@@ -14,6 +14,10 @@ class GameViewController: UIViewController {
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
+		
+		// Load card deck
+		_ = CardUtils.loadDeck()
+		
 		let scene = GameScene(size: view.bounds.size)
 		let skView = view as! SKView
 		skView.showsFPS = true

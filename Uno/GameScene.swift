@@ -11,8 +11,7 @@ import GameplayKit
 
 class GameScene: SKScene {
 	
-	//let card = SKSpriteNode(imageNamed: "Red_0")
-	let card = Card(cardType: CardType.number, cardColor: CardColor.red, cardValue: 1)
+	let card = Card(cardColor: CardColor.red, cardValue: 1)
 	
 	override func didMove(to view: SKView) {
 		backgroundColor = SKColor.white
@@ -20,6 +19,10 @@ class GameScene: SKScene {
 		card.position = CGPoint(x: size.width * 0.1, y: size.height * 0.5)
 		card.setScale(0.3)
 		self.addChild(card)
+		
+		let cardDeck = CardUtils.getCardDeck()
+		
+		// TODO: create hand for every player, discard stack and draw stack 
 	}
 	
     override func update(_ currentTime: TimeInterval) {

@@ -10,9 +10,9 @@ import SpriteKit
 
 enum CardColor :Int {
 	case red,
-	yellow,
 	green,
 	blue,
+	yellow,
 	other
 }
 
@@ -23,7 +23,7 @@ enum CardType :Int {
 }
 
 enum SpecialVals :Int {
-	case Skip = 10,
+	case skip = 10,
 	plusTwo,
 	reverse,
 	wild,
@@ -33,16 +33,28 @@ enum SpecialVals :Int {
 class Card : SKSpriteNode {
 	let cardType :CardType
 	let cardColor :CardColor
+	let cardValue :Int
 	let frontTexture :SKTexture
+	public override var description: String { get { return "<CardType = \(cardType)>, <CardColor = \(cardColor)>, <CardType = \(cardType)>, <CardValue = \(cardValue)>" } }
  
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("NSCoding not supported")
 	}
  
-	init(cardType: CardType, cardColor: CardColor, cardValue: Int) {
-		self.cardType = cardType
+	init(cardColor: CardColor, cardValue: Int) {
 		self.cardColor = cardColor
+		self.cardValue = cardValue
 		
+		// Figure out what CardType this card is
+		if cardValue < SpecialVals.skip.rawValue {
+			self.cardType = CardType.number
+		} else if cardValue < SpecialVals.wild.rawValue {
+			self.cardType = CardType.action
+		} else {
+			self.cardType = CardType.wild
+		}
+		
+		// Load appropriate Card image. TODO: handle special cards and all colors
 		switch cardColor {
 		case .red:
 			frontTexture = SKTexture(imageNamed: "Red_" + String(cardValue))

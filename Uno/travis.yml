@@ -1,0 +1,13 @@
+language: objective-c
+
+branches:
+only:
+- master
+
+xcode_project: Uno.xcodeproj
+xcode_scheme: Uno
+osx_image: xcode8.2
+xcode_sdk: iphonesimulator10.0
+
+script:
+- xcodebuild clean build test -project Uno.xcodeproj -scheme Uno

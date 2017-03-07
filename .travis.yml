@@ -10,4 +10,4 @@ osx_image: xcode8.2
 xcode_sdk: iphonesimulator10.0
 
 script:
-- xcodebuild clean build test -project Uno.xcodeproj -scheme Uno
+- xcodebuild clean build -project Uno.xcodeproj -scheme Uno

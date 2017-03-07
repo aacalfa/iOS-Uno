@@ -18,7 +18,6 @@
 		B24A135E1E6B4F79009BE336 /* UnoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24A135D1E6B4F79009BE336 /* UnoUITests.swift */; };
 		B24A136C1E6B5435009BE336 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24A136B1E6B5435009BE336 /* Card.swift */; };
 		B24A136E1E6BA9CE009BE336 /* Stack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24A136D1E6BA9CE009BE336 /* Stack.swift */; };
-		B273EE0D1E6E7F7C001A29AF /* travis.yml in Resources */ = {isa = PBXBuildFile; fileRef = B273EE0C1E6E7F7C001A29AF /* travis.yml */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -253,7 +252,6 @@
 				B24A13431E6B4F79009BE336 /* Main.storyboard in Resources */,
 				B24A13451E6B4F79009BE336 /* Assets.xcassets in Resources */,
 				B24A13481E6B4F79009BE336 /* LaunchScreen.storyboard in Resources */,
-				B273EE0D1E6E7F7C001A29AF /* travis.yml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

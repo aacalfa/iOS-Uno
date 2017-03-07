@@ -17,6 +17,8 @@ class GameViewController: UIViewController {
 		
 		// Load card deck
 		_ = CardUtils.loadDeck()
+		// Shuffle card deck
+		CardUtils.shuffleDeck()
 		
 		let scene = GameScene(size: view.bounds.size)
 		let skView = view as! SKView

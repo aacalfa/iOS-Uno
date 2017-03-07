@@ -11,6 +11,7 @@ import Foundation
 class CardUtils {
 	private static var cardDeck = [Card?](repeating: nil, count:108)
 	
+	// Creates all 108 cards from Uno deck into an array of Cards
 	static func loadDeck() {
 		let redColor = CardColor.red
 		let greenColor = CardColor.green
@@ -39,8 +40,41 @@ class CardUtils {
 		}
 		print("finished loadDeck\n")
 	}
-	
+
+	// Return array of cards
 	static func getCardDeck() -> [Card?] {
 		return cardDeck
+	}
+	
+	//
+	static func shuffleDeck() {
+		cardDeck.shuffle()
+	}
+	
+}
+
+// Helper methods that shuffle elements in an array. To be used with in shuffling the cards of the deck.
+
+extension MutableCollection where Indices.Iterator.Element == Index {
+	/// Shuffles the contents of this collection.
+	mutating func shuffle() {
+		let c = count
+		guard c > 1 else { return }
+		
+		for (firstUnshuffled , unshuffledCount) in zip(indices, stride(from: c, to: 1, by: -1)) {
+			let d: IndexDistance = numericCast(arc4random_uniform(numericCast(unshuffledCount)))
+			guard d != 0 else { continue }
+			let i = index(firstUnshuffled, offsetBy: d)
+			swap(&self[firstUnshuffled], &self[i])
+		}
+	}
+}
+
+extension Sequence {
+	/// Returns an array with the contents of this sequence, shuffled.
+	func shuffled() -> [Iterator.Element] {
+		var result = Array(self)
+		result.shuffle()
+		return result
 	}
 }

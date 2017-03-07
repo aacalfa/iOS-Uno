@@ -24,10 +24,10 @@ enum CardType :Int {
 
 enum SpecialVals :Int {
 	case skip = 10,
-	plusTwo,
-	reverse,
-	wild,
-	wildPlusFour
+	plusTwo,     // 11
+	reverse,     // 12
+	wild,        // 13
+	wildPlusFour // 14
 }
 
 class Card : SKSpriteNode {

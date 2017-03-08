@@ -24,7 +24,7 @@ class Menu: GKState {
 // Represents in-game scenario
 class GamePlay: GKState {
 	override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-		return stateClass is Finish.Type
+		return stateClass is EndGame.Type
 	}
 	
 	override func didEnter(from previousState: GKState?) {

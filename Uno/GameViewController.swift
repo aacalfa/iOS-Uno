@@ -11,6 +11,10 @@ import SpriteKit
 import GameplayKit
 
 class GameViewController: UIViewController {
+	var menuState = Menu()
+	var gamePlayState = GamePlay()
+	var endGameState = EndGame()
+	var stateMachine : GKStateMachine?
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -20,6 +24,10 @@ class GameViewController: UIViewController {
 		// Shuffle card deck
 		CardUtils.shuffleDeck()
 		
+		// Create state machines
+		createStateSm()
+		
+		// TODO: add a scene per state in the state machine
 		let scene = GameScene(size: view.bounds.size)
 		let skView = view as! SKView
 		skView.showsFPS = true
@@ -32,4 +40,8 @@ class GameViewController: UIViewController {
     override var prefersStatusBarHidden: Bool {
         return true
     }
+	
+	func createStateSm() {
+		stateMachine = GKStateMachine(states: [menuState, gamePlayState, endGameState])
+	}
 }

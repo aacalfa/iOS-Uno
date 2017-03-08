@@ -18,6 +18,7 @@
 		B24A135E1E6B4F79009BE336 /* UnoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24A135D1E6B4F79009BE336 /* UnoUITests.swift */; };
 		B24A136C1E6B5435009BE336 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24A136B1E6B5435009BE336 /* Card.swift */; };
 		B24A136E1E6BA9CE009BE336 /* Stack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24A136D1E6BA9CE009BE336 /* Stack.swift */; };
+		B29C15991E6FC6660071E70E /* GameSm.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29C15981E6FC6660071E70E /* GameSm.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 		B24A136B1E6B5435009BE336 /* Card.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		B24A136D1E6BA9CE009BE336 /* Stack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stack.swift; sourceTree = "<group>"; };
 		B273EE0C1E6E7F7C001A29AF /* travis.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = travis.yml; sourceTree = "<group>"; };
+		B29C15981E6FC6660071E70E /* GameSm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameSm.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,6 +119,7 @@
 				B24A136D1E6BA9CE009BE336 /* Stack.swift */,
 				B2336F651E6D18D200A8CE10 /* CardUtils.swift */,
 				B273EE0C1E6E7F7C001A29AF /* travis.yml */,
+				B29C15981E6FC6660071E70E /* GameSm.swift */,
 			);
 			path = Uno;
 			sourceTree = "<group>";
@@ -274,6 +277,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B24A133E1E6B4F79009BE336 /* GameScene.swift in Sources */,
+				B29C15991E6FC6660071E70E /* GameSm.swift in Sources */,
 				B24A136E1E6BA9CE009BE336 /* Stack.swift in Sources */,
 				B24A13401E6B4F79009BE336 /* GameViewController.swift in Sources */,
 				B2336F661E6D18D200A8CE10 /* CardUtils.swift in Sources */,

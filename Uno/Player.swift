@@ -12,13 +12,16 @@ class Player {
     
     var cards: [Card?]
     var points: Int = 0
+    var name: String
 
-    init(cards: [Card?]) {
+    init(cards: [Card?], name: String = "Anonymous") {
         self.cards = []
         
         for card in cards {
             self.cards.append(card)
         }
+        
+        self.name = name
     }
     
     func getCards() -> [Card?] {
@@ -31,6 +34,14 @@ class Player {
     
     func setPoints(points: Int) {
         self.points = points
+    }
+    
+    func getName() -> String {
+        return self.name
+    }
+    
+    func setName(name: String) {
+        self.name = name
     }
     
     func resetPoints() {

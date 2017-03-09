@@ -11,6 +11,7 @@ import Foundation
 class Player {
     
     var cards: [Card?]
+    var points: Int = 0
 
     init(cards: [Card?]) {
         self.cards = []
@@ -22,6 +23,18 @@ class Player {
     
     func getCards() -> [Card?] {
         return self.cards
+    }
+    
+    func getPoints() -> Int {
+        return self.points
+    }
+    
+    func setPoints(points: Int) {
+        self.points = points
+    }
+    
+    func resetPoints() {
+        self.points = 0
     }
     
     func playCard(card: Card) {

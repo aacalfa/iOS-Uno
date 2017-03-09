@@ -17,19 +17,20 @@ class CardUtils {
 		let greenColor = CardColor.green
 		let blueColor = CardColor.blue
 		let yellowColor = CardColor.yellow
+		let otherColor = CardColor.other
 		var currIdx = 0
 		
-		// Load first half of deck, includes 0 and wild card
+		// Load first half of deck, includes 0
 		for color in [redColor, greenColor, blueColor, yellowColor] {
-			for i in 0...13 {
+			for i in 0...12 {
 				cardDeck[currIdx] = Card(cardColor: color, cardValue: i)
 				currIdx += 1
 			}
 		}
 		
-		// Load second half of deck, excludes 0 and has wild card plus 4 card
+		// Load second half of deck, excludes 0\
 		for color in [redColor, greenColor, blueColor, yellowColor] {
-			for i in 1...13 {
+			for i in 1...12 {
 				var currVal = i
 				if currVal == 13 {
 					currVal += 1
@@ -38,6 +39,19 @@ class CardUtils {
 				currIdx += 1
 			}
 		}
+		
+		// Load wild cards
+		for _ in 1...4 {
+			cardDeck[currIdx] = Card(cardColor: otherColor, cardValue: SpecialVals.wild.rawValue)
+			currIdx += 1
+		}
+		// Load wild cards PlusFour
+		for _ in 1...4 {
+			cardDeck[currIdx] = Card(cardColor: otherColor, cardValue: SpecialVals.wildPlusFour.rawValue)
+			currIdx += 1
+		}		
+		
+		// Load wild cards
 		print("finished loadDeck\n")
 	}
 

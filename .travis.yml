@@ -1,10 +1,5 @@
 language: objective-c
 
-branches:
-only:
-- master
-- /^develop-.*$/
-
 osx_image: xcode8.2
 
 script:

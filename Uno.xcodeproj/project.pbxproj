@@ -19,6 +19,8 @@
 		B24A136C1E6B5435009BE336 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24A136B1E6B5435009BE336 /* Card.swift */; };
 		B24A136E1E6BA9CE009BE336 /* Stack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24A136D1E6BA9CE009BE336 /* Stack.swift */; };
 		B29C15991E6FC6660071E70E /* GameSm.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29C15981E6FC6660071E70E /* GameSm.swift */; };
+		B302FE0E1E709FF700EF3C44 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = B302FE0D1E709FF700EF3C44 /* Player.swift */; };
+		B302FE101E70AC1900EF3C44 /* PlayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B302FE0F1E70AC1900EF3C44 /* PlayerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +60,8 @@
 		B24A136D1E6BA9CE009BE336 /* Stack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stack.swift; sourceTree = "<group>"; };
 		B273EE0C1E6E7F7C001A29AF /* travis.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = travis.yml; sourceTree = "<group>"; };
 		B29C15981E6FC6660071E70E /* GameSm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameSm.swift; sourceTree = "<group>"; };
+		B302FE0D1E709FF700EF3C44 /* Player.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		B302FE0F1E70AC1900EF3C44 /* PlayerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,6 +124,7 @@
 				B2336F651E6D18D200A8CE10 /* CardUtils.swift */,
 				B273EE0C1E6E7F7C001A29AF /* travis.yml */,
 				B29C15981E6FC6660071E70E /* GameSm.swift */,
+				B302FE0D1E709FF700EF3C44 /* Player.swift */,
 			);
 			path = Uno;
 			sourceTree = "<group>";
@@ -128,6 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				B24A13521E6B4F79009BE336 /* UnoTests.swift */,
+				B302FE0F1E70AC1900EF3C44 /* PlayerTests.swift */,
 				B24A13541E6B4F79009BE336 /* Info.plist */,
 			);
 			path = UnoTests;
@@ -280,6 +286,7 @@
 				B29C15991E6FC6660071E70E /* GameSm.swift in Sources */,
 				B24A136E1E6BA9CE009BE336 /* Stack.swift in Sources */,
 				B24A13401E6B4F79009BE336 /* GameViewController.swift in Sources */,
+				B302FE0E1E709FF700EF3C44 /* Player.swift in Sources */,
 				B2336F661E6D18D200A8CE10 /* CardUtils.swift in Sources */,
 				B24A13381E6B4F79009BE336 /* AppDelegate.swift in Sources */,
 				B24A136C1E6B5435009BE336 /* Card.swift in Sources */,
@@ -290,6 +297,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B302FE101E70AC1900EF3C44 /* PlayerTests.swift in Sources */,
 				B24A13531E6B4F79009BE336 /* UnoTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

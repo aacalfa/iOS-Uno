@@ -27,6 +27,46 @@ class PlayerTests: XCTestCase {
         player2 = nil
     }
     
+    func testInitialPoints() {
+        player1 = Player(cards: [redCard0, redCard1, blueCard2])
+        
+        XCTAssert(player1.getPoints() == 0)
+    }
+    
+    func testGetSetPoints() {
+        player1 = Player(cards: [redCard0, redCard1, blueCard2])
+        
+        let points: Int = 100
+        player1.setPoints(points: points)
+        
+        XCTAssert(player1.getPoints() == points)
+    }
+    
+    func testResetPoints() {
+        player1 = Player(cards: [redCard0, redCard1, blueCard2])
+        
+        let points: Int = 100
+        player1.setPoints(points: points)
+        player1.resetPoints()
+        
+        XCTAssert(player1.getPoints() == 0)
+    }
+    
+    func testInitialName() {
+        player1 = Player(cards: [redCard0, redCard1, blueCard2])
+        
+        XCTAssert(player1.getName() == "Anonymous")
+    }
+    
+    func testGetSetName() {
+        player1 = Player(cards: [redCard0, redCard1, blueCard2])
+        
+        let name: String = "Player1"
+        player1.setName(name: name)
+        
+        XCTAssert(player1.getName() == name)
+    }
+    
     func comparePlayers(player1: Player, player2: Player) -> Bool {
         var success: Bool = true
         for card in player1.cards {

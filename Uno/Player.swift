@@ -25,20 +25,36 @@ class Player {
     }
     
     func playCard(card: Card) {
-        self.cards.remove(at: self.cards.index{$0 === card}!)
+        if self.cards.count > 0 {
+            // First, check if card exists, then remove it if it does
+            let ind = self.cards.index{$0 === card}
+            if ind != nil {
+                self.cards.remove(at: ind!)
+            }
+        }
     }
     
     func drawCard(card: Card) {
-        self.cards.append(card)
+        // First, check if card exists, then append it if it doesn't or insert it if it does
+        let ind = self.cards.index{$0 === card}
+        if ind == nil {
+            self.cards.append(card)
+        } else {
+            self.cards.insert(card, at: ind!)
+        }
     }
     
     func toString() -> String {
         var playerString: String = ""
         
         for card in cards {
-            playerString.append("CardColor: " + String(describing: card?.cardColor) + "\tCardType: " + String(describing: card?.cardType) + "\tCardValue: " + String(describing: card?.cardValue) + "\n")
+            playerString.append("CardColor: " + String(describing: card?.cardColor.hashValue) + "\tCardType: " + String(describing: card?.cardType.hashValue) + "\tCardValue: " + String(describing: card?.cardValue.hashValue) + "\n")
         }
         
         return playerString
+    }
+    
+    func copy() -> Player {
+        return Player(cards: self.cards)
     }
 }

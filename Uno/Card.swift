@@ -24,8 +24,8 @@ enum CardType :Int {
 
 enum SpecialVals :Int {
 	case skip = 10,
-	plusTwo,     // 11
-	reverse,     // 12
+	reverse,     // 11
+	plusTwo,     // 12
 	wild,        // 13
 	wildPlusFour // 14
 }

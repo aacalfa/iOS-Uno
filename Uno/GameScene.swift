@@ -10,9 +10,12 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene {
+    var background = SKSpriteNode(imageNamed: "Table")
 	
 	override func didMove(to view: SKView) {
-		backgroundColor = SKColor.white
+        
+        addChild(background)
+
 		var xPos = size.width * 0.1
 		let yPos = size.height * 0.5
 		
@@ -27,7 +30,7 @@ class GameScene: SKScene {
 			if let card: Card = cardDeck[Int(randomNumber)] {
 				card.position = CGPoint(x: xPos, y: yPos)
 				card.setScale(0.3)
-				self.addChild(card)
+				background.addChild(card)
 				xPos += (card.texture?.size().width)! / 4
 			}
 		}

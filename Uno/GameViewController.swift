@@ -32,7 +32,7 @@ class GameViewController: UIViewController {
 		let skView = view as! SKView
 		skView.showsFPS = true
 		skView.showsNodeCount = true
-		skView.ignoresSiblingOrder = true
+		skView.ignoresSiblingOrder = false // Draw background first, then cards
 		scene.scaleMode = .resizeFill
 		skView.presentScene(scene)
 	}

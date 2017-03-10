@@ -58,9 +58,20 @@ class Card : SKSpriteNode {
 		switch cardColor {
 		case .red:
 			frontTexture = SKTexture(imageNamed: "Red_" + String(cardValue))
-		default:
-			frontTexture = SKTexture(image:#imageLiteral(resourceName: "Red_0"))
-
+			break
+		case .green:
+			frontTexture = SKTexture(imageNamed: "Green_" + String(cardValue))
+			break
+		case .blue:
+			frontTexture = SKTexture(imageNamed: "Blue_" + String(cardValue))
+			break
+		case .yellow:
+			frontTexture = SKTexture(imageNamed: "Yellow_" + String(cardValue))
+			break
+		case .other:
+			frontTexture = SKTexture(imageNamed: "Wild_" + String(cardValue))
+			break
+		// TODO: try to find a texture for the back of the card.
 		}
 		
 		super.init(texture: frontTexture, color: .clear, size: frontTexture.size())

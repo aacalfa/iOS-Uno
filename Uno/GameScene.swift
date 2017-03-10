@@ -11,16 +11,27 @@ import GameplayKit
 
 class GameScene: SKScene {
 	
-	let card = Card(cardColor: CardColor.red, cardValue: 1)
-	
 	override func didMove(to view: SKView) {
 		backgroundColor = SKColor.white
-		
-		card.position = CGPoint(x: size.width * 0.1, y: size.height * 0.5)
-		card.setScale(0.3)
-		self.addChild(card)
+		var xPos = size.width * 0.1
+		let yPos = size.height * 0.5
 		
 		let cardDeck = CardUtils.getCardDeck()
+		
+		// Load 7 random cards
+		let lower : UInt32 = 0
+		let upper : UInt32 = 107
+
+		for _ in 1...7 {
+			let randomNumber = arc4random_uniform(upper - lower) + lower
+			if let card: Card = cardDeck[Int(randomNumber)] {
+				card.position = CGPoint(x: xPos, y: yPos)
+				card.setScale(0.3)
+				self.addChild(card)
+				xPos += (card.texture?.size().width)! / 4
+			}
+		}
+		
 		
 		// TODO: create hand for every player, discard stack and draw stack 
 	}

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B221B7301E73E10200883FD7 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = B221B72F1E73E10200883FD7 /* MenuScene.swift */; };
+		B231C9451E75378E00A68615 /* Button.wav in Resources */ = {isa = PBXBuildFile; fileRef = B231C9441E75378E00A68615 /* Button.wav */; };
 		B2336F661E6D18D200A8CE10 /* CardUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2336F651E6D18D200A8CE10 /* CardUtils.swift */; };
 		B24A13381E6B4F79009BE336 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24A13371E6B4F79009BE336 /* AppDelegate.swift */; };
 		B24A133E1E6B4F79009BE336 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24A133D1E6B4F79009BE336 /* GameScene.swift */; };
@@ -41,6 +43,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B221B72F1E73E10200883FD7 /* MenuScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
+		B231C9441E75378E00A68615 /* Button.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = Button.wav; path = Uno/Assets.xcassets/Button.dataset/Button.wav; sourceTree = "<group>"; };
 		B2336F651E6D18D200A8CE10 /* CardUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardUtils.swift; sourceTree = "<group>"; };
 		B24A13341E6B4F79009BE336 /* Uno.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Uno.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B24A13371E6B4F79009BE336 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -92,6 +96,7 @@
 		B24A132B1E6B4F79009BE336 = {
 			isa = PBXGroup;
 			children = (
+				B231C9441E75378E00A68615 /* Button.wav */,
 				B24A13361E6B4F79009BE336 /* Uno */,
 				B24A13511E6B4F79009BE336 /* UnoTests */,
 				B24A135C1E6B4F79009BE336 /* UnoUITests */,
@@ -125,6 +130,7 @@
 				B273EE0C1E6E7F7C001A29AF /* travis.yml */,
 				B29C15981E6FC6660071E70E /* GameSm.swift */,
 				B302FE0D1E709FF700EF3C44 /* Player.swift */,
+				B221B72F1E73E10200883FD7 /* MenuScene.swift */,
 			);
 			path = Uno;
 			sourceTree = "<group>";
@@ -255,6 +261,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B231C9451E75378E00A68615 /* Button.wav in Resources */,
 				B24A13431E6B4F79009BE336 /* Main.storyboard in Resources */,
 				B24A13451E6B4F79009BE336 /* Assets.xcassets in Resources */,
 				B24A13481E6B4F79009BE336 /* LaunchScreen.storyboard in Resources */,
@@ -285,6 +292,7 @@
 				B24A133E1E6B4F79009BE336 /* GameScene.swift in Sources */,
 				B29C15991E6FC6660071E70E /* GameSm.swift in Sources */,
 				B24A136E1E6BA9CE009BE336 /* Stack.swift in Sources */,
+				B221B7301E73E10200883FD7 /* MenuScene.swift in Sources */,
 				B24A13401E6B4F79009BE336 /* GameViewController.swift in Sources */,
 				B302FE0E1E709FF700EF3C44 /* Player.swift in Sources */,
 				B2336F661E6D18D200A8CE10 /* CardUtils.swift in Sources */,

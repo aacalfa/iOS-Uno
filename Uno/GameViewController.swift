@@ -27,8 +27,8 @@ class GameViewController: UIViewController {
 		// Create state machines
 		createStateSm()
 		
-		// TODO: add a scene per state in the state machine
-		let scene = GameScene(size: view.bounds.size)
+		// Present main menu
+		let scene = MenuScene(size: view.bounds.size)
 		let skView = view as! SKView
 		skView.showsFPS = true
 		skView.showsNodeCount = true

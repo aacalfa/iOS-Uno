@@ -54,7 +54,7 @@ class Card : SKSpriteNode {
 			self.cardType = CardType.wild
 		}
 		
-		// Load appropriate Card image. TODO: handle special cards and all colors
+		// Load appropriate Card image
 		switch cardColor {
 		case .red:
 			frontTexture = SKTexture(imageNamed: "Red_" + String(cardValue))

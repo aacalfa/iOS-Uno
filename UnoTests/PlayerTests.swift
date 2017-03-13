@@ -113,6 +113,12 @@ class PlayerTests: XCTestCase {
         XCTAssertTrue(comparePlayers(player1: player1, player2: player2))
     }
     
+    func testPlayerAI() {
+        player1 = Player(cards: [redCard0, redCard1])
+        
+        XCTAssert(!player1.isAI())
+    }
+    
     func testPerformanceExample() {
         // This is an example of a performance test case.
         self.measure {

@@ -59,10 +59,10 @@ class GameViewController: UIViewController {
 	}
 	
 	func initPlayers() {
-		playersVec = [Player]()
+		playersVec = [Player?](repeating: nil, count: numOfPlayers)
         let initNumOfCards : Int = 7
-        var cards = [Card?](repeating: nil, count: initNumOfCards)
 		for i in 0...numOfPlayers - 1 {
+            var cards = [Card?](repeating: nil, count: initNumOfCards)
             for i in 0...initNumOfCards - 1 {
                 cards[i] = cardDeck.pop()
             }

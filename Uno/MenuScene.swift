@@ -12,6 +12,9 @@ import UIKit
 
 class MenuScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerViewDelegate {
 
+	// we need to make sure to set this when we create our GameScene
+	var viewController: GameViewController!
+	
 	var startButton = SKSpriteNode()
 	let startButtonTex = SKTexture(imageNamed: "start_button")
 	var player : AVAudioPlayer?
@@ -49,6 +52,10 @@ class MenuScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
 			
 			if node == startButton {
 				if view != nil {
+					// Get selected value in picker and set number of players
+					viewController.numOfPlayers = Int((myLabel?.text)!)!
+					// Initialize Players
+					viewController.initPlayers()
 					// Remove picker from view
 					myPicker?.removeFromSuperview()
 					

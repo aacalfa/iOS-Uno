@@ -39,6 +39,7 @@ class MenuScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
 		// Draw picker
 		myPicker = UIPickerView(frame: CGRect(x: view.bounds.width / 2 - 50, y: view.bounds.height / 2 - 100, width: 100, height: 60))
 		myLabel = UILabel(frame: CGRect(x: 20, y: 10, width: 50, height: 200))
+        myLabel?.text = pickerData[0] // Set default value for label text
 		myPicker?.delegate = self
 		myPicker?.dataSource = self
 		self.view!.addSubview(myPicker!)

@@ -119,6 +119,30 @@ class PlayerTests: XCTestCase {
         XCTAssert(!player1.isAI())
     }
     
+    func testHasCardType() {
+        player1 = Player(cards: [redCard0, redCard1])
+        
+        XCTAssertTrue(player1.hasCardType(cardType: redCard0.cardType))
+    }
+    
+    func testHasCardColor() {
+        player1 = Player(cards: [redCard0, redCard1])
+        
+        XCTAssertTrue(player1.hasCardColor(cardColor: redCard0.cardColor))
+    }
+    
+    func testHasCardValue() {
+        player1 = Player(cards: [redCard0, redCard1])
+        
+        XCTAssertTrue(player1.hasCardValue(cardValue: redCard0.cardValue))
+    }
+    
+    func testHasCard() {
+        player1 = Player(cards: [redCard0, redCard1])
+        
+        XCTAssertTrue(player1.hasCard(card: redCard0))
+    }
+    
     func testPerformanceExample() {
         // This is an example of a performance test case.
         self.measure {

@@ -135,6 +135,61 @@ class Player {
     }
     
     /**
+     Checks if given card type is present in player's set of cards.
+     
+     - parameter cardType: Given card type
+     - returns: True if given card type is present in the set of cards, false otherwise 
+    */
+    func hasCardType(cardType: CardType) -> Bool {
+        for card in self.cards {
+            if card?.cardType == cardType {
+                return true
+            }
+        }
+        return false
+    }
+    
+    /**
+     Checks if given card color is present in player's set of cards.
+     
+     - parameter cardColor: Given card color
+     - returns: True if given card color is present in the set of cards, false otherwise
+     */
+    func hasCardColor(cardColor: CardColor) -> Bool {
+        for card in self.cards {
+            if card?.cardColor == cardColor {
+                return true
+            }
+        }
+        return false
+    }
+    
+    /**
+     Checks if given card value is present in player's set of cards.
+     
+     - parameter cardValue: Given card value
+     - returns: True if given card value is present in the set of cards, false otherwise
+     */
+    func hasCardValue(cardValue: Int) -> Bool {
+        for card in self.cards {
+            if card?.cardValue == cardValue {
+                return true
+            }
+        }
+        return false
+    }
+    
+    /**
+     Checks if given card is present in player's set of cards.
+     
+     - parameter card: Given card
+     - returns: True if given card is present in the set of cards, false otherwise
+     */
+    func hasCard(card: Card) -> Bool {
+        return self.hasCardType(cardType: card.cardType) && self.hasCardColor(cardColor: card.cardColor) && self.hasCardValue(cardValue: card.cardValue)
+    }
+    
+    /**
      Convert the player information to `String`.
      
      - returns: A `String` representation of the player

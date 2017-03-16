@@ -17,17 +17,24 @@ class GameViewController: UIViewController {
 	var endGameState = EndGame()
 	var stateMachine : GKStateMachine?
 	
-	var playersVec : [Player?] = [] // array that contains all players in the game
-	var numOfPlayers : Int = 0 // determines how many players are participating in the game
-	var menuScene : MenuScene? // store MenuScene object
+    var cardDeck : Stack<Card?> = Stack<Card?>() // Game's card deck
+	var playersVec : [Player?] = [] // Array that contains all players in the game
+	var numOfPlayers : Int = 0 // Determines how many players are participating in the game
+	var menuScene : MenuScene? // Stores MenuScene object
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
 		// Load card deck
-		_ = CardUtils.loadDeck()
+		CardUtils.loadDeck()
+        
 		// Shuffle card deck
 		CardUtils.shuffleDeck()
+        
+        // Populate stack of cards
+        for card in CardUtils.getCardDeck() {
+            cardDeck.push(card)
+        }
 		
 		// Create state machines
 		createStateSm()
@@ -52,10 +59,15 @@ class GameViewController: UIViewController {
 	}
 	
 	func initPlayers() {
-		playersVec = [Player]()
-		// TODO: get cards for each player
-//		for i in 0...numOfPlayers - 1 {
-//			playersVec[i] = Player(cards: nil, name: "Player" + String(i), flagAI: i == 0)
-//		}
+		playersVec = [Player?](repeating: nil, count: numOfPlayers)
+        let initNumOfCards : Int = 7
+		for i in 0...numOfPlayers - 1 {
+            var cards = [Card?](repeating: nil, count: initNumOfCards)
+            for i in 0...initNumOfCards - 1 {
+                cards[i] = cardDeck.pop()
+            }
+            
+			playersVec[i] = Player(cards: cards, name: "Player" + String(i), flagAI: i == 0)
+		}
 	}
 }

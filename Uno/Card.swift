@@ -35,6 +35,7 @@ class Card : SKSpriteNode {
 	let cardColor :CardColor
 	let cardValue :Int
 	let frontTexture :SKTexture
+	let backTexture :SKTexture
 	public override var description: String { get { return "<CardType = \(cardType)>, <CardColor = \(cardColor)>, <CardType = \(cardType)>, <CardValue = \(cardValue)>" } }
  
 	required init?(coder aDecoder: NSCoder) {
@@ -71,8 +72,9 @@ class Card : SKSpriteNode {
 		case .other:
 			frontTexture = SKTexture(imageNamed: "Wild_" + String(cardValue))
 			break
-		// TODO: try to find a texture for the back of the card.
 		}
+		// Load back texture of card
+		backTexture = SKTexture(imageNamed: "CardBack")
 		
 		super.init(texture: frontTexture, color: .clear, size: frontTexture.size())
 	}

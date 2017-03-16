@@ -30,6 +30,7 @@ class GameScene: SKScene {
 			if let card: Card = cardDeck[Int(randomNumber)] {
 				card.position = CGPoint(x: xPos, y: yPos)
 				card.setScale(0.3)
+				card.texture = card.backTexture
 				background.addChild(card)
 				xPos += (card.texture?.size().width)! / 4
 			}

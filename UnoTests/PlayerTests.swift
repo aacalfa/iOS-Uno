@@ -15,6 +15,7 @@ class PlayerTests: XCTestCase {
     let redCard0 = Card(cardColor: CardColor.red, cardValue: 0)
     let redCard1 = Card(cardColor: CardColor.red, cardValue: 1)
     let blueCard2 = Card(cardColor: CardColor.blue, cardValue: 2)
+    let wildCard = Card(cardColor: CardColor.other, cardValue: SpecialVals.wild.rawValue)
     
     override func setUp() {
         super.setUp()
@@ -117,6 +118,54 @@ class PlayerTests: XCTestCase {
         player1 = Player(cards: [redCard0, redCard1])
         
         XCTAssert(!player1.isAI())
+    }
+    
+    func testHasCardType() {
+        player1 = Player(cards: [redCard0, redCard1])
+        
+        XCTAssertTrue(player1.hasCardType(cardType: redCard0.cardType))
+    }
+    
+    func testHasCardColor() {
+        player1 = Player(cards: [redCard0, redCard1])
+        
+        XCTAssertTrue(player1.hasCardColor(cardColor: redCard0.cardColor))
+    }
+    
+    func testHasCardValue() {
+        player1 = Player(cards: [redCard0, redCard1])
+        
+        XCTAssertTrue(player1.hasCardValue(cardValue: redCard0.cardValue))
+    }
+    
+    func testHasCard() {
+        player1 = Player(cards: [redCard0, redCard1])
+        
+        XCTAssertTrue(player1.hasCard(card: redCard0))
+    }
+    
+    func testHasCardTypeFalse() {
+        player1 = Player(cards: [redCard0, redCard1])
+        
+        XCTAssertFalse(player1.hasCardType(cardType: wildCard.cardType))
+    }
+    
+    func testHasCardColorFalse() {
+        player1 = Player(cards: [redCard0, redCard1])
+        
+        XCTAssertFalse(player1.hasCardColor(cardColor: blueCard2.cardColor))
+    }
+    
+    func testHasCardValueFalse() {
+        player1 = Player(cards: [redCard0, redCard1])
+        
+        XCTAssertFalse(player1.hasCardValue(cardValue: blueCard2.cardValue))
+    }
+    
+    func testHasCardFalse() {
+        player1 = Player(cards: [redCard0, redCard1])
+        
+        XCTAssertFalse(player1.hasCard(card: blueCard2))
     }
     
     func testPerformanceExample() {

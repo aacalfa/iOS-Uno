@@ -30,6 +30,11 @@ enum SpecialVals :Int {
     wildDrawFour // 14
 }
 
+enum CardPropertyError :Error {
+    case invalidColor
+    case invalidValue
+}
+
 class Card : SKSpriteNode {
     let cardType :CardType
     let cardColor :CardColor
@@ -45,6 +50,17 @@ class Card : SKSpriteNode {
     init(cardColor: CardColor, cardValue: Int) {
         self.cardColor = cardColor
         self.cardValue = cardValue
+        
+        // Check if input parameters are valid
+        do {
+            try Card.isValidCard(cardColor: cardColor, cardValue: cardValue)
+        } catch CardPropertyError.invalidColor {
+            print("invalid Card color")
+        } catch CardPropertyError.invalidValue {
+            print("invalid Card value")
+        } catch {
+            print("Unknown error when creating Card object")
+        }
         
         // Figure out what CardType this card is
         if cardValue < SpecialVals.skip.rawValue {
@@ -77,5 +93,15 @@ class Card : SKSpriteNode {
         backTexture = SKTexture(imageNamed: "CardBack")
         
         super.init(texture: frontTexture, color: .clear, size: frontTexture.size())
+    }
+    
+    static func isValidCard(cardColor: CardColor, cardValue: Int) throws {
+        if cardValue < 0 || cardValue > SpecialVals.wildDrawFour.rawValue {
+            throw CardPropertyError.invalidValue
+        } else if cardValue < SpecialVals.wild.rawValue && cardColor == CardColor.other {
+            throw CardPropertyError.invalidColor
+        } else if cardValue >= SpecialVals.wild.rawValue && cardColor != CardColor.other {
+            throw CardPropertyError.invalidColor
+        }
     }
 }

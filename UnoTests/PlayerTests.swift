@@ -15,7 +15,6 @@ class PlayerTests: XCTestCase {
     let redCard0 = Card(cardColor: CardColor.red, cardValue: 0)
     let redCard1 = Card(cardColor: CardColor.red, cardValue: 1)
     let blueCard2 = Card(cardColor: CardColor.blue, cardValue: 2)
-    let wildCard = Card(cardColor: CardColor.other, cardValue: SpecialVals.wild.rawValue)
     
     override func setUp() {
         super.setUp()
@@ -70,8 +69,8 @@ class PlayerTests: XCTestCase {
     
     func comparePlayers(player1: Player, player2: Player) -> Bool {
         var success: Bool = true
-        for card in player1.cards {
-            if !player2.cards.contains(where: {$0 == card}) {
+        for card in player1.getCards() {
+            if !player2.getCards().contains(where: {$0 == card}) {
                 success = false
             }
         }
@@ -147,7 +146,7 @@ class PlayerTests: XCTestCase {
     func testHasCardTypeFalse() {
         player1 = Player(cards: [redCard0, redCard1])
         
-        XCTAssertFalse(player1.hasCardType(cardType: wildCard.cardType))
+        XCTAssertFalse(player1.hasCardType(cardType: CardUtils.wildCard.cardType))
     }
     
     func testHasCardColorFalse() {
@@ -166,6 +165,36 @@ class PlayerTests: XCTestCase {
         player1 = Player(cards: [redCard0, redCard1])
         
         XCTAssertFalse(player1.hasCard(card: blueCard2))
+    }
+    
+    func testGetMaximumValueCard() {
+        player1 = Player(cards: [redCard0, redCard1, CardUtils.wildDrawFourCard])
+        
+        XCTAssert(player1.getMaximumValueCard() == CardUtils.wildDrawFourCard)
+    }
+    
+    func testGetMaximumValueCardFalse() {
+        player1 = Player(cards: [redCard0, redCard1, CardUtils.wildDrawFourCard])
+        
+        XCTAssert(player1.getMaximumValueCard() != redCard1)
+    }
+    
+    func testGetMaximumValueCardColor() {
+        player1 = Player(cards: [redCard0, redCard1, blueCard2])
+        
+        XCTAssert(player1.getMaximumValueCard(cardColor: CardColor.red) == redCard1)
+    }
+    
+    func testGetMaximumValueCardColorFalse() {
+        player1 = Player(cards: [redCard0, redCard1, blueCard2])
+        
+        XCTAssert(player1.getMaximumValueCard(cardColor: CardColor.red) != redCard0)
+    }
+    
+    func testGetMaximumValueCardColorFalse2() {
+        player1 = Player(cards: [redCard0, redCard1, blueCard2])
+        
+        XCTAssert(player1.getMaximumValueCard(cardColor: CardColor.red) != blueCard2)
     }
     
     func testPerformanceExample() {

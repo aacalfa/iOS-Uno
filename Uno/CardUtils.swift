@@ -11,6 +11,12 @@ import Foundation
 class CardUtils {
     private static var cardDeck = [Card?](repeating: nil, count:108)
     
+    // Predefined action cards
+    static let reverseCard = Card(cardColor: CardColor.other, cardValue: SpecialVals.reverse.rawValue)
+    static let drawTwoCard = Card(cardColor: CardColor.other, cardValue: SpecialVals.drawTwo.rawValue)
+    static let wildCard = Card(cardColor: CardColor.other, cardValue: SpecialVals.wild.rawValue)
+    static let wildDrawFourCard = Card(cardColor: CardColor.other, cardValue: SpecialVals.wildDrawFour.rawValue)
+    
     // Creates all 108 cards from Uno deck into an array of Cards
     static func loadDeck() {
         let redColor = CardColor.red
@@ -47,7 +53,7 @@ class CardUtils {
         }
         // Load wild cards PlusFour
         for _ in 1...4 {
-            cardDeck[currIdx] = Card(cardColor: otherColor, cardValue: SpecialVals.wildPlusFour.rawValue)
+            cardDeck[currIdx] = Card(cardColor: otherColor, cardValue: SpecialVals.wildDrawFour.rawValue)
             currIdx += 1
         }       
         

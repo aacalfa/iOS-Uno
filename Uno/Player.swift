@@ -10,10 +10,10 @@ import Foundation
 
 class Player {
     
-    var cards: [Card?]
-    var points: Int = 0
-    var name: String
-    var flagAI: Bool
+    private var cards: [Card?]
+    private var points: Int = 0
+    private var name: String
+    private var flagAI: Bool
 
     /**
      Constructor.
@@ -44,7 +44,7 @@ class Player {
     }
     
     /**
-     Check if artificial intelligence (AI) player.
+     Checks if artificial intelligence (AI) player.
      
      - returns: The artificial intelligence (AI) status of the player
      */
@@ -53,7 +53,7 @@ class Player {
     }
     
     /**
-     Get cards.
+     Gets cards.
      
      - returns: The set of cards of the player
      */
@@ -62,7 +62,7 @@ class Player {
     }
     
     /**
-     Get points.
+     Gets points.
      
      - returns: The current points of the player
      */
@@ -71,7 +71,7 @@ class Player {
     }
     
     /**
-     Set points.
+     Sets points.
      
      - parameter points: The current points of the player
      */
@@ -80,14 +80,14 @@ class Player {
     }
     
     /**
-     Reset current points (i.e., set them to zero).
+     Resets current points (i.e., set them to zero).
      */
     func resetPoints() {
         self.points = 0
     }
     
     /**
-     Get player's name.
+     Gets player's name.
      
      - returns: The name of the player
      */
@@ -96,7 +96,7 @@ class Player {
     }
     
     /**
-     Set player's name.
+     Sets player's name.
      
      - parameter name: The name of the player
      */
@@ -105,7 +105,7 @@ class Player {
     }
     
     /**
-     Play card by removing it from the player's set of cards.
+     Plays card by removing it from the player's set of cards.
      
      - parameter card: The played card
      */
@@ -120,7 +120,7 @@ class Player {
     }
     
     /**
-     Draw card by appending or inserting it into the player's set of cards.
+     Draws card by appending or inserting it into the player's set of cards.
      
      - parameter card: The drawn card
      */
@@ -190,7 +190,26 @@ class Player {
     }
     
     /**
-     Convert the player information to `String`.
+     Gets card with maximum value in player's set of cards.
+     
+     - returns: Card with maximum value, or nil if set of cards is empty
+     */
+    func getMaximumValueCard() -> Card? {
+        return self.cards.max{ a, b in (a?.cardValue)! < (b?.cardValue)! }!
+    }
+    
+    /**
+     Gets card of a given color with maximum value in player's set of cards.
+     
+     - parameter cardColor: The color of the card
+     - returns: Card with maximum value, or nil if set of cards is empty
+     */
+    func getMaximumValueCard(cardColor: CardColor) -> Card? {
+        return self.cards.filter{$0?.cardColor == cardColor}.max{a, b in (a?.cardValue)! < (b?.cardValue)!}!
+    }
+    
+    /**
+     Converts the player information to `String`.
      
      - returns: A `String` representation of the player
      */

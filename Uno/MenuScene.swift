@@ -65,6 +65,8 @@ class MenuScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
                     let transition:SKTransition = SKTransition.fade(withDuration: 1)
                     let scene:SKScene = GameScene(size: self.size)
                     self.view?.presentScene(scene, transition: transition)
+                    
+                    // TODO: Set currentCard when the game begins
                 }
             }
         }

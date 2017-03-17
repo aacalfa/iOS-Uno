@@ -7,7 +7,6 @@
 //
 
 import SpriteKit
-import AVFoundation
 import UIKit
 
 class MenuScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerViewDelegate {
@@ -17,7 +16,6 @@ class MenuScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
     
     var startButton = SKSpriteNode()
     let startButtonTex = SKTexture(imageNamed: "start_button")
-    var player : AVAudioPlayer?
     
     let numberPlayersLabel = SKLabelNode(text: "Please select the number of players")
     var myPicker : UIPickerView?
@@ -61,7 +59,7 @@ class MenuScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
                     myPicker?.removeFromSuperview()
                     
                     // Play button click sound
-                    playSound()
+                    SoundFX.playButtonClickSound()
                     
                     // Go to GameScene
                     let transition:SKTransition = SKTransition.fade(withDuration: 1)
@@ -69,20 +67,6 @@ class MenuScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
                     self.view?.presentScene(scene, transition: transition)
                 }
             }
-        }
-    }
-    
-    func playSound() {
-        let url = Bundle.main.url(forResource: "Button", withExtension: "wav")!
-        
-        do {
-            player = try AVAudioPlayer(contentsOf: url)
-            guard let player = player else { return }
-            
-            player.prepareToPlay()
-            player.play()
-        } catch let error {
-            print(error.localizedDescription)
         }
     }
     

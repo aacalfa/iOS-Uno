@@ -12,8 +12,6 @@ class CardUtils {
     private static var cardDeck = [Card?](repeating: nil, count:108)
     
     // Predefined action cards
-    static let reverseCard = Card(cardColor: CardColor.other, cardValue: SpecialVals.reverse.rawValue)
-    static let drawTwoCard = Card(cardColor: CardColor.other, cardValue: SpecialVals.drawTwo.rawValue)
     static let wildCard = Card(cardColor: CardColor.other, cardValue: SpecialVals.wild.rawValue)
     static let wildDrawFourCard = Card(cardColor: CardColor.other, cardValue: SpecialVals.wildDrawFour.rawValue)
     

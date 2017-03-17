@@ -144,7 +144,7 @@ class GameViewController: UIViewController {
             playedCard = CardUtils.wildCard
         } else {
             // Action 1.
-            playedCard = playerAI.getMaximumValueCard()
+            playedCard = playerAI.getMaximumValueCard() // Exclude Wild Draw Four card (default parameter)
             
             // If there is a match in card value, no need to check colors
             if playedCard != nil && playedCard?.cardValue != currentCard?.cardValue {

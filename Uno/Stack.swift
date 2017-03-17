@@ -9,12 +9,16 @@
 import Foundation
 
 struct Stack<Element> {
-    var items = [Element]()
+    private var items = [Element]()
     mutating func push(_ item: Element) {
         items.append(item)
     }
     
     mutating func pop() -> Element {
         return items.removeLast()
+    }
+    
+    func isEmpty() -> Bool {
+        return items.isEmpty
     }
 }

@@ -161,9 +161,14 @@ class Player {
 
     /// Gets card with maximum value in player's set of cards.
     ///
+    /// - Parameter excludeWildDrawFourCard: Flag to exclude or not the Wild Draw Four card
     /// - Returns: Card with maximum value, or nil if set of cards is empty
-    func getMaximumValueCard() -> Card? {
-        return self.cards.max{ a, b in (a?.cardValue)! < (b?.cardValue)! }!
+    func getMaximumValueCard(excludeWildDrawFourCard: Bool = true) -> Card? {
+        if excludeWildDrawFourCard {
+            return self.cards.filter{$0 != CardUtils.wildDrawFourCard}.max{ a, b in (a?.cardValue)! < (b?.cardValue)! }!
+        } else {
+            return self.cards.max{ a, b in (a?.cardValue)! < (b?.cardValue)! }!
+        }
     }
 
     /// Gets card of a given color with maximum value in player's set of cards.

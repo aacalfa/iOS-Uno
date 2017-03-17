@@ -170,13 +170,19 @@ class PlayerTests: XCTestCase {
     func testGetMaximumValueCard() {
         player1 = Player(cards: [redCard0, redCard1, CardUtils.wildDrawFourCard])
         
-        XCTAssert(player1.getMaximumValueCard() == CardUtils.wildDrawFourCard)
+        XCTAssert(player1.getMaximumValueCard() == redCard1)
+    }
+    
+    func testGetMaximumValueCard2() {
+        player1 = Player(cards: [redCard0, redCard1, CardUtils.wildDrawFourCard])
+        
+        XCTAssert(player1.getMaximumValueCard(excludeWildDrawFourCard: false) == CardUtils.wildDrawFourCard)
     }
     
     func testGetMaximumValueCardFalse() {
         player1 = Player(cards: [redCard0, redCard1, CardUtils.wildDrawFourCard])
         
-        XCTAssert(player1.getMaximumValueCard() != redCard1)
+        XCTAssert(player1.getMaximumValueCard(excludeWildDrawFourCard: false) != redCard1)
     }
     
     func testGetMaximumValueCardColor() {

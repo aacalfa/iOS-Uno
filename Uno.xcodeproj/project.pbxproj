@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B21A969B1E7C7943006655F4 /* CardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21A969A1E7C7943006655F4 /* CardTests.swift */; };
 		B221B7301E73E10200883FD7 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = B221B72F1E73E10200883FD7 /* MenuScene.swift */; };
 		B231C9451E75378E00A68615 /* Button.wav in Resources */ = {isa = PBXBuildFile; fileRef = B231C9441E75378E00A68615 /* Button.wav */; };
 		B2336F661E6D18D200A8CE10 /* CardUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2336F651E6D18D200A8CE10 /* CardUtils.swift */; };
@@ -44,6 +45,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B21A969A1E7C7943006655F4 /* CardTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardTests.swift; sourceTree = "<group>"; };
 		B221B72F1E73E10200883FD7 /* MenuScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
 		B231C9441E75378E00A68615 /* Button.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = Button.wav; path = Uno/Assets.xcassets/Button.dataset/Button.wav; sourceTree = "<group>"; };
 		B2336F651E6D18D200A8CE10 /* CardUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardUtils.swift; sourceTree = "<group>"; };
@@ -144,6 +146,7 @@
 				B24A13521E6B4F79009BE336 /* UnoTests.swift */,
 				B302FE0F1E70AC1900EF3C44 /* PlayerTests.swift */,
 				B24A13541E6B4F79009BE336 /* Info.plist */,
+				B21A969A1E7C7943006655F4 /* CardTests.swift */,
 			);
 			path = UnoTests;
 			sourceTree = "<group>";
@@ -309,6 +312,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B21A969B1E7C7943006655F4 /* CardTests.swift in Sources */,
 				B302FE101E70AC1900EF3C44 /* PlayerTests.swift in Sources */,
 				B24A13531E6B4F79009BE336 /* UnoTests.swift in Sources */,
 			);

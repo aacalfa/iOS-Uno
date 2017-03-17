@@ -47,6 +47,12 @@ class Card : SKSpriteNode {
         fatalError("NSCoding not supported")
     }
  
+    
+    /// Constructor
+    ///
+    /// - Parameters:
+    ///   - cardColor: Color for new card
+    ///   - cardValue: Value for new card
     init(cardColor: CardColor, cardValue: Int) {
         self.cardColor = cardColor
         self.cardValue = cardValue
@@ -95,6 +101,13 @@ class Card : SKSpriteNode {
         super.init(texture: frontTexture, color: .clear, size: frontTexture.size())
     }
     
+    
+    /// Checks if given parameters are value for a card
+    ///
+    /// - Parameters:
+    ///   - cardColor: Card color
+    ///   - cardValue: Card value
+    /// - Throws: <#throws value description#>
     static func isValidCard(cardColor: CardColor, cardValue: Int) throws {
         if cardValue < 0 || cardValue > SpecialVals.wildDrawFour.rawValue {
             throw CardPropertyError.invalidValue

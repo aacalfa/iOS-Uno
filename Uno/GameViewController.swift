@@ -18,6 +18,7 @@ class GameViewController: UIViewController {
     var stateMachine: GKStateMachine?
     
     var cardDeck: Stack<Card?> = Stack<Card?>() // Game's card deck
+    var discardPile: Stack<Card?> = Stack<Card?>() // accumulates cards played
     var playersVec: [Player?] = [] // Array that contains all players in the game
     var numOfPlayers: Int = 0 // Determines how many players are participating in the game
     var menuScene: MenuScene? // Stores MenuScene object
@@ -70,16 +71,30 @@ class GameViewController: UIViewController {
             
             playersVec[i] = Player(cards: cards, name: "Player" + String(i), flagAI: i == 0)
         }
+        
+        // Now it's time to create the discard pile
+        initDiscardPile()
     }
     
-    /**
-     Checks if card attempted to be played is valid.
-     
-     - parameters:
-        - player: Player attempting to play a card
-        - card: Potential card to be played
-     - returns: True if card is valid, false otherwise
-    */
+    func initDiscardPile() { // After handing cards to the players, set first card for discard pile
+        assert(!cardDeck.isEmpty())
+        updateDiscardPile(card: cardDeck.pop()!)
+    }
+    
+    /// Add card to top of discard pile
+    ///
+    /// - Parameter card: card to be inserted
+    func updateDiscardPile(card: Card) {
+        currentCard = card
+        discardPile.push(card)
+    }
+    
+    /// Checks if card attempted to be played is valid.
+    ///
+    /// - Parameters:
+    ///   - player: Player attempting to play a card
+    ///   - card: Potential card to be played
+    /// - Returns: True if card is valid, false otherwise
     func isPlayValid(player: Player, card: Card) -> Bool {
         // TODO: Needs testing
         
@@ -102,18 +117,21 @@ class GameViewController: UIViewController {
         return true
     }
     
-    /**
-     Simple strategy for AI player (version 1).
-     
-     Main objective: prioritize playing cards with higher values. 
-     Only uses the number of cards of the next player as game feedback information.
-     
-     List of actions in descending order of priority (if card to-be-played is available and valid):
-     0. Play either Wild Draw Four or Wild card
-        0.1 Play Wild Draw Four card
-        0.2 Play Wild card
-     1. Play card matching color, type (except Wild and Wild Draw Four), or value that has the highest value
-    */
+    /// Simple strategy for AI player (version 1).
+    ///
+    /// Main objective: prioritize playing cards with higher values.
+    /// Only uses the number of cards of the next player as game feedback information.
+    
+    /// List of actions in descending order of priority (if card to-be-played is available and valid):
+    /// 0. Play either Wild Draw Four or Wild card
+    ///   0.1 Play Wild Draw Four card
+    ///   0.2 Play Wild card
+    /// 1. Play card matching color, type (except Wild and Wild Draw Four), or value that has the highest value
+    ///
+    /// - Parameters:
+    ///   - playerAI: current AI player that must choose card to play
+    ///   - nextPlayer: player that will play after playerAI
+    /// - Returns: card to be played
     func playAIStrategySimpleV1(playerAI: Player, nextPlayer: Player) -> Card? {
         // TODO: Needs testing
         

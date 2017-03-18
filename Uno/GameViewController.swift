@@ -69,7 +69,7 @@ class GameViewController: UIViewController {
                 cards[i] = cardDeck.pop()
             }
             
-            playersVec[i] = Player(cards: cards, name: "Player" + String(i), flagAI: i == 0)
+            playersVec[i] = Player(cards: cards, name: "Player" + String(i), flagAI: i != 0)
         }
         
         // Now it's time to create the discard pile

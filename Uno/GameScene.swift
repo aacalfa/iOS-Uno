@@ -11,33 +11,51 @@ import GameplayKit
 
 class GameScene: SKScene {
     var background = SKSpriteNode(imageNamed: "Table")
+    var viewController: GameViewController!
+    var player1CardPosition : CGPoint?
+    var player2CardPosition : CGPoint?
+    var player3CardPosition : CGPoint?
+    var player4CardPosition : CGPoint?
+    var cardPositions: [CGPoint] = []
     
     override func didMove(to view: SKView) {
         
+        // Draw backgorund
         addChild(background)
-
-        var xPos = size.width * 0.1
-        let yPos = size.height * 0.5
         
-        let cardDeck = CardUtils.getCardDeck()
+        // Define where to cards on screen
+        setCardLocations()
         
-        // Load 7 random cards
-        let lower : UInt32 = 0
-        let upper : UInt32 = 107
-
-        for _ in 1...7 {
-            let randomNumber = arc4random_uniform(upper - lower) + lower
-            if let card: Card = cardDeck[Int(randomNumber)] {
-                card.position = CGPoint(x: xPos, y: yPos)
-                card.setScale(0.3)
-                card.texture = card.backTexture
-                background.addChild(card)
-                xPos += (card.texture?.size().width)! / 4
+        // Draw players cards
+        var cardPosIdx = 0
+        let playersVec = viewController.playersVec
+        for player in playersVec {
+            let cards = player?.getCards()
+            var xPos = cardPositions[cardPosIdx].x
+            var yPos = cardPositions[cardPosIdx].y
+            for card in cards! {
+                card?.position = CGPoint(x: xPos, y: yPos)
+                card?.setScale(0.2)
+                // Draw frontTexture if it's human player, otherwise draw backTexture
+                card?.texture = (player?.isAI())! ? card?.backTexture : card?.frontTexture
+                // TODO: rotate cards depending on what player this is
+                background.addChild(card!)
+                
+                // TODO: update xPos or yPos depending what player this is
+                xPos += (card?.texture?.size().width)! / 6
             }
+            cardPosIdx += 1
         }
-        
-        
-        // TODO: create hand for every player, discard stack and draw stack 
+    }
+    
+    func setCardLocations() {
+        player1CardPosition = CGPoint(x: size.width * 0.3, y: size.height * 0.1)
+        player2CardPosition = CGPoint(x: size.width * 0.3, y: size.height * 0.9)
+        // TODO: verify values below
+        player3CardPosition = CGPoint(x: size.width * 0.1, y: size.height * 0.3)
+        player4CardPosition = CGPoint(x: size.width * 0.7, y: size.height * 0.3)
+        cardPositions.append(player1CardPosition!)
+        cardPositions.append(player2CardPosition!)
     }
     
     override func update(_ currentTime: TimeInterval) {

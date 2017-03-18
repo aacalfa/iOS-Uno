@@ -120,7 +120,7 @@ class GameViewController: UIViewController {
     /// Simple strategy for AI player (version 1).
     ///
     /// Main objective: prioritize playing cards with higher values.
-    /// Only uses the number of cards of the next player as game feedback information.
+    /// Does use any game feedback information.
     
     /// List of actions in descending order of priority (if card to-be-played is available and valid):
     /// 0. Play either Wild Draw Four or Wild card
@@ -130,9 +130,8 @@ class GameViewController: UIViewController {
     ///
     /// - Parameters:
     ///   - playerAI: current AI player that must choose card to play
-    ///   - nextPlayer: player that will play after playerAI
     /// - Returns: card to be played
-    func playAIStrategySimpleV1(playerAI: Player, nextPlayer: Player) -> Card? {
+    func playAIStrategySimpleV1(playerAI: Player) -> Card? {
         // TODO: Needs testing
         
         var playedCard: Card? = nil

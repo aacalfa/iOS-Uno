@@ -9,6 +9,7 @@
 import UIKit
 import SpriteKit
 import GameplayKit
+import Foundation
 
 class GameViewController: UIViewController {
     // State machine variables
@@ -56,6 +57,9 @@ class GameViewController: UIViewController {
         skView.ignoresSiblingOrder = false // Draw background first, then cards
         menuScene?.scaleMode = .resizeFill
         skView.presentScene(menuScene)
+        
+        // Add observers
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handlePlayerCardTouch), name: Notification.Name("handlePlayerCardTouch"), object: nil)
     }
     
     override var prefersStatusBarHidden: Bool {
@@ -128,6 +132,17 @@ class GameViewController: UIViewController {
         discardPile.push(card)
     }
     
+    
+    /// Event handler of the card chosen by the non-AI player
+    ///
+    /// - Parameter notification: The card touched by the non-AI player
+    func handlePlayerCardTouch(notification: Notification) {
+        // TODO: Fully handle the event
+        if let touchedCard = notification.object as? Card {
+            print(touchedCard.toString())
+        }
+    }
+    
     /// Checks if card attempted to be played is valid.
     ///
     /// - Parameters:
@@ -187,7 +202,7 @@ class GameViewController: UIViewController {
             // If there is a match in card value, no need to check colors
             if playedCard != nil && playedCard?.cardValue != currentCard?.cardValue {
                 if currentCard?.cardColor == CardColor.blue {
-                    // Check if blue card has maximum value
+                    // Get blue card with maximum value
                     let maxBlueCard = playerAI.getMaximumValueCard(cardColor: CardColor.blue)
                     if maxBlueCard != nil {
                         if playedCard != nil && (playedCard?.cardValue)! < (maxBlueCard?.cardValue)! {
@@ -195,7 +210,7 @@ class GameViewController: UIViewController {
                         }
                     }
                 } else if currentCard?.cardColor == CardColor.green {
-                    // Check if green card has maximum value
+                    // Get green card with maximum value
                     let maxGreenCard = playerAI.getMaximumValueCard(cardColor: CardColor.green)
                     if maxGreenCard != nil {
                         if playedCard != nil && (playedCard?.cardValue)! < (maxGreenCard?.cardValue)! {
@@ -203,7 +218,7 @@ class GameViewController: UIViewController {
                         }
                     }
                 } else if currentCard?.cardColor == CardColor.red {
-                    // Check if red card has maximum value
+                    // Get red card with maximum value
                     let maxRedCard = playerAI.getMaximumValueCard(cardColor: CardColor.red)
                     if maxRedCard != nil {
                         if playedCard != nil && (playedCard?.cardValue)! < (maxRedCard?.cardValue)! {
@@ -211,7 +226,7 @@ class GameViewController: UIViewController {
                         }
                     }
                 } else {
-                    // Check if yellow card has maximum value
+                    // Get yellow card with maximum value
                     let maxYellowCard = playerAI.getMaximumValueCard(cardColor: CardColor.yellow)
                     if maxYellowCard != nil {
                         if playedCard != nil && (playedCard?.cardValue)! < (maxYellowCard?.cardValue)! {

@@ -91,4 +91,20 @@ class GameScene: SKScene {
         // Called before each frame is rendered
         
     }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        for touch in touches {
+            let location = touch.location(in: self)
+            let node: SKNode = self.atPoint(location)
+            
+            if node == viewController.currentCard {
+                // TODO: Change the condition to the player's picked card to play
+                // TODO: Fully handle the event
+                // Touched current card in the pile
+                
+                // Post notification
+                NotificationCenter.default.post( name: Notification.Name("handlePlayerCardTouch"), object: node)
+            }
+        }
+    }
 }

@@ -117,4 +117,12 @@ class Card : SKSpriteNode {
             throw CardPropertyError.invalidColor
         }
     }
+    
+    
+    /// Returns a string representation of the card
+    ///
+    /// - Returns: String representation of the card
+    func toString() -> String {
+        return "CardType: " + String(describing: cardType) + "\tCardColor: " + String(describing: cardColor) + "\tCardValue: " + String(describing: cardValue)
+    }
 }

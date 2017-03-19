@@ -17,13 +17,15 @@ class GameScene: SKScene {
     var player3CardPosition : CGPoint?
     var player4CardPosition : CGPoint?
     var cardPositions: [CGPoint] = []
-    
+	
+	var currPlayerLabel = SKLabelNode(text: "")
+	
     override func didMove(to view: SKView) {
         
         // Draw backgorund
         addChild(background)
         
-        // Define where to cards on screen
+        // Define where to place cards on screen
         setCardLocations()
         
         // Draw players cards
@@ -39,23 +41,50 @@ class GameScene: SKScene {
                 // Draw frontTexture if it's human player, otherwise draw backTexture
                 card?.texture = (player?.isAI())! ? card?.backTexture : card?.frontTexture
                 // TODO: rotate cards depending on what player this is
+				if cardPosIdx == 1 {
+					card?.zRotation = CGFloat(M_PI)
+				} else if cardPosIdx == 2 {
+					card?.zRotation = CGFloat(-M_PI / 2)
+				} else if cardPosIdx == 3 {
+					card?.zRotation = CGFloat(M_PI / 2)
+				}
                 background.addChild(card!)
                 
-                // TODO: update xPos or yPos depending what player this is
-                xPos += (card?.texture?.size().width)! / 6
+                // player 0 and 1 cards are distributed horizontally through the screen,
+				// whereas players 2 and 3 cards are distributed vertically
+				if cardPosIdx <= 1 {
+					xPos += (card?.texture?.size().width)! / 6
+				} else {
+					yPos += (card?.texture?.size().width)! / 6
+				}
+				
             }
             cardPosIdx += 1
         }
+		
+		// Draw discard pile
+		drawTopDiscardPileCard()
     }
+	
+	/// Draw card on top of discard pile
+	func drawTopDiscardPileCard() {
+		let topDiscardPileCard = viewController.currentCard
+		topDiscardPileCard?.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
+		topDiscardPileCard?.setScale(0.2)
+		topDiscardPileCard?.texture = topDiscardPileCard?.frontTexture
+		topDiscardPileCard?.zRotation = CGFloat(M_PI / 2)
+		background.addChild(topDiscardPileCard!)
+	}
     
     func setCardLocations() {
         player1CardPosition = CGPoint(x: size.width * 0.3, y: size.height * 0.1)
         player2CardPosition = CGPoint(x: size.width * 0.3, y: size.height * 0.9)
-        // TODO: verify values below
-        player3CardPosition = CGPoint(x: size.width * 0.1, y: size.height * 0.3)
-        player4CardPosition = CGPoint(x: size.width * 0.7, y: size.height * 0.3)
+        player3CardPosition = CGPoint(x: size.width * 0.06, y: size.height * 0.2)
+        player4CardPosition = CGPoint(x: size.width * 0.94, y: size.height * 0.2)
         cardPositions.append(player1CardPosition!)
         cardPositions.append(player2CardPosition!)
+		cardPositions.append(player3CardPosition!)
+		cardPositions.append(player4CardPosition!)
     }
     
     override func update(_ currentTime: TimeInterval) {

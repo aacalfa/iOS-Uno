@@ -19,8 +19,14 @@ class GameViewController: UIViewController {
     
     var cardDeck: Stack<Card?> = Stack<Card?>() // Game's card deck
     var discardPile: Stack<Card?> = Stack<Card?>() // accumulates cards played
+	
     var playersVec: [Player?] = [] // Array that contains all players in the game
-    var numOfPlayers: Int = 0 // Determines how many players are participating in the game
+	var numOfPlayers: Int = 0 // Determines how many players are participating in the game
+	
+	var playerOrderOfPlay: [Player?] = [] // Array that determines the order of play
+	var currPlayerIdx: Int = 0 // which player is currently playing
+	var isOrderClockwise: Bool = true // determines direction of play
+	
     var menuScene: MenuScene? // Stores MenuScene object
     var currentCard: Card? = nil // Current card on the table
 
@@ -71,11 +77,44 @@ class GameViewController: UIViewController {
             
             playersVec[i] = Player(cards: cards, name: "Player" + String(i), flagAI: i != 0)
         }
-        
+		
+		// Now that we have the players created, let's set an order of play
+		setOrderOfPlay()
         // Now it's time to create the discard pile
         initDiscardPile()
     }
-    
+	
+	func setOrderOfPlay() {
+		assert(!playersVec.isEmpty)
+		// Considering the default order to be clockwise and starting from top of screen,
+		// If there are 4 players in total, the order is player 1 - player 3 - player 0 - player 2
+		// If there are 3 players in total, the order is player 1 - player 0 - player 2
+		// If there are 2 players in total, the order is player 1 - player 0
+		switch numOfPlayers {
+		case 4:
+			playerOrderOfPlay.append(playersVec[1])
+			playerOrderOfPlay.append(playersVec[3])
+			playerOrderOfPlay.append(playersVec[0])
+			playerOrderOfPlay.append(playersVec[2])
+			break
+		case 3:
+			playerOrderOfPlay.append(playersVec[1])
+			playerOrderOfPlay.append(playersVec[0])
+			playerOrderOfPlay.append(playersVec[2])
+			break
+		case 2:
+			playerOrderOfPlay.append(playersVec[1])
+			playerOrderOfPlay.append(playersVec[0])
+			break
+		default:
+			assert(false) // should never happen!
+		}
+		// To make things more interesting, let's pick a random player to start first:
+		let lower : UInt32 = 0
+		let upper : UInt32 = UInt32(numOfPlayers - 1)
+		currPlayerIdx = Int(arc4random_uniform(upper - lower) + lower)
+	}
+	
     func initDiscardPile() { // After handing cards to the players, set first card for discard pile
         assert(!cardDeck.isEmpty())
         updateDiscardPile(card: cardDeck.pop()!)

@@ -16,6 +16,7 @@ class GameScene: SKScene {
     var cardPositions: [CGPoint] = [] // Location of cards
 	
 	var playDirection = SKSpriteNode(imageNamed: "Clockwise") // Show if play is clockwise or anti-clockwise
+    let invalidPlayLabel = SKLabelNode(text: "Invalid play!")
 	var currPlayerLabel = SKLabelNode(text: "")
 	var playerNames: [SKLabelNode] = [] // Labels for players' names
 	
@@ -74,6 +75,13 @@ class GameScene: SKScene {
 		if viewController.numOfPlayers > 2 {
 			drawPlayDirection()
 		}
+        
+        // Initialize properties of invalid play label and make it hidden
+        invalidPlayLabel.fontSize = 13
+        invalidPlayLabel.fontName = "AvenirNext-Bold"
+        invalidPlayLabel.position = CGPoint(x: currPlayerLabel.position.x, y: size.height - currPlayerLabel.position.y)
+        invalidPlayLabel.isHidden = true
+        background.addChild(invalidPlayLabel)
     }
 	
 	/// Draw label that informs who's playing currently
@@ -81,8 +89,7 @@ class GameScene: SKScene {
 		currPlayerLabel.position = CGPoint(x: size.width * 0.9, y: size.height * 0.94)
 		currPlayerLabel.fontSize = 13
 		currPlayerLabel.fontName = "AvenirNext-Bold"
-		currPlayerLabel.text =
-			(viewController.playerOrderOfPlay[viewController.currPlayerIdx]?.getName())! + "'s turn"
+		currPlayerLabel.text = (viewController.playerOrderOfPlay[viewController.currPlayerIdx]?.getName())! + "'s turn"
 		background.addChild(currPlayerLabel)
 	}
 	
@@ -117,14 +124,16 @@ class GameScene: SKScene {
 	
 	/// Draw card on top of discard pile
 	func drawTopDiscardPileCard() {
-		let topDiscardPileCard = viewController.currentCard
-		topDiscardPileCard?.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
-		topDiscardPileCard?.setScale(0.2)
-		topDiscardPileCard?.texture = topDiscardPileCard?.frontTexture
-		topDiscardPileCard?.zRotation = CGFloat(M_PI / 2)
-		background.addChild(topDiscardPileCard!)
+        let topDiscardPileCard = viewController.currentCard
+        topDiscardPileCard?.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
+        topDiscardPileCard?.setScale(0.2)
+        topDiscardPileCard?.texture = topDiscardPileCard?.frontTexture
+        topDiscardPileCard?.zRotation = CGFloat(M_PI / 2)
+        topDiscardPileCard?.removeFromParent()
+        background.addChild(topDiscardPileCard!)
 	}
     
+    /// Set card locations
     func setCardLocations() {
         let player1CardPosition = CGPoint(x: size.width * 0.3, y: size.height * 0.1)
         let player2CardPosition = CGPoint(x: size.width * 0.3, y: size.height * 0.89)
@@ -141,18 +150,25 @@ class GameScene: SKScene {
         
     }
     
+    
+    /// Handles touches on the game scene UI
+    ///
+    /// - Parameters:
+    ///   - touches: Reference to touches on the UI
+    ///   - event: Reference to touch event
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
             let location = touch.location(in: self)
             let node: SKNode = self.atPoint(location)
             
-            if node == viewController.currentCard {
-                // TODO: Change the condition to the player's picked card to play
+            if node is Card {
                 // TODO: Fully handle the event
-                // Touched current card in the pile
-                
-                // Post notification
-                NotificationCenter.default.post( name: Notification.Name("handlePlayerCardTouch"), object: node)
+                let card = (node as? Card)!
+                let player = viewController.playerOrderOfPlay[viewController.currPlayerIdx]!
+                if !player.isAI() && player.hasCardObject(card: card) {
+                    // Post notification
+                    NotificationCenter.default.post( name: Notification.Name("handlePlayerCardTouch"), object: ["player" : player, "card": card])
+                }
             }
         }
     }

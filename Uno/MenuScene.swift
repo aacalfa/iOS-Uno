@@ -65,6 +65,7 @@ class MenuScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
                     let transition:SKTransition = SKTransition.fade(withDuration: 1)
                     let gameScene : GameScene = GameScene(size: self.size)
                     gameScene.viewController = viewController
+                    viewController.gameScene = gameScene
                     self.view?.presentScene(gameScene, transition: transition)
                 }
             }

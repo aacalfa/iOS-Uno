@@ -117,12 +117,7 @@ class Player {
     /// - Parameter cardType: Given card type
     /// - Returns: True if given card type is present in the set of cards, false otherwise
     func hasCardType(cardType: CardType) -> Bool {
-        for card in self.cards {
-            if card?.cardType == cardType {
-                return true
-            }
-        }
-        return false
+        return self.cards.contains{$0?.cardType == cardType}
     }
     
     /// Checks if given card color is present in player's set of cards.
@@ -130,12 +125,7 @@ class Player {
     /// - Parameter cardColor: Given card color
     /// - Returns: True if given card color is present in the set of cards, false otherwise
     func hasCardColor(cardColor: CardColor) -> Bool {
-        for card in self.cards {
-            if card?.cardColor == cardColor {
-                return true
-            }
-        }
-        return false
+        return self.cards.contains{$0?.cardColor == cardColor}
     }
 
     /// Checks if given card value is present in player's set of cards.
@@ -143,12 +133,7 @@ class Player {
     /// - Parameter cardValue: Given card value
     /// - Returns: True if given card value is present in the set of cards, false otherwise
     func hasCardValue(cardValue: Int) -> Bool {
-        for card in self.cards {
-            if card?.cardValue == cardValue {
-                return true
-            }
-        }
-        return false
+        return self.cards.contains{$0?.cardValue == cardValue}
     }
 
     /// Checks if given card is present in player's set of cards.
@@ -157,6 +142,14 @@ class Player {
     /// - Returns: True if given card is present in the set of cards, false otherwise
     func hasCard(card: Card) -> Bool {
         return self.hasCardType(cardType: card.cardType) && self.hasCardColor(cardColor: card.cardColor) && self.hasCardValue(cardValue: card.cardValue)
+    }
+    
+    /// Checks if given card object is present in player's set of cards.
+    ///
+    /// - Parameter card: Given card
+    /// - Returns: True if given card object is present in the set of cards (using object reference), false otherwise
+    func hasCardObject(card: Card) -> Bool {
+        return self.cards.contains{$0 === card}
     }
 
     /// Gets card with maximum value in player's set of cards.
@@ -186,7 +179,7 @@ class Player {
         var playerString: String = ""
         
         for card in cards {
-            playerString.append("CardColor: " + String(describing: card?.cardColor.hashValue) + "\tCardType: " + String(describing: card?.cardType.hashValue) + "\tCardValue: " + String(describing: card?.cardValue.hashValue) + "\n")
+            playerString.append((card?.toString())! + "\n")
         }
         
         return playerString

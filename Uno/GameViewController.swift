@@ -124,7 +124,7 @@ class GameViewController: UIViewController {
 		let lower : UInt32 = 0
 		let upper : UInt32 = UInt32(numOfPlayers - 1)
 		currPlayerIdx = Int(arc4random_uniform(upper - lower) + lower)
-//        currPlayerIdx = 1 // Uncomment this to test first play by non-AI player in a 2-player game
+        currPlayerIdx = 2 // Uncomment this to test first play by non-AI player in a 2-player game
 	}
 	
     
@@ -161,6 +161,11 @@ class GameViewController: UIViewController {
                 // Update view
                 gameScene?.invalidPlayLabel.isHidden = true
                 gameScene?.drawTopDiscardPileCard()
+                // Rearrange cards: as cards move from hand to discard pile, update cards from
+                // player hand so that they are shown right next to each other. cardPosIdx corresponds
+                // is to tell drawPlayerCards which players card we are adjusting in the position
+                // perspective.
+                gameScene?.drawPlayerCards(player: player, cardPosIdx: playersVec.index{$0 === player}!)
             } else {
                 gameScene?.invalidPlayLabel.isHidden = false
             }

@@ -32,33 +32,7 @@ class GameScene: SKScene {
         var cardPosIdx = 0
         let playersVec = viewController.playersVec
         for player in playersVec {
-            let cards = player?.getCards()
-            var xPos = cardPositions[cardPosIdx].x
-            var yPos = cardPositions[cardPosIdx].y
-            for card in cards! {
-                card?.position = CGPoint(x: xPos, y: yPos)
-                card?.setScale(0.2)
-                // Draw frontTexture if it's human player, otherwise draw backTexture
-                card?.texture = (player?.isAI())! ? card?.backTexture : card?.frontTexture
-                // TODO: rotate cards depending on what player this is
-				if cardPosIdx == 1 {
-					card?.zRotation = CGFloat(M_PI)
-				} else if cardPosIdx == 2 {
-					card?.zRotation = CGFloat(-M_PI / 2)
-				} else if cardPosIdx == 3 {
-					card?.zRotation = CGFloat(M_PI / 2)
-				}
-                background.addChild(card!)
-                
-                // player 0 and 1 cards are distributed horizontally through the screen,
-				// whereas players 2 and 3 cards are distributed vertically
-				if cardPosIdx <= 1 {
-					xPos += (card?.texture?.size().width)! / 6
-				} else {
-					yPos += (card?.texture?.size().width)! / 6
-				}
-				
-            }
+            drawPlayerCards(player: player, cardPosIdx: cardPosIdx)
             cardPosIdx += 1
         }
 		
@@ -79,9 +53,43 @@ class GameScene: SKScene {
         // Initialize properties of invalid play label and make it hidden
         invalidPlayLabel.fontSize = 13
         invalidPlayLabel.fontName = "AvenirNext-Bold"
-        invalidPlayLabel.position = CGPoint(x: currPlayerLabel.position.x, y: size.height - currPlayerLabel.position.y)
+        let topDiscardPileCard = viewController.currentCard
+        invalidPlayLabel.position = CGPoint(x: (topDiscardPileCard?.position.x)!, y: (topDiscardPileCard?.position.y)! - (topDiscardPileCard?.size.height)!)
         invalidPlayLabel.isHidden = true
         background.addChild(invalidPlayLabel)
+    }
+    
+    func drawPlayerCards(player: Player?, cardPosIdx: Int) {
+        let cards = player?.getCards()
+        var xPos = cardPositions[cardPosIdx].x
+        var yPos = cardPositions[cardPosIdx].y
+        
+        for card in cards! {
+            // If cards currently exist, remove them so they'll get rearranged
+            card?.removeFromParent()
+            
+            card?.position = CGPoint(x: xPos, y: yPos)
+            card?.setScale(0.2)
+            // Draw frontTexture if it's human player, otherwise draw backTexture
+            card?.texture = (player?.isAI())! ? card?.backTexture : card?.frontTexture
+            if cardPosIdx == 1 {
+                card?.zRotation = CGFloat(M_PI)
+            } else if cardPosIdx == 2 {
+                card?.zRotation = CGFloat(-M_PI / 2)
+            } else if cardPosIdx == 3 {
+                card?.zRotation = CGFloat(M_PI / 2)
+            }
+            background.addChild(card!)
+            
+            // player 0 and 1 cards are distributed horizontally through the screen,
+            // whereas players 2 and 3 cards are distributed vertically
+            if cardPosIdx <= 1 {
+                xPos += (card?.texture?.size().width)! / 6
+            } else {
+                yPos += (card?.texture?.size().width)! / 6
+            }
+            
+        }
     }
 	
 	/// Draw label that informs who's playing currently
@@ -149,7 +157,6 @@ class GameScene: SKScene {
         // Called before each frame is rendered
         
     }
-    
     
     /// Handles touches on the game scene UI
     ///

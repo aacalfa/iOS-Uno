@@ -44,8 +44,17 @@ class CardTests: XCTestCase {
         XCTAssertThrowsError(try Card.isValidCard(cardColor: CardColor.green, cardValue: 20) ) {
             (error) -> Void in XCTAssertEqual(error as? CardPropertyError, CardPropertyError.invalidValue)
         }
-
+    }
+    
+    func testCardPoints() {
+        XCTAssert(Card(cardColor: CardColor.blue, cardValue: 3).cardPoints == 3)
         
+        XCTAssert(Card(cardColor: CardColor.green, cardValue: 0).cardPoints == 0)
+        
+        XCTAssert(Card(cardColor: CardColor.other, cardValue: SpecialVals.reverse.rawValue).cardPoints == 20)
+        
+        XCTAssert(Card(cardColor: CardColor.other, cardValue: SpecialVals.wildDrawFour.rawValue).cardPoints == 50)
+
     }
     
     func testPerformanceExample() {

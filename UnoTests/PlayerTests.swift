@@ -143,6 +143,19 @@ class PlayerTests: XCTestCase {
         XCTAssertTrue(player1.hasCard(card: redCard0))
     }
     
+    func testHasCardObject() {
+        player1 = Player(cards: [redCard0, redCard1])
+        
+        XCTAssertTrue(player1.hasCardObject(card: redCard0))
+    }
+    
+    func testHasCardObjectFalse() {
+        player1 = Player(cards: [redCard0, redCard1])
+        let redCard0Other = Card(cardColor: CardColor.red, cardValue: 0)
+        
+        XCTAssertFalse(player1.hasCardObject(card: redCard0Other))
+    }
+    
     func testHasCardTypeFalse() {
         player1 = Player(cards: [redCard0, redCard1])
         

@@ -36,11 +36,12 @@ enum CardPropertyError :Error {
 }
 
 class Card : SKSpriteNode {
-    let cardType :CardType
-    let cardColor :CardColor
-    let cardValue :Int
-    let frontTexture :SKTexture
-    let backTexture :SKTexture
+    let cardType: CardType
+    let cardColor: CardColor
+    let cardValue: Int
+    let frontTexture: SKTexture
+    let backTexture: SKTexture
+    let cardPoints: Int
     public override var description: String { get { return "<CardType = \(cardType)>, <CardColor = \(cardColor)>, <CardType = \(cardType)>, <CardValue = \(cardValue)>" } }
  
     required init?(coder aDecoder: NSCoder) {
@@ -71,10 +72,13 @@ class Card : SKSpriteNode {
         // Figure out what CardType this card is
         if cardValue < SpecialVals.skip.rawValue {
             self.cardType = CardType.number
+            self.cardPoints = cardValue
         } else if cardValue < SpecialVals.wild.rawValue {
             self.cardType = CardType.action
+            self.cardPoints = 20
         } else {
             self.cardType = CardType.wild
+            self.cardPoints = 50
         }
         
         // Load appropriate Card image
@@ -107,7 +111,7 @@ class Card : SKSpriteNode {
     /// - Parameters:
     ///   - cardColor: Card color
     ///   - cardValue: Card value
-    /// - Throws: <#throws value description#>
+    /// - Throws: Value exception
     static func isValidCard(cardColor: CardColor, cardValue: Int) throws {
         if cardValue < 0 || cardValue > SpecialVals.wildDrawFour.rawValue {
             throw CardPropertyError.invalidValue

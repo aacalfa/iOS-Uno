@@ -19,17 +19,22 @@ class GameViewController: UIViewController {
     var stateMachine: GKStateMachine?
     
     var cardDeck: Stack<Card?> = Stack<Card?>() // Game's card deck
-    var discardPile: Stack<Card?> = Stack<Card?>() // accumulates cards played
+    var discardPile: Stack<Card?> = Stack<Card?>() // Accumulates cards played
 	
     var playersVec: [Player?] = [] // Array that contains all players in the game
 	var numOfPlayers: Int = 0 // Determines how many players are participating in the game
 	
 	var playerOrderOfPlay: [Player?] = [] // Array that determines the order of play
-	var currPlayerIdx: Int = 0 // which player is currently playing
-	var isOrderClockwise: Bool = true // determines direction of play
+	var currPlayerIdx: Int = 0 // Index of the player who is currently playing
+	var isOrderClockwise: Bool = true // Determines direction of play
 	
     var menuScene: MenuScene? // Stores MenuScene object
+    var gameScene: GameScene? // Stores GameScene object
     var currentCard: Card? = nil // Current card on the table
+    
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,8 +57,8 @@ class GameViewController: UIViewController {
         menuScene = MenuScene(size: view.bounds.size)
         menuScene?.viewController = self
         let skView = view as! SKView
-        skView.showsFPS = true
-        skView.showsNodeCount = true
+        skView.showsFPS = false
+        skView.showsNodeCount = false
         skView.ignoresSiblingOrder = false // Draw background first, then cards
         menuScene?.scaleMode = .resizeFill
         skView.presentScene(menuScene)
@@ -62,21 +67,21 @@ class GameViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.handlePlayerCardTouch), name: Notification.Name("handlePlayerCardTouch"), object: nil)
     }
     
-    override var prefersStatusBarHidden: Bool {
-        return true
-    }
     
+    /// Create state machine
     func createStateSm() {
         stateMachine = GKStateMachine(states: [menuState, gamePlayState, endGameState])
     }
     
+    
+    /// Initialize array of players
     func initPlayers() {
         playersVec = [Player?](repeating: nil, count: numOfPlayers)
         let initNumOfCards : Int = 7
         for i in 0..<numOfPlayers {
             var cards = [Card?](repeating: nil, count: initNumOfCards)
-            for i in 0..<initNumOfCards {
-                cards[i] = cardDeck.pop()
+            for j in 0..<initNumOfCards {
+                cards[j] = cardDeck.pop()
             }
             
             playersVec[i] = Player(cards: cards, name: "Player" + String(i), flagAI: i != 0)
@@ -88,6 +93,8 @@ class GameViewController: UIViewController {
         initDiscardPile()
     }
 	
+    
+	/// Set order of play
 	func setOrderOfPlay() {
 		assert(!playersVec.isEmpty)
 		// Considering the default order to be clockwise and starting from top of screen,
@@ -117,8 +124,11 @@ class GameViewController: UIViewController {
 		let lower : UInt32 = 0
 		let upper : UInt32 = UInt32(numOfPlayers - 1)
 		currPlayerIdx = Int(arc4random_uniform(upper - lower) + lower)
+//        currPlayerIdx = 1 // Uncomment this to test first play by non-AI player in a 2-player game
 	}
 	
+    
+    /// Initialize discard pile
     func initDiscardPile() { // After handing cards to the players, set first card for discard pile
         assert(!cardDeck.isEmpty())
         updateDiscardPile(card: cardDeck.pop()!)
@@ -138,12 +148,26 @@ class GameViewController: UIViewController {
     /// - Parameter notification: The card touched by the non-AI player
     func handlePlayerCardTouch(notification: Notification) {
         // TODO: Fully handle the event
-        if let touchedCard = notification.object as? Card {
-            print(touchedCard.toString())
+        if let playerCardDict = notification.object as? [String: AnyObject] {
+            let player = playerCardDict["player"] as! Player
+            let card = playerCardDict["card"] as! Card
+            if isPlayValid(player: player, card: card) {
+                // Update discard pile
+                updateDiscardPile(card: card)
+                
+                // Update model
+                player.playCard(card: card)
+                
+                // Update view
+                gameScene?.invalidPlayLabel.isHidden = true
+                gameScene?.drawTopDiscardPileCard()
+            } else {
+                gameScene?.invalidPlayLabel.isHidden = false
+            }
         }
     }
     
-    /// Checks if card attempted to be played is valid.
+    /// Check if card attempted to be played is valid.
     ///
     /// - Parameters:
     ///   - player: Player attempting to play a card
@@ -162,7 +186,7 @@ class GameViewController: UIViewController {
                 }
             } else {
                 // Check card color, type, and value
-                if (self.currentCard?.cardColor != card.cardColor && self.currentCard?.cardType != card.cardType && self.currentCard?.cardValue != card.cardValue) {
+                if (self.currentCard?.cardColor != card.cardColor && self.currentCard?.cardValue != card.cardValue) {
                     return false
                 }
             }

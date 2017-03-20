@@ -10,15 +10,14 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene {
-    var background = SKSpriteNode(imageNamed: "Table")
+    var background = SKSpriteNode(imageNamed: "Table") // sprite for table texture
     var viewController: GameViewController!
-    var player1CardPosition : CGPoint?
-    var player2CardPosition : CGPoint?
-    var player3CardPosition : CGPoint?
-    var player4CardPosition : CGPoint?
-    var cardPositions: [CGPoint] = []
 	
+    var cardPositions: [CGPoint] = [] // Location of cards
+	
+	var playDirection = SKSpriteNode(imageNamed: "Clockwise") // Show if play is clockwise or anti-clockwise
 	var currPlayerLabel = SKLabelNode(text: "")
+	var playerNames: [SKLabelNode] = [] // Labels for players' names
 	
     override func didMove(to view: SKView) {
         
@@ -62,9 +61,59 @@ class GameScene: SKScene {
             cardPosIdx += 1
         }
 		
+		// Draw labels for players' names
+		drawPlayersNames()
+		
+		// Draw label for current player
+		drawCurrentPlayerLabel()
+		
 		// Draw discard pile
 		drawTopDiscardPileCard()
+		
+		// Draw playDirection node, but only if number of players > 2
+		if viewController.numOfPlayers > 2 {
+			drawPlayDirection()
+		}
     }
+	
+	/// Draw label that informs who's playing currently
+	func drawCurrentPlayerLabel() {
+		currPlayerLabel.position = CGPoint(x: size.width * 0.9, y: size.height * 0.94)
+		currPlayerLabel.fontSize = 13
+		currPlayerLabel.fontName = "AvenirNext-Bold"
+		currPlayerLabel.text =
+			(viewController.playerOrderOfPlay[viewController.currPlayerIdx]?.getName())! + "'s turn"
+		background.addChild(currPlayerLabel)
+	}
+	
+	/// Draw players' names labels
+	func drawPlayersNames() {
+		let playersVec = viewController.playersVec
+		var i = 0
+		for player in playersVec {
+			let playerNameLabel = SKLabelNode(text: player?.getName())
+			playerNameLabel.fontSize = 13
+			playerNameLabel.fontName = "AvenirNext-Bold"
+			var position = cardPositions[i]
+			// fixMe: find a better way to set the position
+			if i < 2 {
+				position.x -= 60
+			} else {
+				position.y -= 60
+			}
+			playerNameLabel.position = position
+			playerNames.append(playerNameLabel)
+			background.addChild(playerNames[i])
+			i += 1
+		}
+	}
+	
+	/// Draw sprite that shows if the order is clockwise or anticlockwise
+	func drawPlayDirection() {
+		playDirection.position = CGPoint(x: size.width * 0.06, y: size.height * 0.94)
+		playDirection.setScale(0.3)
+		background.addChild(playDirection)
+	}
 	
 	/// Draw card on top of discard pile
 	func drawTopDiscardPileCard() {
@@ -77,14 +126,14 @@ class GameScene: SKScene {
 	}
     
     func setCardLocations() {
-        player1CardPosition = CGPoint(x: size.width * 0.3, y: size.height * 0.1)
-        player2CardPosition = CGPoint(x: size.width * 0.3, y: size.height * 0.9)
-        player3CardPosition = CGPoint(x: size.width * 0.06, y: size.height * 0.2)
-        player4CardPosition = CGPoint(x: size.width * 0.94, y: size.height * 0.2)
-        cardPositions.append(player1CardPosition!)
-        cardPositions.append(player2CardPosition!)
-		cardPositions.append(player3CardPosition!)
-		cardPositions.append(player4CardPosition!)
+        let player1CardPosition = CGPoint(x: size.width * 0.3, y: size.height * 0.1)
+        let player2CardPosition = CGPoint(x: size.width * 0.3, y: size.height * 0.89)
+        let player3CardPosition = CGPoint(x: size.width * 0.06, y: size.height * 0.2)
+        let player4CardPosition = CGPoint(x: size.width * 0.94, y: size.height * 0.2)
+        cardPositions.append(player1CardPosition)
+        cardPositions.append(player2CardPosition)
+		cardPositions.append(player3CardPosition)
+		cardPositions.append(player4CardPosition)
     }
     
     override func update(_ currentTime: TimeInterval) {

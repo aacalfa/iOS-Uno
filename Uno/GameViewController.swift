@@ -31,7 +31,6 @@ class GameViewController: UIViewController {
     var menuScene: MenuScene? // Stores MenuScene object
     var gameScene: GameScene? // Stores GameScene object
     var currentCard: Card? = nil // Current card on the table
-    var currentCardOnDeck: Card? = nil // Current card on card deck
     
     override var prefersStatusBarHidden: Bool {
         return true
@@ -98,36 +97,36 @@ class GameViewController: UIViewController {
     
 	/// Set order of play
 	func setOrderOfPlay() {
-		assert(!playersVec.isEmpty)
-		// Considering the default order to be clockwise and starting from top of screen,
-		// If there are 4 players in total, the order is player 1 - player 3 - player 0 - player 2
-		// If there are 3 players in total, the order is player 1 - player 0 - player 2
-		// If there are 2 players in total, the order is player 1 - player 0
-		switch numOfPlayers {
-		case 4:
-			playerOrderOfPlay.append(playersVec[1])
-			playerOrderOfPlay.append(playersVec[3])
-			playerOrderOfPlay.append(playersVec[0])
-			playerOrderOfPlay.append(playersVec[2])
-			break
-		case 3:
-			playerOrderOfPlay.append(playersVec[1])
-			playerOrderOfPlay.append(playersVec[0])
-			playerOrderOfPlay.append(playersVec[2])
-			break
-		case 2:
-			playerOrderOfPlay.append(playersVec[1])
-			playerOrderOfPlay.append(playersVec[0])
-			break
-		default:
-			assert(false) // should never happen!
-		}
-		// To make things more interesting, let's pick a random player to start first:
-		let lower : UInt32 = 0
-		let upper : UInt32 = UInt32(numOfPlayers - 1)
-		currPlayerIdx = Int(arc4random_uniform(upper - lower) + lower)
+        assert(!playersVec.isEmpty)
+        // Considering the default order to be clockwise and starting from top of screen,
+        // If there are 4 players in total, the order is player 1 - player 3 - player 0 - player 2
+        // If there are 3 players in total, the order is player 1 - player 0 - player 2
+        // If there are 2 players in total, the order is player 1 - player 0
+        switch numOfPlayers {
+        case 4:
+            playerOrderOfPlay.append(playersVec[1])
+            playerOrderOfPlay.append(playersVec[3])
+            playerOrderOfPlay.append(playersVec[0])
+            playerOrderOfPlay.append(playersVec[2])
+            break
+        case 3:
+            playerOrderOfPlay.append(playersVec[1])
+            playerOrderOfPlay.append(playersVec[0])
+            playerOrderOfPlay.append(playersVec[2])
+            break
+        case 2:
+            playerOrderOfPlay.append(playersVec[1])
+            playerOrderOfPlay.append(playersVec[0])
+            break
+        default:
+            assert(false) // should never happen!
+        }
+        // To make things more interesting, let's pick a random player to start first:
+        let lower : UInt32 = 0
+        let upper : UInt32 = UInt32(numOfPlayers - 1)
+        currPlayerIdx = Int(arc4random_uniform(upper - lower) + lower)
         currPlayerIdx = numOfPlayers <= 3 ? 1 : 2 // Uncomment this to test first play by non-AI player
-	}
+    }
 	
     
     /// Initialize discard pile
@@ -143,6 +142,12 @@ class GameViewController: UIViewController {
     func updateDiscardPile(card: Card) {
         currentCard = card
         discardPile.push(card)
+    }
+    
+    /// Update draw cards pile
+    func updateDrawPile() -> Card {
+        assert(!cardDeck.isEmpty())
+        return cardDeck.pop()!
     }
     
     func handleAIPlayersPlay() {
@@ -212,10 +217,7 @@ class GameViewController: UIViewController {
         gameScene?.drawPlayerCards(player: player, cardPosIdx: playersVec.index{$0 === player}!)
         
         // Update order of play
-        currPlayerIdx = isOrderClockwise ? currPlayerIdx + 1 : currPlayerIdx - 1
-        if currPlayerIdx >= numOfPlayers || currPlayerIdx < 0 {
-            currPlayerIdx = 0
-        }
+        updateOrderOfPlay()
         gameScene?.drawCurrentPlayerLabel()
 		
         // Go to the next player (possibly AI)
@@ -231,23 +233,46 @@ class GameViewController: UIViewController {
             let player = playerCardDict["player"] as! Player
             let card = playerCardDict["card"] as! Card
             let validPlay = playerCardDict["validPlay"] as! Bool
+            let decidedToPlay = playerCardDict["decidedToPlay"] as! Bool
             
             print(player.getName() + " drew card " + card.toString())
             
-            if !validPlay {
-                // Update model
-                player.drawCard(card: card)
-                
-                // Update view
-                // Rearrange cards: as cards move from hand to discard pile, update cards from
-                // player hand so that they are shown right next to each other. cardPosIdx corresponds
-                // is to tell drawPlayerCards which players card we are adjusting in the position
-                // perspective.
-                gameScene?.drawPlayerCards(player: player, cardPosIdx: playersVec.index{$0 === player}!)
+            if !decidedToPlay {
+                // Add animation to card moving from hand to discard pile
+                // After completing the animation, doFinishHandleDrawCardDeckTouch will be called
+                gameScene?.moveCardFromDrawToPlayerHand(player: player, cardPosIdx: playersVec.index{$0 === player}!, card: card)
             }
-            
-            handleAIPlayersPlay()
         }
+    }
+    
+    /// Finish HandleDrawCardDeckTouch by updating view and model
+    ///
+    /// - Parameters:
+    ///   - player: player that's currently playing
+    ///   - card: card that was drawn
+    func doFinishHandleDrawCardDeckTouch(player: Player, card: Card) {
+        // Update draw card pile
+        let cardFromDeck = updateDrawPile()
+        assert(card === cardFromDeck) // Just checking
+        // Update draw card pile in view
+        gameScene?.drawTopDrawDeckCard()
+        
+        // Update model
+        player.drawCard(card: cardFromDeck)
+        
+        // Update view
+        // Rearrange cards: as cards move from hand to discard pile, update cards from
+        // player hand so that they are shown right next to each other. cardPosIdx corresponds
+        // is to tell drawPlayerCards which players card we are adjusting in the position
+        // perspective.
+        gameScene?.drawPlayerCards(player: player, cardPosIdx: playersVec.index{$0 === player}!)
+        
+        // Update order of play
+        updateOrderOfPlay()
+        gameScene?.drawCurrentPlayerLabel()
+        
+        // Go to the next player (possibly AI)
+        handleAIPlayersPlay()
     }
     
     /// Check if card attempted to be played is valid.
@@ -362,5 +387,16 @@ class GameViewController: UIViewController {
         }
         
         return playedCard
+    }
+    
+    /// update currPlayerIdx value to set who plays next
+    func updateOrderOfPlay() {
+        currPlayerIdx = isOrderClockwise ? currPlayerIdx + 1 : currPlayerIdx - 1
+        if currPlayerIdx >= numOfPlayers {
+            currPlayerIdx = 0
+        } else if currPlayerIdx < 0 {
+            currPlayerIdx = numOfPlayers - 1
+        }
+        
     }
 }

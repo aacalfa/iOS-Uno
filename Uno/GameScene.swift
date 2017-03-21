@@ -146,7 +146,8 @@ class GameScene: SKScene {
     
     /// Draw card on top of draw deck
     func drawTopDrawDeckCard() {
-        let topDrawDeckCard = viewController.cardDeck.pop()
+        viewController.currentCardOnDeck = viewController.cardDeck.pop()
+        let topDrawDeckCard = viewController.currentCardOnDeck
         topDrawDeckCard?.position = CGPoint(x: self.size.width / 2 - (topDrawDeckCard?.size.width)! / 3, y: self.size.height / 2)
         topDrawDeckCard?.setScale(0.2)
         topDrawDeckCard?.texture = topDrawDeckCard?.backTexture
@@ -185,8 +186,21 @@ class GameScene: SKScene {
                 let card = (node as? Card)!
                 let player = viewController.playerOrderOfPlay[viewController.currPlayerIdx]!
                 if !player.isAI() && player.hasCardObject(card: card) {
-                    // Post notification
+                    // Non-AI player attempts to play
                     NotificationCenter.default.post( name: Notification.Name("handlePlayerCardTouch"), object: ["player": player, "card": card])
+                } else if node === viewController.currentCardOnDeck {
+                    if !player.isAI() {
+                        // Drawn card from deck
+                        var validPlay: Bool = false // Player must keep card and cannot play
+                        
+                        if viewController.isPlayValid(player: player, card: card) {
+                            // TODO: ask player if he/she wants to play card or keep it
+                            
+                            validPlay = true
+                        }
+                        
+                        NotificationCenter.default.post( name: Notification.Name("handleDrawCardDeckTouch"), object: ["player": player, "card": card, "validPlay": validPlay])
+                    }
                 }
             }
         }

@@ -169,7 +169,11 @@ class Player {
     /// - Parameter cardColor: The color of the card
     /// - Returns: Card with maximum value, or nil if set of cards is empty
     func getMaximumValueCard(cardColor: CardColor) -> Card? {
-        return self.cards.filter{$0?.cardColor == cardColor}.max{a, b in (a?.cardValue)! < (b?.cardValue)!}!
+        if self.cards.contains(where: {$0?.cardColor == cardColor}) {
+            return self.cards.filter{$0?.cardColor == cardColor}.max{a, b in (a?.cardValue)! < (b?.cardValue)!}!
+        } else {
+            return nil
+        }
     }
 
     /// Converts the player information to `String`.

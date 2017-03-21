@@ -21,7 +21,6 @@ class GameScene: SKScene {
 	var playerNames: [SKLabelNode] = [] // Labels for players' names
 	
     override func didMove(to view: SKView) {
-        
         // Draw backgorund
         addChild(background)
         
@@ -44,6 +43,9 @@ class GameScene: SKScene {
 		
 		// Draw discard pile
 		drawTopDiscardPileCard()
+        
+        // Draw card deck
+        drawTopDrawDeckCard()
 		
 		// Draw playDirection node, but only if number of players > 2
 		if viewController.numOfPlayers > 2 {
@@ -92,8 +94,9 @@ class GameScene: SKScene {
         }
     }
 	
-	/// Draw label that informs who's playing currently
+	/// Draw label that informs the current player
 	func drawCurrentPlayerLabel() {
+        currPlayerLabel.removeFromParent()
 		currPlayerLabel.position = CGPoint(x: size.width * 0.9, y: size.height * 0.94)
 		currPlayerLabel.fontSize = 13
 		currPlayerLabel.fontName = "AvenirNext-Bold"
@@ -141,6 +144,17 @@ class GameScene: SKScene {
         background.addChild(topDiscardPileCard!)
 	}
     
+    /// Draw card on top of draw deck
+    func drawTopDrawDeckCard() {
+        let topDrawDeckCard = viewController.cardDeck.pop()
+        topDrawDeckCard?.position = CGPoint(x: self.size.width / 2 - (topDrawDeckCard?.size.width)! / 3, y: self.size.height / 2)
+        topDrawDeckCard?.setScale(0.2)
+        topDrawDeckCard?.texture = topDrawDeckCard?.backTexture
+        topDrawDeckCard?.zRotation = CGFloat(M_PI / 2)
+        topDrawDeckCard?.removeFromParent()
+        background.addChild(topDrawDeckCard!)
+    }
+    
     /// Set card locations
     func setCardLocations() {
         let player1CardPosition = CGPoint(x: size.width * 0.3, y: size.height * 0.1)
@@ -155,7 +169,6 @@ class GameScene: SKScene {
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
-        
     }
     
     /// Handles touches on the game scene UI
@@ -169,12 +182,11 @@ class GameScene: SKScene {
             let node: SKNode = self.atPoint(location)
             
             if node is Card {
-                // TODO: Fully handle the event
                 let card = (node as? Card)!
                 let player = viewController.playerOrderOfPlay[viewController.currPlayerIdx]!
                 if !player.isAI() && player.hasCardObject(card: card) {
                     // Post notification
-                    NotificationCenter.default.post( name: Notification.Name("handlePlayerCardTouch"), object: ["player" : player, "card": card])
+                    NotificationCenter.default.post( name: Notification.Name("handlePlayerCardTouch"), object: ["player": player, "card": card])
                 }
             }
         }
@@ -186,6 +198,7 @@ class GameScene: SKScene {
     ///   - player: player that's currently playing
     ///   - card: card that will be moved
     func moveCardFromHandToDiscardPile(player: Player, card: Card) {
+        card.texture = card.frontTexture
         let moveTo = viewController.currentCard?.position
         let move = SKAction.move(to: moveTo!, duration: 1)
         card.run(move, completion: { self.viewController.doFinishHandlePlayerCardTouch(player: player, card: card) })

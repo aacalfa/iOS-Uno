@@ -158,7 +158,7 @@ class GameViewController: UIViewController {
                 
                 // Update order of play
                 currPlayerIdx = isOrderClockwise ? currPlayerIdx + 1 : currPlayerIdx - 1
-                if currPlayerIdx >= numOfPlayers {
+                if currPlayerIdx >= numOfPlayers || currPlayerIdx < 0 {
                     currPlayerIdx = 0
                 }
                 gameScene?.drawCurrentPlayerLabel()
@@ -184,7 +184,7 @@ class GameViewController: UIViewController {
                 
                 // Update order of play
                 currPlayerIdx = isOrderClockwise ? currPlayerIdx + 1 : currPlayerIdx - 1
-                if currPlayerIdx >= numOfPlayers {
+                if currPlayerIdx >= numOfPlayers || currPlayerIdx < 0 {
                     currPlayerIdx = 0
                 }
                 gameScene?.drawCurrentPlayerLabel()

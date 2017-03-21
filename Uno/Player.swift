@@ -151,6 +151,18 @@ class Player {
     func hasCardObject(card: Card) -> Bool {
         return self.cards.contains{$0 === card}
     }
+    
+    
+    /// Get card object that matches given card's type, color, and value.
+    ///
+    /// - Parameter card: Card template sought
+    /// - Returns: A card object if it exists, nil otherwise
+    func getCard(card: Card) -> Card? {
+        if self.hasCard(card: card) {
+            return self.cards.filter{$0?.cardType == card.cardType && $0?.cardColor == card.cardColor && $0?.cardValue == card.cardValue}.first!
+        }
+        return nil
+    }
 
     /// Gets card with maximum value in player's set of cards.
     ///
@@ -158,7 +170,7 @@ class Player {
     /// - Returns: Card with maximum value, or nil if set of cards is empty
     func getMaximumValueCard(excludeWildDrawFourCard: Bool = true) -> Card? {
         if excludeWildDrawFourCard {
-            return self.cards.filter{$0 != CardUtils.wildDrawFourCard}.max{ a, b in (a?.cardValue)! < (b?.cardValue)! }!
+            return self.cards.filter{$0?.cardValue != CardUtils.wildDrawFourCard.cardValue}.max{ a, b in (a?.cardValue)! < (b?.cardValue)! }!
         } else {
             return self.cards.max{ a, b in (a?.cardValue)! < (b?.cardValue)! }!
         }

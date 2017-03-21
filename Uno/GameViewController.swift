@@ -129,7 +129,8 @@ class GameViewController: UIViewController {
 	
     
     /// Initialize discard pile
-    func initDiscardPile() { // After handing cards to the players, set first card for discard pile
+    func initDiscardPile() {
+        // After handing cards to the players, set first card for discard pile
         assert(!cardDeck.isEmpty())
         updateDiscardPile(card: cardDeck.pop()!)
     }
@@ -140,6 +141,31 @@ class GameViewController: UIViewController {
     func updateDiscardPile(card: Card) {
         currentCard = card
         discardPile.push(card)
+    }
+    
+    func handleAIPlayersPlay() {
+        let player = playerOrderOfPlay[currPlayerIdx]
+        if (player?.isAI())! {
+            // Sleep for 3 seconds
+            sleep(3)
+            
+            // Play
+            let card = playAIStrategySimpleV1(player: player!)
+            
+            if card != nil {
+                // Update model and view
+                gameScene?.moveCardFromHandToDiscardPile(player: player!, card: card!)
+                
+                // Update order of play
+                currPlayerIdx = isOrderClockwise ? currPlayerIdx + 1 : currPlayerIdx - 1
+                if currPlayerIdx >= numOfPlayers {
+                    currPlayerIdx = 0
+                }
+                gameScene?.drawCurrentPlayerLabel()
+            } else {
+                // TODO: Handle nil card (needs to draw a card)
+            }
+        }
     }
     
     
@@ -156,6 +182,12 @@ class GameViewController: UIViewController {
                 // After completing the animation, doFinishHandlePlayerCardTouch will be called
                 gameScene?.moveCardFromHandToDiscardPile(player: player, card: card)
                 
+                // Update order of play
+                currPlayerIdx = isOrderClockwise ? currPlayerIdx + 1 : currPlayerIdx - 1
+                if currPlayerIdx >= numOfPlayers {
+                    currPlayerIdx = 0
+                }
+                gameScene?.drawCurrentPlayerLabel()
             } else {
                 gameScene?.invalidPlayLabel.isHidden = false
             }
@@ -183,6 +215,8 @@ class GameViewController: UIViewController {
         // is to tell drawPlayerCards which players card we are adjusting in the position
         // perspective.
         gameScene?.drawPlayerCards(player: player, cardPosIdx: playersVec.index{$0 === player}!)
+        
+        handleAIPlayersPlay()
     }
     
     /// Check if card attempted to be played is valid.
@@ -225,27 +259,27 @@ class GameViewController: UIViewController {
     /// 1. Play card matching color, type (except Wild and Wild Draw Four), or value that has the highest value
     ///
     /// - Parameters:
-    ///   - playerAI: current AI player that must choose card to play
+    ///   - player: current AI player that must choose card to play
     /// - Returns: card to be played
-    func playAIStrategySimpleV1(playerAI: Player) -> Card? {
+    func playAIStrategySimpleV1(player: Player) -> Card? {
         // TODO: Needs testing
         
         var playedCard: Card? = nil
         
         // Action 0.
-        if playerAI.hasCard(card: CardUtils.wildDrawFourCard) && self.isPlayValid(player: playerAI, card: CardUtils.wildDrawFourCard) {
+        if player.hasCard(card: CardUtils.wildDrawFourCard) && self.isPlayValid(player: player, card: CardUtils.wildDrawFourCard) {
             playedCard = CardUtils.wildDrawFourCard
-        } else if playerAI.hasCard(card: CardUtils.wildCard) && self.isPlayValid(player: playerAI, card: CardUtils.wildCard) {
+        } else if player.hasCard(card: CardUtils.wildCard) && self.isPlayValid(player: player, card: CardUtils.wildCard) {
             playedCard = CardUtils.wildCard
         } else {
             // Action 1.
-            playedCard = playerAI.getMaximumValueCard() // Exclude Wild Draw Four card (default parameter)
+            playedCard = player.getMaximumValueCard() // Exclude Wild Draw Four card (default parameter)
             
             // If there is a match in card value, no need to check colors
             if playedCard != nil && playedCard?.cardValue != currentCard?.cardValue {
                 if currentCard?.cardColor == CardColor.blue {
                     // Get blue card with maximum value
-                    let maxBlueCard = playerAI.getMaximumValueCard(cardColor: CardColor.blue)
+                    let maxBlueCard = player.getMaximumValueCard(cardColor: CardColor.blue)
                     if maxBlueCard != nil {
                         if playedCard != nil && (playedCard?.cardValue)! < (maxBlueCard?.cardValue)! {
                             playedCard = maxBlueCard
@@ -253,7 +287,7 @@ class GameViewController: UIViewController {
                     }
                 } else if currentCard?.cardColor == CardColor.green {
                     // Get green card with maximum value
-                    let maxGreenCard = playerAI.getMaximumValueCard(cardColor: CardColor.green)
+                    let maxGreenCard = player.getMaximumValueCard(cardColor: CardColor.green)
                     if maxGreenCard != nil {
                         if playedCard != nil && (playedCard?.cardValue)! < (maxGreenCard?.cardValue)! {
                             playedCard = maxGreenCard
@@ -261,7 +295,7 @@ class GameViewController: UIViewController {
                     }
                 } else if currentCard?.cardColor == CardColor.red {
                     // Get red card with maximum value
-                    let maxRedCard = playerAI.getMaximumValueCard(cardColor: CardColor.red)
+                    let maxRedCard = player.getMaximumValueCard(cardColor: CardColor.red)
                     if maxRedCard != nil {
                         if playedCard != nil && (playedCard?.cardValue)! < (maxRedCard?.cardValue)! {
                             playedCard = maxRedCard
@@ -269,21 +303,16 @@ class GameViewController: UIViewController {
                     }
                 } else {
                     // Get yellow card with maximum value
-                    let maxYellowCard = playerAI.getMaximumValueCard(cardColor: CardColor.yellow)
+                    let maxYellowCard = player.getMaximumValueCard(cardColor: CardColor.yellow)
                     if maxYellowCard != nil {
                         if playedCard != nil && (playedCard?.cardValue)! < (maxYellowCard?.cardValue)! {
                             playedCard = maxYellowCard
                         }
                     }
                 }
+            } else {
+                playedCard = nil
             }
-        }
-        
-        // Update model
-        if playedCard != nil {
-            playerAI.playCard(card: playedCard!)
-        } else {
-            playerAI.drawCard(card: cardDeck.pop()!)
         }
         
         return playedCard

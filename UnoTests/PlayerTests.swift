@@ -180,6 +180,26 @@ class PlayerTests: XCTestCase {
         XCTAssertFalse(player1.hasCard(card: blueCard2))
     }
     
+    func testGetCard() {
+        player1 = Player(cards: [redCard0, redCard1, CardUtils.wildDrawFourCard])
+        
+        XCTAssert(player1.getCard(card: redCard1) === redCard1)
+    }
+    
+    func testGetCard2() {
+        player1 = Player(cards: [redCard0, redCard1, CardUtils.wildDrawFourCard])
+        let redCard0Other = Card(cardColor: CardColor.red, cardValue: 0)
+        
+        XCTAssert(player1.getCard(card: redCard0Other) === redCard0)
+    }
+    
+    func testGetCardFalse() {
+        player1 = Player(cards: [redCard0, redCard1, CardUtils.wildDrawFourCard])
+        let wildDrawFourCardOther = Card(cardColor: CardColor.other, cardValue: SpecialVals.wildDrawFour.rawValue)
+        
+        XCTAssert(player1.getCard(card: wildDrawFourCardOther) !== wildDrawFourCardOther)
+    }
+    
     func testGetMaximumValueCard() {
         player1 = Player(cards: [redCard0, redCard1, CardUtils.wildDrawFourCard])
         

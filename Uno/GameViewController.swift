@@ -31,6 +31,7 @@ class GameViewController: UIViewController {
     var menuScene: MenuScene? // Stores MenuScene object
     var gameScene: GameScene? // Stores GameScene object
     var currentCard: Card? = nil // Current card on the table
+    var currentCardOnDeck: Card? = nil // Current card on card deck
     
     override var prefersStatusBarHidden: Bool {
         return true
@@ -65,6 +66,7 @@ class GameViewController: UIViewController {
         
         // Add observers
         NotificationCenter.default.addObserver(self, selector: #selector(self.handlePlayerCardTouch), name: Notification.Name("handlePlayerCardTouch"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleDrawCardDeckTouch), name: Notification.Name("handleDrawCardDeckTouch"), object: nil)
     }
     
     
@@ -144,24 +146,27 @@ class GameViewController: UIViewController {
     }
     
     func handleAIPlayersPlay() {
-        let player = playerOrderOfPlay[currPlayerIdx]
-        if (player?.isAI())! {
-            
-            // Play
-            let card = playAIStrategySimpleV1(player: player!)
-            
-            if card != nil {
-                // Update model and view
-                gameScene?.moveCardFromHandToDiscardPile(player: player!, card: card!)
+        let delayInSeconds = 2.5
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delayInSeconds) {
+            let player = self.playerOrderOfPlay[self.currPlayerIdx]
+            if (player?.isAI())! {
                 
-                // Update order of play
-                currPlayerIdx = isOrderClockwise ? currPlayerIdx + 1 : currPlayerIdx - 1
-                if currPlayerIdx >= numOfPlayers || currPlayerIdx < 0 {
-                    currPlayerIdx = 0
+                // Play
+                let card = self.playAIStrategySimpleV1(player: player!)
+                
+                if card != nil {
+                    // Update model and view
+                    self.gameScene?.moveCardFromHandToDiscardPile(player: player!, card: card!)
+                    self.gameScene?.drawCurrentPlayerLabel()
+                    
+                    print("Card played")
+                    print(card!.toString())
+                    print("Player's cards")
+                    print(player!.toString())
+                } else {
+                    // TODO: Handle returned nil card due to current action card
+                    print("Current action card")
                 }
-                gameScene?.drawCurrentPlayerLabel()
-            } else {
-                // TODO: Handle nil card (needs to draw a card)
             }
         }
     }
@@ -169,9 +174,8 @@ class GameViewController: UIViewController {
     
     /// Event handler of the card chosen by the non-AI player
     ///
-    /// - Parameter notification: The card touched by the non-AI player
+    /// - Parameter notification: Dictionary containing the non-AI player and the touched card
     func handlePlayerCardTouch(notification: Notification) {
-        // TODO: Fully handle the event
         if let playerCardDict = notification.object as? [String: AnyObject] {
             let player = playerCardDict["player"] as! Player
             let card = playerCardDict["card"] as! Card
@@ -179,13 +183,6 @@ class GameViewController: UIViewController {
                 // Add animation to card moving from hand to discard pile
                 // After completing the animation, doFinishHandlePlayerCardTouch will be called
                 gameScene?.moveCardFromHandToDiscardPile(player: player, card: card)
-                
-                // Update order of play
-                currPlayerIdx = isOrderClockwise ? currPlayerIdx + 1 : currPlayerIdx - 1
-                if currPlayerIdx >= numOfPlayers || currPlayerIdx < 0 {
-                    currPlayerIdx = 0
-                }
-                gameScene?.drawCurrentPlayerLabel()
             } else {
                 gameScene?.invalidPlayLabel.isHidden = false
             }
@@ -213,17 +210,44 @@ class GameViewController: UIViewController {
         // is to tell drawPlayerCards which players card we are adjusting in the position
         // perspective.
         gameScene?.drawPlayerCards(player: player, cardPosIdx: playersVec.index{$0 === player}!)
+        
+        // Update order of play
+        currPlayerIdx = isOrderClockwise ? currPlayerIdx + 1 : currPlayerIdx - 1
+        if currPlayerIdx >= numOfPlayers || currPlayerIdx < 0 {
+            currPlayerIdx = 0
+        }
+        gameScene?.drawCurrentPlayerLabel()
 		
-		let delayInSeconds = 1.5
-		// FixMe: Still not working 100%. It's better than calling sleep as it doesn't freeze the
-		// played card over the discard pile, but for some unknown reason it doesn't always print 1 and then
-		// 2 at a 1.5 seconds interval, sometimes the behavior is 1 1 2, and the card played by the AI
-		// happens way before 1.5 seconds. Need to find out why this is happening.
-		print("1")
-		DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delayInSeconds) {
-			print("2")
-			self.handleAIPlayersPlay()
-		}
+        // Go to the next player (possibly AI)
+        handleAIPlayersPlay()
+    }
+    
+    /// Event handler of the card chosen by the non-AI player
+    ///
+    /// - Parameter notification: Dictionary containing the non-AI player and the touched card
+    func handleDrawCardDeckTouch(notification: Notification) {
+        // TODO: Fully handle the event
+        if let playerCardDict = notification.object as? [String: AnyObject] {
+            let player = playerCardDict["player"] as! Player
+            let card = playerCardDict["card"] as! Card
+            let validPlay = playerCardDict["validPlay"] as! Bool
+            
+            print(player.getName() + " drew card " + card.toString())
+            
+            if !validPlay {
+                // Update model
+                player.drawCard(card: card)
+                
+                // Update view
+                // Rearrange cards: as cards move from hand to discard pile, update cards from
+                // player hand so that they are shown right next to each other. cardPosIdx corresponds
+                // is to tell drawPlayerCards which players card we are adjusting in the position
+                // perspective.
+                gameScene?.drawPlayerCards(player: player, cardPosIdx: playersVec.index{$0 === player}!)
+            }
+            
+            handleAIPlayersPlay()
+        }
     }
     
     /// Check if card attempted to be played is valid.
@@ -259,11 +283,12 @@ class GameViewController: UIViewController {
     /// Main objective: prioritize playing cards with higher values.
     /// Does use any game feedback information.
     
-    /// List of actions in descending order of priority (if card to-be-played is available and valid):
+    /// List of steps in descending order of priority (if card to-be-played is available and valid):
     /// 0. Play either Wild Draw Four or Wild card
-    ///   0.1 Play Wild Draw Four card
-    ///   0.2 Play Wild card
+    ///     0.1 Play Wild Draw Four card
+    ///     0.2 Play Wild card
     /// 1. Play card matching color, type (except Wild and Wild Draw Four), or value that has the highest value
+    ///     1.1 Or check if action card
     ///
     /// - Parameters:
     ///   - player: current AI player that must choose card to play
@@ -273,51 +298,50 @@ class GameViewController: UIViewController {
         
         var playedCard: Card? = nil
         
-        // Action 0.
+        // Step 0.
         if player.hasCard(card: CardUtils.wildDrawFourCard) && self.isPlayValid(player: player, card: CardUtils.wildDrawFourCard) {
             playedCard = CardUtils.wildDrawFourCard
         } else if player.hasCard(card: CardUtils.wildCard) && self.isPlayValid(player: player, card: CardUtils.wildCard) {
             playedCard = CardUtils.wildCard
         } else {
-            // Action 1.
+            // Step 1.
             playedCard = player.getMaximumValueCard() // Exclude Wild Draw Four card (default parameter)
             
             // If there is a match in card value, no need to check colors
             if playedCard != nil && playedCard?.cardValue != currentCard?.cardValue {
+                // Find maximum card of valid color
+                playedCard = nil
                 if currentCard?.cardColor == CardColor.blue {
                     // Get blue card with maximum value
                     let maxBlueCard = player.getMaximumValueCard(cardColor: CardColor.blue)
                     if maxBlueCard != nil {
-                        if playedCard != nil && (playedCard?.cardValue)! < (maxBlueCard?.cardValue)! {
-                            playedCard = maxBlueCard
-                        }
+                        playedCard = maxBlueCard
                     }
                 } else if currentCard?.cardColor == CardColor.green {
                     // Get green card with maximum value
                     let maxGreenCard = player.getMaximumValueCard(cardColor: CardColor.green)
                     if maxGreenCard != nil {
-                        if playedCard != nil && (playedCard?.cardValue)! < (maxGreenCard?.cardValue)! {
-                            playedCard = maxGreenCard
-                        }
+                        playedCard = maxGreenCard
                     }
                 } else if currentCard?.cardColor == CardColor.red {
                     // Get red card with maximum value
                     let maxRedCard = player.getMaximumValueCard(cardColor: CardColor.red)
                     if maxRedCard != nil {
-                        if playedCard != nil && (playedCard?.cardValue)! < (maxRedCard?.cardValue)! {
-                            playedCard = maxRedCard
-                        }
+                        playedCard = maxRedCard
                     }
                 } else {
                     // Get yellow card with maximum value
                     let maxYellowCard = player.getMaximumValueCard(cardColor: CardColor.yellow)
                     if maxYellowCard != nil {
-                        if playedCard != nil && (playedCard?.cardValue)! < (maxYellowCard?.cardValue)! {
-                            playedCard = maxYellowCard
-                        }
+                        playedCard = maxYellowCard
                     }
                 }
             } else {
+                // Check if action card
+                if currentCard?.cardType == CardType.action {
+                    // TODO: Handle action card
+                }
+                
                 playedCard = nil
             }
         }

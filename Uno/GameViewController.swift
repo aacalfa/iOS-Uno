@@ -124,7 +124,7 @@ class GameViewController: UIViewController {
 		let lower : UInt32 = 0
 		let upper : UInt32 = UInt32(numOfPlayers - 1)
 		currPlayerIdx = Int(arc4random_uniform(upper - lower) + lower)
-        currPlayerIdx = 2 // Uncomment this to test first play by non-AI player in a 2-player game
+        currPlayerIdx = numOfPlayers <= 3 ? 1 : 2 // Uncomment this to test first play by non-AI player
 	}
 	
     
@@ -152,24 +152,37 @@ class GameViewController: UIViewController {
             let player = playerCardDict["player"] as! Player
             let card = playerCardDict["card"] as! Card
             if isPlayValid(player: player, card: card) {
-                // Update discard pile
-                updateDiscardPile(card: card)
+                // Add animation to card moving from hand to discard pile
+                // After completing the animation, doFinishHandlePlayerCardTouch will be called
+                gameScene?.moveCardFromHandToDiscardPile(player: player, card: card)
                 
-                // Update model
-                player.playCard(card: card)
-                
-                // Update view
-                gameScene?.invalidPlayLabel.isHidden = true
-                gameScene?.drawTopDiscardPileCard()
-                // Rearrange cards: as cards move from hand to discard pile, update cards from
-                // player hand so that they are shown right next to each other. cardPosIdx corresponds
-                // is to tell drawPlayerCards which players card we are adjusting in the position
-                // perspective.
-                gameScene?.drawPlayerCards(player: player, cardPosIdx: playersVec.index{$0 === player}!)
             } else {
                 gameScene?.invalidPlayLabel.isHidden = false
             }
         }
+    }
+    
+    
+    /// Finish handlePlayerCardTouch by updating view and model
+    ///
+    /// - Parameters:
+    ///   - player: player that's currently playing
+    ///   - card: card that will be played
+    func doFinishHandlePlayerCardTouch(player: Player, card: Card) {
+        // Update model
+        player.playCard(card: card)
+
+        // Update discard pile
+        updateDiscardPile(card: card)
+
+        // Update view
+        gameScene?.invalidPlayLabel.isHidden = true
+        gameScene?.drawTopDiscardPileCard()
+        // Rearrange cards: as cards move from hand to discard pile, update cards from
+        // player hand so that they are shown right next to each other. cardPosIdx corresponds
+        // is to tell drawPlayerCards which players card we are adjusting in the position
+        // perspective.
+        gameScene?.drawPlayerCards(player: player, cardPosIdx: playersVec.index{$0 === player}!)
     }
     
     /// Check if card attempted to be played is valid.

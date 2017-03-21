@@ -179,4 +179,15 @@ class GameScene: SKScene {
             }
         }
     }
+    
+    /// Animates the card being played by moving it to the discard player
+    ///
+    /// - Parameters:
+    ///   - player: player that's currently playing
+    ///   - card: card that will be moved
+    func moveCardFromHandToDiscardPile(player: Player, card: Card) {
+        let moveTo = viewController.currentCard?.position
+        let move = SKAction.move(to: moveTo!, duration: 1)
+        card.run(move, completion: { self.viewController.doFinishHandlePlayerCardTouch(player: player, card: card) })
+    }
 }

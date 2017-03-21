@@ -21,4 +21,9 @@ struct Stack<Element> {
     func isEmpty() -> Bool {
         return items.isEmpty
     }
+    
+    func peek() -> Element {
+        assert(!items.isEmpty)
+        return items.last!
+    }
 }

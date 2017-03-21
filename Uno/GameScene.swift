@@ -146,8 +146,7 @@ class GameScene: SKScene {
     
     /// Draw card on top of draw deck
     func drawTopDrawDeckCard() {
-        viewController.currentCardOnDeck = viewController.cardDeck.pop()
-        let topDrawDeckCard = viewController.currentCardOnDeck
+        let topDrawDeckCard = viewController.cardDeck.peek()
         topDrawDeckCard?.position = CGPoint(x: self.size.width / 2 - (topDrawDeckCard?.size.width)! / 3, y: self.size.height / 2)
         topDrawDeckCard?.setScale(0.2)
         topDrawDeckCard?.texture = topDrawDeckCard?.backTexture
@@ -188,18 +187,18 @@ class GameScene: SKScene {
                 if !player.isAI() && player.hasCardObject(card: card) {
                     // Non-AI player attempts to play
                     NotificationCenter.default.post( name: Notification.Name("handlePlayerCardTouch"), object: ["player": player, "card": card])
-                } else if node === viewController.currentCardOnDeck {
+                } else if node === viewController.cardDeck.peek() {
                     if !player.isAI() {
                         // Drawn card from deck
                         var validPlay: Bool = false // Player must keep card and cannot play
+                        // decision made by player whether to use card or not
+                        var decidedToPlay: Bool = false
                         
                         if viewController.isPlayValid(player: player, card: card) {
                             // TODO: ask player if he/she wants to play card or keep it
-                            
                             validPlay = true
                         }
-                        
-                        NotificationCenter.default.post( name: Notification.Name("handleDrawCardDeckTouch"), object: ["player": player, "card": card, "validPlay": validPlay])
+                        NotificationCenter.default.post( name: Notification.Name("handleDrawCardDeckTouch"), object: ["player": player, "card": card, "validPlay": validPlay, "decidedToPlay": decidedToPlay])
                     }
                 }
             }
@@ -216,5 +215,20 @@ class GameScene: SKScene {
         let moveTo = viewController.currentCard?.position
         let move = SKAction.move(to: moveTo!, duration: 1)
         card.run(move, completion: { self.viewController.doFinishHandlePlayerCardTouch(player: player, card: card) })
+    }
+    
+    /// Animates the card being moved from draw pile to player's hand
+    ///
+    /// - Parameters:
+    ///   - player: player who drew card
+    ///   - cardPosIdx: defines where to move the card to
+    ///   - card: card moved from draw pile
+    func moveCardFromDrawToPlayerHand(player: Player, cardPosIdx: Int, card: Card) {
+        card.texture = card.frontTexture
+        card.zRotation = 0
+        let moveTo = cardPositions[cardPosIdx]
+        let move = SKAction.move(to: moveTo, duration: 1)
+        card.run(move, completion: { self.viewController.doFinishHandleDrawCardDeckTouch(player: player, card: card) })
+        
     }
 }

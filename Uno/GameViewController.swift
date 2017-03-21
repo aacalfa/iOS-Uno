@@ -146,8 +146,6 @@ class GameViewController: UIViewController {
     func handleAIPlayersPlay() {
         let player = playerOrderOfPlay[currPlayerIdx]
         if (player?.isAI())! {
-            // Sleep for 3 seconds
-            sleep(3)
             
             // Play
             let card = playAIStrategySimpleV1(player: player!)
@@ -215,8 +213,17 @@ class GameViewController: UIViewController {
         // is to tell drawPlayerCards which players card we are adjusting in the position
         // perspective.
         gameScene?.drawPlayerCards(player: player, cardPosIdx: playersVec.index{$0 === player}!)
-        
-        handleAIPlayersPlay()
+		
+		let delayInSeconds = 1.5
+		// FixMe: Still not working 100%. It's better than calling sleep as it doesn't freeze the
+		// played card over the discard pile, but for some unknown reason it doesn't always print 1 and then
+		// 2 at a 1.5 seconds interval, sometimes the behavior is 1 1 2, and the card played by the AI
+		// happens way before 1.5 seconds. Need to find out why this is happening.
+		print("1")
+		DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delayInSeconds) {
+			print("2")
+			self.handleAIPlayersPlay()
+		}
     }
     
     /// Check if card attempted to be played is valid.

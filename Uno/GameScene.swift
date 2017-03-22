@@ -128,6 +128,9 @@ class GameScene: SKScene {
 	
 	/// Draw sprite that shows if the order is clockwise or anticlockwise
 	func drawPlayDirection() {
+        playDirection.removeFromParent()
+        playDirection.texture = viewController.isOrderClockwise ?
+            SKTexture(imageNamed: "Clockwise") : SKTexture(imageNamed: "AntiClockwise")
 		playDirection.position = CGPoint(x: size.width * 0.06, y: size.height * 0.94)
 		playDirection.setScale(0.3)
 		background.addChild(playDirection)

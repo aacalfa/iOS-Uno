@@ -179,7 +179,7 @@ class GameViewController: UIViewController {
                         let drawnCard = self.cardDeck.peek()
                         if self.isPlayValid(player: player!, card: drawnCard) {
                             // Add animation to card moving from draw pile to discard pile
-                            // After completing the animation, doFinishHandleDrawCardDeckTouch will be called
+                            // After completing the animation, doFinishHandleDrawDeckPile will be called
                             self.gameScene?.moveCardFromDrawToDiscardPile(player: player!, card: drawnCard!)
                         } else {
                             // Add animation to card moving from hand to discard pile
@@ -197,8 +197,8 @@ class GameViewController: UIViewController {
         }
     }
     
-    
     func handleCurrentActionOrWildCard(player: Player) {
+/*
         // TODO: Not working yet
         
         // Index of the next player
@@ -217,7 +217,7 @@ class GameViewController: UIViewController {
 //            gameScene?.moveCardFromDrawToPlayerHand(player: player, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card: self.cardDeck.peek()!, updateOrder: false)
 //            self.gameScene?.drawTopDrawDeckCard()
 //            gameScene?.moveCardFromDrawToPlayerHand(player: player, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card: self.cardDeck.peek()!, updateOrder: false)
-//            
+//
 //            // Update order of play
 //            updateOrderOfPlay()
 //            gameScene?.drawCurrentPlayerLabel()
@@ -245,8 +245,8 @@ class GameViewController: UIViewController {
         
         // Go to the next player (possibly AI)
         handleAIPlayersPlay()
+ */
     }
-    
     
     /// Event handler of the card chosen by the non-AI player
     ///
@@ -266,7 +266,8 @@ class GameViewController: UIViewController {
     }
     
     
-    /// Finish handlePlayerCardTouch by updating view and model
+    /// Finish handlePlayerCardTouch by updating view and model. This is called when a card is played
+    /// from hand to discard pile
     ///
     /// - Parameters:
     ///   - player: player that's currently playing
@@ -277,6 +278,9 @@ class GameViewController: UIViewController {
 
         // Update discard pile
         updateDiscardPile(card: card)
+        
+        // if the card played is skip or reverse, adjust who will play next and the view
+        let isSkip = handleSkipAndReverseCards(card: card)
 
         // Update view
         gameScene?.invalidPlayLabel.isHidden = true
@@ -288,7 +292,7 @@ class GameViewController: UIViewController {
         gameScene?.drawPlayerCards(player: player, cardPosIdx: playersVec.index{$0 === player}!)
         
         // Update order of play
-        updateOrderOfPlay()
+        updateOrderOfPlay(withSkip: isSkip)
         gameScene?.drawCurrentPlayerLabel()
         
         // Go to the next player (possibly AI)
@@ -315,7 +319,8 @@ class GameViewController: UIViewController {
         }
     }
     
-    /// Finish HandleDrawCardDeckTouch by updating view and model
+    /// Finish HandleDrawCardDeckTouch by updating view and model. This is called when a card is drawn
+    /// from card deck but not played to discard pile
     ///
     /// - Parameters:
     ///   - player: player that's currently playing
@@ -338,14 +343,15 @@ class GameViewController: UIViewController {
         gameScene?.drawPlayerCards(player: player, cardPosIdx: playersVec.index{$0 === player}!)
         
         // Update order of play
-        updateOrderOfPlay()
+        updateOrderOfPlay(withSkip: false) // No card is played, pass skip as false
         gameScene?.drawCurrentPlayerLabel()
         
         // Go to the next player (possibly AI)
         handleAIPlayersPlay()
     }
     
-    /// Finish HandleDrawCardDeckTouch by updating view and model
+    /// Finish HandleDrawCardDeckTouch by updating view and model. This is called when a card is drawn
+    /// from card deck AND it is played to discard pile
     ///
     /// - Parameters:
     ///   - player: player that's currently playing
@@ -361,8 +367,11 @@ class GameViewController: UIViewController {
         // Update draw card pile in view
         gameScene?.drawTopDrawDeckCard()
         
+        // if the card played is skip or reverse, adjust who will play next and the view
+        let isSkip = handleSkipAndReverseCards(card: card)
+        
         // Update order of play
-        updateOrderOfPlay()
+        updateOrderOfPlay(withSkip: isSkip)
         gameScene?.drawCurrentPlayerLabel()
         
         // Go to the next player (possibly AI)
@@ -486,13 +495,41 @@ class GameViewController: UIViewController {
         return playedCard
     }
     
+    
+    /// handleSkipAndReverseCards update controller attributes and view when a reverse card
+    /// or a skip card is played, by setting who plays next.
+    ///
+    /// - Parameter card: card played
+    /// - Returns: bool informing if next player should be skipped
+    func handleSkipAndReverseCards(card: Card) -> Bool {
+        var isSkip = false
+        // If played card was a skip or reverse, do extra changes
+        if card.cardValue == SpecialVals.reverse.rawValue {
+            isOrderClockwise = !isOrderClockwise
+            // Update play direction sprite in view
+            if numOfPlayers > 2 {
+                gameScene?.drawPlayDirection()
+            } else { // reverse cards are treated as skip when in 2 players mode
+                isSkip = true
+            }
+        } else if card.cardValue == SpecialVals.skip.rawValue {
+            isSkip = true
+        }
+        return isSkip
+    }
+    
     /// Update currPlayerIdx value to set who plays next
-    func updateOrderOfPlay() {
-        currPlayerIdx = isOrderClockwise ? currPlayerIdx + 1 : currPlayerIdx - 1
+    func updateOrderOfPlay(withSkip: Bool) {
+        if withSkip == true {
+            currPlayerIdx = isOrderClockwise ? currPlayerIdx + 2 : currPlayerIdx - 2
+        } else {
+            currPlayerIdx = isOrderClockwise ? currPlayerIdx + 1 : currPlayerIdx - 1
+        }
+        
         if currPlayerIdx >= numOfPlayers {
-            currPlayerIdx = 0
+            currPlayerIdx = currPlayerIdx - numOfPlayers
         } else if currPlayerIdx < 0 {
-            currPlayerIdx = numOfPlayers - 1
+            currPlayerIdx = numOfPlayers + currPlayerIdx
         }
     }
 }

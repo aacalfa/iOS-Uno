@@ -190,15 +190,14 @@ class GameScene: SKScene {
                 } else if node === viewController.cardDeck.peek() {
                     if !player.isAI() {
                         // Drawn card from deck
-                        var validPlay: Bool = false // Player must keep card and cannot play
-                        // decision made by player whether to use card or not
-                        var decidedToPlay: Bool = false
+                        var decidedToPlay: Bool = false // decision made by player whether to use card or not
                         
                         if viewController.isPlayValid(player: player, card: card) {
                             // TODO: ask player if he/she wants to play card or keep it
-                            validPlay = true
+                            //decidedToPlay = true
                         }
-                        NotificationCenter.default.post( name: Notification.Name("handleDrawCardDeckTouch"), object: ["player": player, "card": card, "validPlay": validPlay, "decidedToPlay": decidedToPlay])
+                        
+                        NotificationCenter.default.post( name: Notification.Name("handleDrawCardDeckTouch"), object: ["player": player, "card": card, "decidedToPlay": decidedToPlay])
                     }
                 }
             }
@@ -208,8 +207,8 @@ class GameScene: SKScene {
     /// Animates the card being played by moving it to the discard player
     ///
     /// - Parameters:
-    ///   - player: player that's currently playing
-    ///   - card: card that will be moved
+    ///   - player: Player that's currently playing
+    ///   - card: Card that will be moved
     func moveCardFromHandToDiscardPile(player: Player, card: Card) {
         card.texture = card.frontTexture
         let moveTo = viewController.currentCard?.position
@@ -220,15 +219,31 @@ class GameScene: SKScene {
     /// Animates the card being moved from draw pile to player's hand
     ///
     /// - Parameters:
-    ///   - player: player who drew card
-    ///   - cardPosIdx: defines where to move the card to
-    ///   - card: card moved from draw pile
-    func moveCardFromDrawToPlayerHand(player: Player, cardPosIdx: Int, card: Card) {
-        card.texture = card.frontTexture
+    ///   - player: Player who drew card
+    ///   - cardPosIdx: Defines where to move the card to
+    ///   - card: Card moved from draw pile
+    func moveCardFromDrawToPlayerHand(player: Player, cardPosIdx: Int, card: Card, updateOrder: Bool = true) {
+        self.invalidPlayLabel.isHidden = true
+        card.texture = player.isAI() ? card.backTexture : card.frontTexture
         card.zRotation = 0
         let moveTo = cardPositions[cardPosIdx]
         let move = SKAction.move(to: moveTo, duration: 1)
         card.run(move, completion: { self.viewController.doFinishHandleDrawCardDeckTouch(player: player, card: card) })
+        
+    }
+    
+    /// Animates the card being moved from draw pile to discard pile
+    ///
+    /// - Parameters:
+    ///   - player: Player who drew card
+    ///   - cardPosIdx: Defines where to move the card to
+    ///   - card: Card moved from draw pile
+    func moveCardFromDrawToDiscardPile(player: Player, card: Card) {
+        self.invalidPlayLabel.isHidden = true
+        card.texture = card.frontTexture
+        let moveTo = viewController.discardPile.peek()!.position
+        let move = SKAction.move(to: moveTo, duration: 1)
+        card.run(move, completion: { self.viewController.doFinishHandleDrawDeckPile(player: player, card: card) })
         
     }
 }

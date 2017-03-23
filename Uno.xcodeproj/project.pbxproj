@@ -21,6 +21,7 @@
 		B24A135E1E6B4F79009BE336 /* UnoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24A135D1E6B4F79009BE336 /* UnoUITests.swift */; };
 		B24A136C1E6B5435009BE336 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24A136B1E6B5435009BE336 /* Card.swift */; };
 		B24A136E1E6BA9CE009BE336 /* Stack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24A136D1E6BA9CE009BE336 /* Stack.swift */; };
+		B292AA4B1E843BDE00A742DB /* GameViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B292AA4A1E843BDE00A742DB /* GameViewControllerTest.swift */; };
 		B29C15991E6FC6660071E70E /* GameSm.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29C15981E6FC6660071E70E /* GameSm.swift */; };
 		B2EDE9A11E7B5AA9006667DF /* SoundFX.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2EDE9A01E7B5AA9006667DF /* SoundFX.swift */; };
 		B302FE0E1E709FF700EF3C44 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = B302FE0D1E709FF700EF3C44 /* Player.swift */; };
@@ -66,6 +67,7 @@
 		B24A136B1E6B5435009BE336 /* Card.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		B24A136D1E6BA9CE009BE336 /* Stack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stack.swift; sourceTree = "<group>"; };
 		B273EE0C1E6E7F7C001A29AF /* travis.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = travis.yml; sourceTree = "<group>"; };
+		B292AA4A1E843BDE00A742DB /* GameViewControllerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameViewControllerTest.swift; sourceTree = "<group>"; };
 		B29C15981E6FC6660071E70E /* GameSm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameSm.swift; sourceTree = "<group>"; };
 		B2EDE9A01E7B5AA9006667DF /* SoundFX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundFX.swift; sourceTree = "<group>"; };
 		B302FE0D1E709FF700EF3C44 /* Player.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
@@ -143,6 +145,7 @@
 		B24A13511E6B4F79009BE336 /* UnoTests */ = {
 			isa = PBXGroup;
 			children = (
+				B292AA4A1E843BDE00A742DB /* GameViewControllerTest.swift */,
 				B24A13521E6B4F79009BE336 /* UnoTests.swift */,
 				B302FE0F1E70AC1900EF3C44 /* PlayerTests.swift */,
 				B24A13541E6B4F79009BE336 /* Info.plist */,
@@ -312,6 +315,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B292AA4B1E843BDE00A742DB /* GameViewControllerTest.swift in Sources */,
 				B21A969B1E7C7943006655F4 /* CardTests.swift in Sources */,
 				B302FE101E70AC1900EF3C44 /* PlayerTests.swift in Sources */,
 				B24A13531E6B4F79009BE336 /* UnoTests.swift in Sources */,

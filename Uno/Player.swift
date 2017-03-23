@@ -200,4 +200,12 @@ class Player {
         
         return playerString
     }
+    
+    /// Sets a new array of cards for player (FOR TEST PURPOSE ONLY)
+    ///
+    /// - Parameter cards: array of cards
+    func setPlayerCards(cards: [Card]) {
+        self.cards.removeAll()
+        self.cards = cards
+    }
 }

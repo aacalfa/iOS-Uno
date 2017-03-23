@@ -225,14 +225,13 @@ class GameScene: SKScene {
     ///   - player: Player who drew card
     ///   - cardPosIdx: Defines where to move the card to
     ///   - card: Card moved from draw pile
-    func moveCardFromDrawToPlayerHand(player: Player, cardPosIdx: Int, card: Card, updateOrder: Bool = true) {
+    func moveCardFromDrawToPlayerHand(player: Player, cardPosIdx: Int, card: Card) {
         self.invalidPlayLabel.isHidden = true
         card.texture = player.isAI() ? card.backTexture : card.frontTexture
         card.zRotation = 0
         let moveTo = cardPositions[cardPosIdx]
         let move = SKAction.move(to: moveTo, duration: 1)
         card.run(move, completion: { self.viewController.doFinishHandleDrawCardDeckTouch(player: player, card: card) })
-        
     }
     
     /// Animates the card being moved from draw pile to discard pile
@@ -247,6 +246,24 @@ class GameScene: SKScene {
         let moveTo = viewController.discardPile.peek()!.position
         let move = SKAction.move(to: moveTo, duration: 1)
         card.run(move, completion: { self.viewController.doFinishHandleDrawDeckPile(player: player, card: card) })
-        
+    }
+    
+    /// Animates the card being moved from draw pile to player's hand
+    ///
+    /// - Parameters:
+    ///   - player: Player who drew card
+    ///   - cardPosIdx: Defines where to move the card to
+    ///   - card: Card moved from draw pile
+    func moveCardFromDrawToPlayerHandDrawTwoAction(player: Player, cardPosIdx: Int, card1: Card, card2: Card) {
+        self.invalidPlayLabel.isHidden = true
+        card1.texture = player.isAI() ? card1.backTexture : card1.frontTexture
+        card1.zRotation = 0
+        card2.texture = player.isAI() ? card2.backTexture : card2.frontTexture
+        card2.zRotation = 0
+        let moveTo = cardPositions[cardPosIdx]
+        let move = SKAction.move(to: moveTo, duration: 1)
+        card1.run(move, completion: { self.viewController.doFinishDrawTwoAction(player: player, card1: card1, card2: card2) })
+//        card1.run(move)
+//        card2.run(move, completion: { self.viewController.doFinishDrawTwoAction(player: player, card1: card1, card2: card2) })
     }
 }

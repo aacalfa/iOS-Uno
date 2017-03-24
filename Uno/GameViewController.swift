@@ -489,57 +489,50 @@ class GameViewController: UIViewController {
         
         var playedCard: Card? = nil
         
-        // Check if current card on pile is action card
-        if self.currentCard?.cardType == CardType.action || self.currentCard?.cardType == CardType.wild {
-            // TODO: Not working yet
-//            self.handleCurrentActionOrWildCard(player: player)
-//            mustDraw = false
-        } else {
-            // Step 0.
-            if player.hasCard(card: CardUtils.wildDrawFourCard) {
-                playedCard = player.getCard(card: CardUtils.wildDrawFourCard)
-                if self.isPlayValid(player: player, card: playedCard) {
-                    return playedCard
-                }
+        // Step 0.
+        if player.hasCard(card: CardUtils.wildDrawFourCard) {
+            playedCard = player.getCard(card: CardUtils.wildDrawFourCard)
+            if self.isPlayValid(player: player, card: playedCard) {
+                return playedCard
             }
-            if player.hasCard(card: CardUtils.wildCard) {
-                playedCard = player.getCard(card: CardUtils.wildCard)
-                if self.isPlayValid(player: player, card: playedCard) {
-                    return playedCard
-                }
+        }
+        if player.hasCard(card: CardUtils.wildCard) {
+            playedCard = player.getCard(card: CardUtils.wildCard)
+            if self.isPlayValid(player: player, card: playedCard) {
+                return playedCard
             }
-            
-            // Step 1.
-            playedCard = player.getMaximumValueCard() // Exclude Wild Draw Four card (default parameter)
-            
-            // If there is a match in card value, no need to check colors
-            if playedCard != nil && playedCard?.cardValue != currentCard?.cardValue {
-                // Find maximum card of valid color
-                playedCard = nil
-                if currentCard?.cardColor == CardColor.blue {
-                    // Get blue card with maximum value
-                    let maxBlueCard = player.getMaximumValueCard(cardColor: CardColor.blue)
-                    if maxBlueCard != nil {
-                        playedCard = maxBlueCard
-                    }
-                } else if currentCard?.cardColor == CardColor.green {
-                    // Get green card with maximum value
-                    let maxGreenCard = player.getMaximumValueCard(cardColor: CardColor.green)
-                    if maxGreenCard != nil {
-                        playedCard = maxGreenCard
-                    }
-                } else if currentCard?.cardColor == CardColor.red {
-                    // Get red card with maximum value
-                    let maxRedCard = player.getMaximumValueCard(cardColor: CardColor.red)
-                    if maxRedCard != nil {
-                        playedCard = maxRedCard
-                    }
-                } else {
-                    // Get yellow card with maximum value
-                    let maxYellowCard = player.getMaximumValueCard(cardColor: CardColor.yellow)
-                    if maxYellowCard != nil {
-                        playedCard = maxYellowCard
-                    }
+        }
+        
+        // Step 1.
+        playedCard = player.getMaximumValueCard() // Exclude Wild Draw Four card (default parameter)
+        
+        // If there is a match in card value, no need to check colors
+        if playedCard != nil && playedCard?.cardValue != currentCard?.cardValue {
+            // Find maximum card of valid color
+            playedCard = nil
+            if currentCard?.cardColor == CardColor.blue {
+                // Get blue card with maximum value
+                let maxBlueCard = player.getMaximumValueCard(cardColor: CardColor.blue)
+                if maxBlueCard != nil {
+                    playedCard = maxBlueCard
+                }
+            } else if currentCard?.cardColor == CardColor.green {
+                // Get green card with maximum value
+                let maxGreenCard = player.getMaximumValueCard(cardColor: CardColor.green)
+                if maxGreenCard != nil {
+                    playedCard = maxGreenCard
+                }
+            } else if currentCard?.cardColor == CardColor.red {
+                // Get red card with maximum value
+                let maxRedCard = player.getMaximumValueCard(cardColor: CardColor.red)
+                if maxRedCard != nil {
+                    playedCard = maxRedCard
+                }
+            } else {
+                // Get yellow card with maximum value
+                let maxYellowCard = player.getMaximumValueCard(cardColor: CardColor.yellow)
+                if maxYellowCard != nil {
+                    playedCard = maxYellowCard
                 }
             }
         }
@@ -602,6 +595,14 @@ class GameViewController: UIViewController {
         }
         
         return playerOrderOfPlay[nextPlayerIdx]
+    }
+    
+    func handleChoseColorForWildCard(player: Player, card: Card) {
+        // Pick color that current player has more cards
+        let chosenColor = player.getColorWithMostCards()
+        // Change wild card color to chosen color
+        assert(chosenColor != CardColor.other)
+        card.cardColor = chosenColor
     }
     
     func doFinishDrawTwoAction(player: Player, card1: Card, card2: Card) {

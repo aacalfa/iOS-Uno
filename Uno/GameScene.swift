@@ -18,6 +18,7 @@ class GameScene: SKScene {
 	var playDirection = SKSpriteNode(imageNamed: "Clockwise") // Show if play is clockwise or anti-clockwise
     let invalidPlayLabel = SKLabelNode(text: "Invalid play!")
 	var currPlayerLabel = SKLabelNode(text: "")
+    var wildChosenColorLabel = SKLabelNode(text: "")
 	var playerNames: [SKLabelNode] = [] // Labels for players' names
 	
     override func didMove(to view: SKView) {
@@ -103,6 +104,19 @@ class GameScene: SKScene {
 		currPlayerLabel.text = (viewController.playerOrderOfPlay[viewController.currPlayerIdx]?.getName())! + "'s turn"
 		background.addChild(currPlayerLabel)
 	}
+    
+    /// Draw label that informs what color has been chose for wild card
+    func drawWildChosenColorLabel() {
+        let topDiscardPileCard = viewController.currentCard
+        wildChosenColorLabel.removeFromParent()
+        wildChosenColorLabel.position = CGPoint(x: (topDiscardPileCard?.position.x)!, y: (topDiscardPileCard?.position.y)! + (topDiscardPileCard?.size.height)!)
+        wildChosenColorLabel.fontSize = 13
+        wildChosenColorLabel.fontName = "AvenirNext-Bold"
+        wildChosenColorLabel.fontColor = topDiscardPileCard?.colorAsUIColor()
+        wildChosenColorLabel.text = "Chosen color is: " + (topDiscardPileCard?.colorAsString())!
+        wildChosenColorLabel.isHidden = false
+        background.addChild(wildChosenColorLabel)
+    }
 	
 	/// Draw players' names labels
 	func drawPlayersNames() {

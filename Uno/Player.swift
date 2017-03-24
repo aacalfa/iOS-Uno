@@ -187,6 +187,34 @@ class Player {
             return nil
         }
     }
+    
+    func getCountByColor() -> [CardColor: Int] {
+        // initialize values in dict
+        var ret: [CardColor: Int] = [CardColor.red: 0,CardColor.green: 0, CardColor.blue: 0,
+                                        CardColor.yellow: 0]
+        for card in self.cards {
+            // We don't want to account for wilds here
+            if card?.cardColor == CardColor.other {
+                continue
+            }
+            let curr = ret[card!.cardColor]
+            ret[card!.cardColor] = curr! + 1
+        }
+        return ret
+    }
+    
+    func getColorWithMostCards() -> CardColor {
+        let dict = getCountByColor()
+        var ret = CardColor.other
+        var minValue = Int.min
+        for (key, value) in dict {
+            if value > minValue {
+                minValue = value
+                ret = key
+            }
+        }
+        return ret
+    }
 
     /// Converts the player information to `String`.
     ///

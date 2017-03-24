@@ -37,7 +37,7 @@ enum CardPropertyError :Error {
 
 class Card : SKSpriteNode {
     let cardType: CardType
-    let cardColor: CardColor
+    var cardColor: CardColor
     let cardValue: Int
     let frontTexture: SKTexture
     let backTexture: SKTexture
@@ -103,6 +103,45 @@ class Card : SKSpriteNode {
         backTexture = SKTexture(imageNamed: "CardBack")
         
         super.init(texture: frontTexture, color: .clear, size: frontTexture.size())
+    }
+    
+    
+    /// Return card color as a string
+    ///
+    /// - Returns: string informing card color
+    func colorAsString() -> String {
+        switch self.cardColor {
+        case .red:
+            return "Red"
+        case .green:
+            return "Green"
+        case .blue:
+            return "Blue"
+        case .yellow:
+            return "Yellow"
+        default:
+            return "other"
+        }
+        
+    }
+    
+    
+    /// Return card color as UIColor
+    ///
+    /// - Returns: UIColor value related to card color
+    func colorAsUIColor() -> UIColor {
+        switch self.cardColor {
+        case .red:
+            return UIColor.red
+        case .green:
+            return UIColor.green
+        case .blue:
+            return UIColor.blue
+        case .yellow:
+            return UIColor.yellow
+        default:
+            return UIColor.black
+        }
     }
     
     

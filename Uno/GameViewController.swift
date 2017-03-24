@@ -134,7 +134,8 @@ class GameViewController: UIViewController {
         // After handing cards to the players, set first card for discard pile
         assert(!cardDeck.isEmpty())
         
-        // Prevent action or wild cards to be on the discard pile at the beginning of a round
+        // Deliberate design decision
+        // Prevent action or wild cards to be on top of the discard pile at the beginning of a round
         var poppedCards: [Card?] = []
         var isActionOrWildCard: Bool = true
         while isActionOrWildCard {
@@ -306,7 +307,23 @@ class GameViewController: UIViewController {
         updateDiscardPile(card: card)
         
         // if the card played is skip or reverse, adjust who will play next and the view
-        let isSkip = handleSkipAndReverseCards(card: card)
+//        let isSkip = handleSkipAndReverseCards(card: card)
+        var isSkip: Bool = handleSkipAndReverseCards(card: card)
+        
+        // Check if draw two card
+        if card.cardValue == SpecialVals.drawTwo.rawValue {
+            // Skipe next player
+            isSkip = true
+            
+            // Get next player
+            let nextPlayer = getNextPlayer()
+            assert(nextPlayer != nil)
+            
+            // Add two cards to the next player's hand
+            // Add animation to card moving from draw pile to player's hand
+            // After completing the animation, doFinishDrawTwoAction will be called
+            gameScene?.moveCardFromDrawToPlayerHandDrawTwoAction(player: nextPlayer!, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card1: updateDrawPile(), card2: cardDeck.peek()!)
+        }
 
         // Update view
         // If the card played is wild, show in view what was the chosen color
@@ -346,7 +363,7 @@ class GameViewController: UIViewController {
             print(player.getName() + " drew card " + card.toString())
             
             if !decidedToPlay {
-                // Add animation to card moving from hand to discard pile
+                // Add animation to card moving from draw pile to player's hand
                 // After completing the animation, doFinishHandleDrawCardDeckTouch will be called
                 gameScene?.moveCardFromDrawToPlayerHand(player: player, cardPosIdx: playersVec.index{$0 === player}!, card: card)
             }
@@ -472,57 +489,50 @@ class GameViewController: UIViewController {
         
         var playedCard: Card? = nil
         
-        // Check if current card on pile is action card
-        if self.currentCard?.cardType == CardType.action || self.currentCard?.cardType == CardType.wild {
-            // TODO: Not working yet
-//            self.handleCurrentActionOrWildCard(player: player)
-//            mustDraw = false
-        } else {
-            // Step 0.
-            if player.hasCard(card: CardUtils.wildDrawFourCard) {
-                playedCard = player.getCard(card: CardUtils.wildDrawFourCard)
-                if self.isPlayValid(player: player, card: playedCard) {
-                    return playedCard
-                }
+        // Step 0.
+        if player.hasCard(card: CardUtils.wildDrawFourCard) {
+            playedCard = player.getCard(card: CardUtils.wildDrawFourCard)
+            if self.isPlayValid(player: player, card: playedCard) {
+                return playedCard
             }
-            if player.hasCard(card: CardUtils.wildCard) {
-                playedCard = player.getCard(card: CardUtils.wildCard)
-                if self.isPlayValid(player: player, card: playedCard) {
-                    return playedCard
-                }
+        }
+        if player.hasCard(card: CardUtils.wildCard) {
+            playedCard = player.getCard(card: CardUtils.wildCard)
+            if self.isPlayValid(player: player, card: playedCard) {
+                return playedCard
             }
-            
-            // Step 1.
-            playedCard = player.getMaximumValueCard() // Exclude Wild Draw Four card (default parameter)
-            
-            // If there is a match in card value, no need to check colors
-            if playedCard != nil && playedCard?.cardValue != currentCard?.cardValue {
-                // Find maximum card of valid color
-                playedCard = nil
-                if currentCard?.cardColor == CardColor.blue {
-                    // Get blue card with maximum value
-                    let maxBlueCard = player.getMaximumValueCard(cardColor: CardColor.blue)
-                    if maxBlueCard != nil {
-                        playedCard = maxBlueCard
-                    }
-                } else if currentCard?.cardColor == CardColor.green {
-                    // Get green card with maximum value
-                    let maxGreenCard = player.getMaximumValueCard(cardColor: CardColor.green)
-                    if maxGreenCard != nil {
-                        playedCard = maxGreenCard
-                    }
-                } else if currentCard?.cardColor == CardColor.red {
-                    // Get red card with maximum value
-                    let maxRedCard = player.getMaximumValueCard(cardColor: CardColor.red)
-                    if maxRedCard != nil {
-                        playedCard = maxRedCard
-                    }
-                } else {
-                    // Get yellow card with maximum value
-                    let maxYellowCard = player.getMaximumValueCard(cardColor: CardColor.yellow)
-                    if maxYellowCard != nil {
-                        playedCard = maxYellowCard
-                    }
+        }
+        
+        // Step 1.
+        playedCard = player.getMaximumValueCard() // Exclude Wild Draw Four card (default parameter)
+        
+        // If there is a match in card value, no need to check colors
+        if playedCard != nil && playedCard?.cardValue != currentCard?.cardValue {
+            // Find maximum card of valid color
+            playedCard = nil
+            if currentCard?.cardColor == CardColor.blue {
+                // Get blue card with maximum value
+                let maxBlueCard = player.getMaximumValueCard(cardColor: CardColor.blue)
+                if maxBlueCard != nil {
+                    playedCard = maxBlueCard
+                }
+            } else if currentCard?.cardColor == CardColor.green {
+                // Get green card with maximum value
+                let maxGreenCard = player.getMaximumValueCard(cardColor: CardColor.green)
+                if maxGreenCard != nil {
+                    playedCard = maxGreenCard
+                }
+            } else if currentCard?.cardColor == CardColor.red {
+                // Get red card with maximum value
+                let maxRedCard = player.getMaximumValueCard(cardColor: CardColor.red)
+                if maxRedCard != nil {
+                    playedCard = maxRedCard
+                }
+            } else {
+                // Get yellow card with maximum value
+                let maxYellowCard = player.getMaximumValueCard(cardColor: CardColor.yellow)
+                if maxYellowCard != nil {
+                    playedCard = maxYellowCard
                 }
             }
         }
@@ -575,11 +585,42 @@ class GameViewController: UIViewController {
         }
     }
     
+    
+    func getNextPlayer() -> Player? {
+        var nextPlayerIdx: Int = isOrderClockwise ? currPlayerIdx + 1 : currPlayerIdx - 1
+        if nextPlayerIdx >= numOfPlayers {
+            nextPlayerIdx = nextPlayerIdx - numOfPlayers
+        } else if nextPlayerIdx < 0 {
+            nextPlayerIdx = numOfPlayers + nextPlayerIdx
+        }
+        
+        return playerOrderOfPlay[nextPlayerIdx]
+    }
+    
     func handleChoseColorForWildCard(player: Player, card: Card) {
         // Pick color that current player has more cards
         let chosenColor = player.getColorWithMostCards()
         // Change wild card color to chosen color
         assert(chosenColor != CardColor.other)
         card.cardColor = chosenColor
+    }
+    
+    func doFinishDrawTwoAction(player: Player, card1: Card, card2: Card) {
+        // Update draw card pile
+        let cardFromDeck = updateDrawPile()
+        assert(card2 === cardFromDeck) // Just checking
+        // Update draw card pile in view
+        gameScene?.drawTopDrawDeckCard()
+        
+        // Update model
+        player.drawCard(card: card1)
+        player.drawCard(card: card2)
+        
+        // Update view
+        // Rearrange cards: as cards move from hand to discard pile, update cards from
+        // player hand so that they are shown right next to each other. cardPosIdx corresponds
+        // is to tell drawPlayerCards which players card we are adjusting in the position
+        // perspective.
+        gameScene?.drawPlayerCards(player: player, cardPosIdx: playersVec.index{$0 === player}!)
     }
 }

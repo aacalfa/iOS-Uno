@@ -133,7 +133,24 @@ class GameViewController: UIViewController {
     func initDiscardPile() {
         // After handing cards to the players, set first card for discard pile
         assert(!cardDeck.isEmpty())
+        
+        // Prevent action or wild cards to be on the discard pile at the beginning of a round
+        var poppedCards: [Card?] = []
+        var isActionOrWildCard: Bool = true
+        while isActionOrWildCard {
+            let peekCard = cardDeck.peek()
+            if peekCard?.cardType == CardType.action || peekCard?.cardType == CardType.wild {
+                poppedCards.append(cardDeck.pop())
+            } else {
+                isActionOrWildCard = false
+            }
+        }
         updateDiscardPile(card: cardDeck.pop()!)
+        
+        // Push back to deck action and wild cards that were popped, if any
+        for card in poppedCards {
+            cardDeck.push(card)
+        }
     }
     
     /// Add card to top of discard pile
@@ -521,11 +538,11 @@ class GameViewController: UIViewController {
     }
     
     
-    /// handleSkipAndReverseCards update controller attributes and view when a reverse card
-    /// or a skip card is played, by setting who plays next.
+    /// Update controller's attributes and view when a reverse card
+    /// or a skip card is played by setting who plays next.
     ///
-    /// - Parameter card: card played
-    /// - Returns: bool informing if next player should be skipped
+    /// - Parameter card: Card played
+    /// - Returns: Bool informing if next player should be skipped
     func handleSkipAndReverseCards(card: Card) -> Bool {
         var isSkip = false
         // If played card was a skip or reverse, do extra changes

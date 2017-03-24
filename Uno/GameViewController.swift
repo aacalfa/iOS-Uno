@@ -185,6 +185,11 @@ class GameViewController: UIViewController {
                 let card = self.playAIStrategySimpleV1(player: player!, mustDraw: &mustDraw)
                 
                 if card != nil {
+                    // If card is wild, AI will have to choose a color for it
+                    if card?.cardType == CardType.wild {
+                        self.handleChoseColorForWildCard(player: player!, card: card!)
+                    }
+                    
                     // Update model and view
                     self.gameScene?.moveCardFromHandToDiscardPile(player: player!, card: card!)
                     self.gameScene?.drawCurrentPlayerLabel()
@@ -196,6 +201,10 @@ class GameViewController: UIViewController {
                     if mustDraw {
                         let drawnCard = self.cardDeck.peek()
                         if self.isPlayValid(player: player!, card: drawnCard) {
+                            // If card is wild, AI will have to choose a color for it
+                            if drawnCard?.cardType == CardType.wild {
+                                self.handleChoseColorForWildCard(player: player!, card: drawnCard!)
+                            }
                             // Add animation to card moving from draw pile to discard pile
                             // After completing the animation, doFinishHandleDrawDeckPile will be called
                             self.gameScene?.moveCardFromDrawToDiscardPile(player: player!, card: drawnCard!)
@@ -317,6 +326,14 @@ class GameViewController: UIViewController {
         }
 
         // Update view
+        // If the card played is wild, show in view what was the chosen color
+        if card.cardType == CardType.wild {
+            gameScene?.drawWildChosenColorLabel()
+        } else {
+            // make sure chosen color label is not displayed
+            gameScene?.wildChosenColorLabel.isHidden = true
+        }
+        
         gameScene?.invalidPlayLabel.isHidden = true
         gameScene?.drawTopDiscardPileCard()
         // Rearrange cards: as cards move from hand to discard pile, update cards from
@@ -400,6 +417,14 @@ class GameViewController: UIViewController {
         gameScene?.drawTopDiscardPileCard()
         // Update draw card pile in view
         gameScene?.drawTopDrawDeckCard()
+        
+        // If the card played is wild, show in view what was the chosen color
+        if card.cardType == CardType.wild {
+            gameScene?.drawWildChosenColorLabel()
+        } else {
+            // make sure chosen color label is not displayed
+            gameScene?.wildChosenColorLabel.isHidden = true
+        }
         
         // if the card played is skip or reverse, adjust who will play next and the view
         let isSkip = handleSkipAndReverseCards(card: card)

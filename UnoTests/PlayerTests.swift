@@ -33,6 +33,20 @@ class PlayerTests: XCTestCase {
         XCTAssert(player1.getPoints() == 0)
     }
     
+    func testCardCountByColor() {
+        player1 = Player(cards: [redCard0, redCard1, blueCard2])
+        let dict = player1.getCountByColor()
+        for value in dict.keys {
+            print("value: \(dict[value])")
+        }
+        
+        XCTAssert(dict[CardColor.red] == 2)
+        XCTAssert(dict[CardColor.blue] == 1)
+        XCTAssert(dict[CardColor.green] == 0)
+        XCTAssert(dict[CardColor.yellow] == 0)
+        XCTAssert(player1.getColorWithMostCards() == CardColor.red)
+    }
+    
     func testGetSetPoints() {
         player1 = Player(cards: [redCard0, redCard1, blueCard2])
         

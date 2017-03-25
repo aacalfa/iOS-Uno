@@ -285,7 +285,7 @@ class GameViewController: UIViewController {
             if isPlayValid(player: player, card: card) {
 				// if card is wild, first ask human player what color he will choose
 				if card.cardType == CardType.wild {
-					gameScene?.drawColorPicker(player: player, card: card)
+					gameScene?.drawColorPicker(player: player, card: card, fromCardDeck: false)
 				} else {
 					// Add animation to card moving from hand to discard pile
 					// After completing the animation, doFinishHandlePlayerCardTouch will be called
@@ -371,7 +371,9 @@ class GameViewController: UIViewController {
                 // Add animation to card moving from draw pile to player's hand
                 // After completing the animation, doFinishHandleDrawCardDeckTouch will be called
                 gameScene?.moveCardFromDrawToPlayerHand(player: player, cardPosIdx: playersVec.index{$0 === player}!, card: card)
-            }
+			} else {
+				gameScene?.moveCardFromDrawToDiscardPile(player: player, card: card)
+			}
         }
     }
     

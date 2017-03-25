@@ -136,7 +136,7 @@ class Card : SKSpriteNode {
         case .green:
             return UIColor.green
         case .blue:
-            return UIColor.blue
+            return UIColor.cyan
         case .yellow:
             return UIColor.yellow
         default:

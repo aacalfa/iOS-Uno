@@ -12,31 +12,31 @@ import GameplayKit
 class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerViewDelegate {
     var background = SKSpriteNode(imageNamed: "Table") // sprite for table texture
     var viewController: GameViewController!
-	
+    
     var cardPositions: [CGPoint] = [] // Location of cards
-	
-	var playDirection = SKSpriteNode(imageNamed: "Clockwise") // Show if play is clockwise or anti-clockwise
+    
+    var playDirection = SKSpriteNode(imageNamed: "Clockwise") // Show if play is clockwise or anti-clockwise
     let invalidPlayLabel = SKLabelNode(text: "Invalid play!")
-	var currPlayerLabel = SKLabelNode(text: "")
+    var currPlayerLabel = SKLabelNode(text: "")
     var wildChosenColorLabel = SKLabelNode(text: "")
-	var playerNames: [SKLabelNode] = [] // Labels for players' names
-	
-	// picker attributes related to color picker used when
-	// human player plays a wild card and has to select a color
-	var colorPicker : UIPickerView?
-	var myLabel: UILabel?
-	let pickerData = ["Red": UIColor.red, "Green": UIColor.green, "Blue": UIColor.cyan, "Yellow": UIColor.yellow]
-	var colorChoiceButton = UIButton()
-	var cardHackBecauseOBJCIsShit: Card?
-	var fromCardDeckHackBecauseOBJCIsShit: Bool?
-	
-	// Buttons shown when human player draws a card that is playable,
-	// so he can decide whether to play it or not
-	var playYesButton = UIButton()
-	var playNoButton = UIButton()
-	var decidedToPlay: Bool = false // decision made by player whether to use card or not
-	var playerAndCard: (Player, Card)?
-	
+    var playerNames: [SKLabelNode] = [] // Labels for players' names
+    
+    // picker attributes related to color picker used when
+    // human player plays a wild card and has to select a color
+    var colorPicker : UIPickerView?
+    var myLabel: UILabel?
+    let pickerData = ["Red": UIColor.red, "Green": UIColor.green, "Blue": UIColor.cyan, "Yellow": UIColor.yellow]
+    var colorChoiceButton = UIButton()
+    var cardHackBecauseOBJCIsShit: Card?
+    var fromCardDeckHackBecauseOBJCIsShit: Bool?
+    
+    // Buttons shown when human player draws a card that is playable,
+    // so he can decide whether to play it or not
+    var playYesButton = UIButton()
+    var playNoButton = UIButton()
+    var decidedToPlay: Bool = false // decision made by player whether to use card or not
+    var playerAndCard: (Player, Card)?
+    
     override func didMove(to view: SKView) {
         // Draw backgorund
         addChild(background)
@@ -51,23 +51,23 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
             drawPlayerCards(player: player, cardPosIdx: cardPosIdx)
             cardPosIdx += 1
         }
-		
-		// Draw labels for players' names
-		drawPlayersNames()
-		
-		// Draw label for current player
-		drawCurrentPlayerLabel()
-		
-		// Draw discard pile
-		drawTopDiscardPileCard()
+        
+        // Draw labels for players' names
+        drawPlayersNames()
+        
+        // Draw label for current player
+        drawCurrentPlayerLabel()
+        
+        // Draw discard pile
+        drawTopDiscardPileCard()
         
         // Draw card deck
         drawTopDrawDeckCard()
-		
-		// Draw playDirection node, but only if number of players > 2
-		if viewController.numOfPlayers > 2 {
-			drawPlayDirection()
-		}
+        
+        // Draw playDirection node, but only if number of players > 2
+        if viewController.numOfPlayers > 2 {
+            drawPlayDirection()
+        }
         
         // Initialize properties of invalid play label and make it hidden
         invalidPlayLabel.fontSize = 13
@@ -110,16 +110,16 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
             
         }
     }
-	
-	/// Draw label that informs the current player
-	func drawCurrentPlayerLabel() {
+    
+    /// Draw label that informs the current player
+    func drawCurrentPlayerLabel() {
         currPlayerLabel.removeFromParent()
-		currPlayerLabel.position = CGPoint(x: size.width * 0.9, y: size.height * 0.94)
-		currPlayerLabel.fontSize = 13
-		currPlayerLabel.fontName = "AvenirNext-Bold"
-		currPlayerLabel.text = (viewController.playerOrderOfPlay[viewController.currPlayerIdx]?.getName())! + "'s turn"
-		background.addChild(currPlayerLabel)
-	}
+        currPlayerLabel.position = CGPoint(x: size.width * 0.9, y: size.height * 0.94)
+        currPlayerLabel.fontSize = 13
+        currPlayerLabel.fontName = "AvenirNext-Bold"
+        currPlayerLabel.text = (viewController.playerOrderOfPlay[viewController.currPlayerIdx]?.getName())! + "'s turn"
+        background.addChild(currPlayerLabel)
+    }
     
     /// Draw label that informs what color has been chose for wild card
     func drawWildChosenColorLabel() {
@@ -137,41 +137,41 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
         wildChosenColorLabel.isHidden = false
         background.addChild(wildChosenColorLabel)
     }
-	
-	/// Draw players' names labels
-	func drawPlayersNames() {
-		let playersVec = viewController.playersVec
-		var i = 0
-		for player in playersVec {
-			let playerNameLabel = SKLabelNode(text: player?.getName())
-			playerNameLabel.fontSize = 13
-			playerNameLabel.fontName = "AvenirNext-Bold"
-			var position = cardPositions[i]
-			// fixMe: find a better way to set the position
-			if i < 2 {
-				position.x -= 60
-			} else {
-				position.y -= 60
-			}
-			playerNameLabel.position = position
-			playerNames.append(playerNameLabel)
-			background.addChild(playerNames[i])
-			i += 1
-		}
-	}
-	
-	/// Draw sprite that shows if the order is clockwise or anticlockwise
-	func drawPlayDirection() {
+    
+    /// Draw players' names labels
+    func drawPlayersNames() {
+        let playersVec = viewController.playersVec
+        var i = 0
+        for player in playersVec {
+            let playerNameLabel = SKLabelNode(text: player?.getName())
+            playerNameLabel.fontSize = 13
+            playerNameLabel.fontName = "AvenirNext-Bold"
+            var position = cardPositions[i]
+            // fixMe: find a better way to set the position
+            if i < 2 {
+                position.x -= 60
+            } else {
+                position.y -= 60
+            }
+            playerNameLabel.position = position
+            playerNames.append(playerNameLabel)
+            background.addChild(playerNames[i])
+            i += 1
+        }
+    }
+    
+    /// Draw sprite that shows if the order is clockwise or anticlockwise
+    func drawPlayDirection() {
         playDirection.removeFromParent()
         playDirection.texture = viewController.isOrderClockwise ?
             SKTexture(imageNamed: "Clockwise") : SKTexture(imageNamed: "AntiClockwise")
-		playDirection.position = CGPoint(x: size.width * 0.06, y: size.height * 0.94)
-		playDirection.setScale(0.3)
-		background.addChild(playDirection)
-	}
-	
-	/// Draw card on top of discard pile
-	func drawTopDiscardPileCard() {
+        playDirection.position = CGPoint(x: size.width * 0.06, y: size.height * 0.94)
+        playDirection.setScale(0.3)
+        background.addChild(playDirection)
+    }
+    
+    /// Draw card on top of discard pile
+    func drawTopDiscardPileCard() {
         let topDiscardPileCard = viewController.currentCard
         topDiscardPileCard?.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
         topDiscardPileCard?.setScale(0.2)
@@ -179,7 +179,7 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
         topDiscardPileCard?.zRotation = CGFloat(M_PI / 2)
         topDiscardPileCard?.removeFromParent()
         background.addChild(topDiscardPileCard!)
-	}
+    }
     
     /// Draw card on top of draw deck
     func drawTopDrawDeckCard() {
@@ -200,8 +200,8 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
         let player4CardPosition = CGPoint(x: size.width * 0.94, y: size.height * 0.2)
         cardPositions.append(player1CardPosition)
         cardPositions.append(player2CardPosition)
-		cardPositions.append(player3CardPosition)
-		cardPositions.append(player4CardPosition)
+        cardPositions.append(player3CardPosition)
+        cardPositions.append(player4CardPosition)
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -227,14 +227,14 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
                 } else if node === viewController.cardDeck.peek() {
                     if !player.isAI() {
                         // Drawn card from deck
-						decidedToPlay = false
+                        decidedToPlay = false
                         if viewController.isPlayValid(player: player, card: card) {
                             // show card and ask player if he/she wants to play card or keep it
-							card.texture = card.frontTexture
-							drawOptionalPlayButtons(player: player, card: card)
-						} else {
-							NotificationCenter.default.post( name: Notification.Name("handleDrawCardDeckTouch"), object: ["player": player, "card": card, "decidedToPlay": decidedToPlay])
-						}
+                            card.texture = card.frontTexture
+                            drawOptionalPlayButtons(player: player, card: card)
+                        } else {
+                            NotificationCenter.default.post( name: Notification.Name("handleDrawCardDeckTouch"), object: ["player": player, "card": card, "decidedToPlay": decidedToPlay])
+                        }
                     }
                 }
             }
@@ -301,138 +301,140 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
 //        card2.run(move, completion: { self.viewController.doFinishDrawTwoAction(player: player, card1: card1, card2: card2) })
     }
   
-	func drawOptionalPlayButtons(player: Player, card: Card) {
-		playYesButton = UIButton(frame: CGRect(x: (view?.bounds.width)! / 2, y: (view?.bounds.height)! / 2 - 85, width: 100, height: 30))
-		playYesButton.setTitle("Yes", for: .normal)
-		playYesButton.setTitleColor(UIColor.white, for: .normal)
-		playYesButton.backgroundColor = UIColor.green
-		playYesButton.addTarget(self, action: #selector(self.playYesPressed), for: .touchUpInside)
-		self.view!.addSubview(playYesButton)
-		
-		playNoButton = UIButton(frame: CGRect(x: (view?.bounds.width)! / 2 - 100, y: (view?.bounds.height)! / 2 - 85, width: 100, height: 30))
-		playNoButton.setTitle("No", for: .normal)
-		playNoButton.setTitleColor(UIColor.white, for: .normal)
-		playNoButton.backgroundColor = UIColor.red
-		playNoButton.addTarget(self, action: #selector(self.playNoPressed), for: .touchUpInside)
-		self.view!.addSubview(playNoButton)
-		playerAndCard = (player, card)
-	}
-	
-	func playYesPressed() {
-		playYesButton.removeFromSuperview()
-		playNoButton.removeFromSuperview()
-		decidedToPlay = true
-		let player = playerAndCard?.0
-		let card = playerAndCard?.1
-		// first check if this is wild card, if yes, we have to ask the player what is the desired color
-		if card?.cardType == CardType.wild {
-			drawColorPicker(player: player!, card: card!, fromCardDeck: true)
-			fromCardDeckHackBecauseOBJCIsShit = true
-		} else {
-			moveCardFromDrawToDiscardPile(player: player!, card: card!)
-		}
-	}
-	
-	func playNoPressed() {
-		playYesButton.removeFromSuperview()
-		playNoButton.removeFromSuperview()
-		decidedToPlay = false
-		let player = playerAndCard?.0
-		let card = playerAndCard?.1
-		NotificationCenter.default.post( name: Notification.Name("handleDrawCardDeckTouch"), object: ["player": player!, "card": card!, "decidedToPlay": decidedToPlay])
-	}
-	
-	func drawColorPicker(player: Player, card: Card, fromCardDeck: Bool) {
+    func drawOptionalPlayButtons(player: Player, card: Card) {
+        playYesButton = UIButton(frame: CGRect(x: (view?.bounds.width)! / 2, y: (view?.bounds.height)! / 2 - 85, width: 100, height: 30))
+        playYesButton.setTitle("Yes", for: .normal)
+        playYesButton.titleLabel?.font = UIFont.init(name: "AvenirNext-Bold", size:13)
+        playYesButton.setTitleColor(UIColor.white, for: .normal)
+        playYesButton.backgroundColor = UIColor.green
+        playYesButton.addTarget(self, action: #selector(self.playYesPressed), for: .touchUpInside)
+        self.view!.addSubview(playYesButton)
+        
+        playNoButton = UIButton(frame: CGRect(x: (view?.bounds.width)! / 2 - 100, y: (view?.bounds.height)! / 2 - 85, width: 100, height: 30))
+        playNoButton.setTitle("No", for: .normal)
+        playNoButton.titleLabel?.font = UIFont.init(name: "AvenirNext-Bold", size:13)
+        playNoButton.setTitleColor(UIColor.white, for: .normal)
+        playNoButton.backgroundColor = UIColor.red
+        playNoButton.addTarget(self, action: #selector(self.playNoPressed), for: .touchUpInside)
+        self.view!.addSubview(playNoButton)
+        playerAndCard = (player, card)
+    }
+    
+    func playYesPressed() {
+        playYesButton.removeFromSuperview()
+        playNoButton.removeFromSuperview()
+        decidedToPlay = true
+        let player = playerAndCard?.0
+        let card = playerAndCard?.1
+        // first check if this is wild card, if yes, we have to ask the player what is the desired color
+        if card?.cardType == CardType.wild {
+            drawColorPicker(player: player!, card: card!, fromCardDeck: true)
+            fromCardDeckHackBecauseOBJCIsShit = true
+        } else {
+            moveCardFromDrawToDiscardPile(player: player!, card: card!)
+        }
+    }
+    
+    func playNoPressed() {
+        playYesButton.removeFromSuperview()
+        playNoButton.removeFromSuperview()
+        decidedToPlay = false
+        let player = playerAndCard?.0
+        let card = playerAndCard?.1
+        NotificationCenter.default.post( name: Notification.Name("handleDrawCardDeckTouch"), object: ["player": player!, "card": card!, "decidedToPlay": decidedToPlay])
+    }
+    
+    func drawColorPicker(player: Player, card: Card, fromCardDeck: Bool) {
         // Make sure wild chosen color label is hidden
         wildChosenColorLabel.isHidden = true
         
-		// Draw picker
-		colorPicker = UIPickerView(frame: CGRect(x: (view?.bounds.width)! / 2 - 110, y: (view?.bounds.height)! / 2 - 100, width: 100, height: 60))
-		myLabel = UILabel(frame: CGRect(x: 20, y: 10, width: 50, height: 200))
-		myLabel?.text = Array(pickerData.keys)[0] // Set default value for label text
-		colorPicker?.delegate = self
-		colorPicker?.dataSource = self
-		self.view!.addSubview(colorPicker!)
-		
-		colorChoiceButton = UIButton(frame: CGRect(x: (view?.bounds.width)! / 2, y: (view?.bounds.height)! / 2 - 85, width: 100, height: 30))
-		colorChoiceButton.setTitle("Choose", for: .normal)
+        // Draw picker
+        colorPicker = UIPickerView(frame: CGRect(x: (view?.bounds.width)! / 2 - 110, y: (view?.bounds.height)! / 2 - 100, width: 100, height: 60))
+        myLabel = UILabel(frame: CGRect(x: 20, y: 10, width: 50, height: 200))
+        myLabel?.text = Array(pickerData.keys)[0] // Set default value for label text
+        colorPicker?.delegate = self
+        colorPicker?.dataSource = self
+        self.view!.addSubview(colorPicker!)
+        
+        colorChoiceButton = UIButton(frame: CGRect(x: (view?.bounds.width)! / 2, y: (view?.bounds.height)! / 2 - 85, width: 100, height: 30))
+        colorChoiceButton.setTitle("Choose", for: .normal)
         colorChoiceButton.titleLabel?.font = UIFont.init(name: "AvenirNext-Bold", size:13)
-		colorChoiceButton.setTitleColor(UIColor.black, for: .normal)
-		colorChoiceButton.backgroundColor = UIColor.white
-		colorChoiceButton.addTarget(self, action: #selector(self.colorChoicePressed), for: .touchUpInside)
-		self.view!.addSubview(colorChoiceButton)
-		// hack to tell pressed what card is supposed to be moved
-		cardHackBecauseOBJCIsShit = card
-	}
-	
-	@objc func colorChoicePressed() {
-		// Remove picker and button from view
-		colorChoiceButton.removeFromSuperview()
-		colorPicker?.removeFromSuperview()
-		// Get value in color picker
-		let chosenColor = myLabel?.text
-		// Convert color string to CardColor
-		let player = viewController.playerOrderOfPlay[viewController.currPlayerIdx]
-		
-		cardHackBecauseOBJCIsShit?.cardColor = Card.stringToCardColor(color: chosenColor!)
-		
-		// Check if the wild card played was drawn from deck
-		if fromCardDeckHackBecauseOBJCIsShit == true {
-			fromCardDeckHackBecauseOBJCIsShit = false
-			moveCardFromDrawToDiscardPile(player: player!, card: cardHackBecauseOBJCIsShit!)
-		} else {
-			moveCardFromHandToDiscardPile(player: player!, card: cardHackBecauseOBJCIsShit!)
-		}
-		
-		
-	}
+        colorChoiceButton.setTitleColor(UIColor.black, for: .normal)
+        colorChoiceButton.backgroundColor = UIColor.white
+        colorChoiceButton.addTarget(self, action: #selector(self.colorChoicePressed), for: .touchUpInside)
+        self.view!.addSubview(colorChoiceButton)
+        // hack to tell pressed what card is supposed to be moved
+        cardHackBecauseOBJCIsShit = card
+    }
+    
+    @objc func colorChoicePressed() {
+        // Remove picker and button from view
+        colorChoiceButton.removeFromSuperview()
+        colorPicker?.removeFromSuperview()
+        // Get value in color picker
+        let chosenColor = myLabel?.text
+        // Convert color string to CardColor
+        let player = viewController.playerOrderOfPlay[viewController.currPlayerIdx]
+        
+        cardHackBecauseOBJCIsShit?.cardColor = Card.stringToCardColor(color: chosenColor!)
+        
+        // Check if the wild card played was drawn from deck
+        if fromCardDeckHackBecauseOBJCIsShit == true {
+            fromCardDeckHackBecauseOBJCIsShit = false
+            moveCardFromDrawToDiscardPile(player: player!, card: cardHackBecauseOBJCIsShit!)
+        } else {
+            moveCardFromHandToDiscardPile(player: player!, card: cardHackBecauseOBJCIsShit!)
+        }
+        
+        
+    }
 
-	
-	//MARK: - Delegates and data sources
-	//MARK: Data Sources
-	func numberOfComponents(in pickerView: UIPickerView) -> Int {
-		return 1
-	}
-	func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-		return pickerData.count
-	}
-	//MARK: Delegates
-	func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-		return Array(pickerData.keys.sorted())[row]
-	}
-	
-	func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-		myLabel?.text = Array(pickerData.keys.sorted())[row]
-	}
-	
-	func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
-		let titleData = Array(pickerData.keys.sorted())[row]
-		let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "AvenirNext-Bold", size: 26.0)!,NSForegroundColorAttributeName:UIColor.blue])
-		return myTitle
-	}
-	
-	func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
-		var pickerLabel = view as! UILabel!
-		if view == nil {  //if no label there yet
-			pickerLabel = UILabel()
-			//color the label's background
+    
+    //MARK: - Delegates and data sources
+    //MARK: Data Sources
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return pickerData.count
+    }
+    //MARK: Delegates
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return Array(pickerData.keys.sorted())[row]
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        myLabel?.text = Array(pickerData.keys.sorted())[row]
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
+        let titleData = Array(pickerData.keys.sorted())[row]
+        let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "AvenirNext-Bold", size: 26.0)!,NSForegroundColorAttributeName:UIColor.blue])
+        return myTitle
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
+        var pickerLabel = view as! UILabel!
+        if view == nil {  //if no label there yet
+            pickerLabel = UILabel()
+            //color the label's background
             pickerLabel?.backgroundColor = pickerData[Array(pickerData.keys.sorted())[row]]
-		}
-		let titleData = Array(pickerData.keys.sorted())[row]
-		let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "AvenirNext-Bold", size: 26.0)!,NSForegroundColorAttributeName:UIColor.black])
-		pickerLabel!.attributedText = myTitle
-		pickerLabel!.textAlignment = .center
-		
-		return pickerLabel!
-		
-	}
-	
-	func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
-		return 36.0
-	}
-	// for best use with multitasking , dont use a constant here.
-	//this is for demonstration purposes only.
-	func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
-		return 100
-	}
+        }
+        let titleData = Array(pickerData.keys.sorted())[row]
+        let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "AvenirNext-Bold", size: 26.0)!,NSForegroundColorAttributeName:UIColor.black])
+        pickerLabel!.attributedText = myTitle
+        pickerLabel!.textAlignment = .center
+        
+        return pickerLabel!
+        
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
+        return 36.0
+    }
+    // for best use with multitasking , dont use a constant here.
+    //this is for demonstration purposes only.
+    func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
+        return 100
+    }
 }

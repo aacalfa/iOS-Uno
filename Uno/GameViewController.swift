@@ -283,9 +283,14 @@ class GameViewController: UIViewController {
             let player = playerCardDict["player"] as! Player
             let card = playerCardDict["card"] as! Card
             if isPlayValid(player: player, card: card) {
-                // Add animation to card moving from hand to discard pile
-                // After completing the animation, doFinishHandlePlayerCardTouch will be called
-                gameScene?.moveCardFromHandToDiscardPile(player: player, card: card)
+				// if card is wild, first ask human player what color he will choose
+				if card.cardType == CardType.wild {
+					gameScene?.drawColorPicker(player: player, card: card)
+				} else {
+					// Add animation to card moving from hand to discard pile
+					// After completing the animation, doFinishHandlePlayerCardTouch will be called
+					gameScene?.moveCardFromHandToDiscardPile(player: player, card: card)
+				}
             } else {
                 gameScene?.invalidPlayLabel.isHidden = false
             }

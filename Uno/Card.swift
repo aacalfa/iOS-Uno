@@ -160,8 +160,28 @@ class Card : SKSpriteNode {
             throw CardPropertyError.invalidColor
         }
     }
-    
-    
+	
+	
+	/// Retunrs CardColor value given a color in String
+	///
+	/// - Parameter color: card color represented as string
+	/// - Returns: card color represented as CardColor
+	static func stringToCardColor(color: String) -> CardColor {
+		switch color {
+		case "Red":
+			return CardColor.red
+		case "Green":
+			return CardColor.green
+		case "Blue":
+			return CardColor.blue
+		case "Yellow":
+			return CardColor.yellow
+		default:
+			return CardColor.other
+		}
+	}
+	
+	
     /// Returns a string representation of the card
     ///
     /// - Returns: String representation of the card

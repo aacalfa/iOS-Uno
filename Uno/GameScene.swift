@@ -288,7 +288,7 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
     ///   - player: Player who drew card
     ///   - cardPosIdx: Defines where to move the card to
     ///   - card: Card moved from draw pile
-    func moveCardFromDrawToPlayerHandDrawTwoAction(player: Player, cardPosIdx: Int, card1: Card, card2: Card) {
+    func moveCardFromDrawToPlayerHandDrawTwoOrFourAction(player: Player, cardPosIdx: Int, card1: Card, card2: Card, card3: Card? = nil, card4: Card? = nil) {
         self.invalidPlayLabel.isHidden = true
         card1.texture = player.isAI() ? card1.backTexture : card1.frontTexture
         card1.zRotation = 0
@@ -296,7 +296,16 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
         card2.zRotation = 0
         let moveTo = cardPositions[cardPosIdx]
         let move = SKAction.move(to: moveTo, duration: 1)
-        card1.run(move, completion: { self.viewController.doFinishDrawTwoAction(player: player, card1: card1, card2: card2) })
+        if card3 != nil && card4 != nil {
+            card3!.texture = player.isAI() ? card3!.backTexture : card3!.frontTexture
+            card3!.zRotation = 0
+            card4!.texture = player.isAI() ? card4!.backTexture : card4!.frontTexture
+            card4!.zRotation = 0
+            
+            card1.run(move, completion: { self.viewController.doFinishDrawTwoOrFourAction(player: player, card1: card1, card2: card2, card3: card3, card4: card4) })
+        } else {
+            card1.run(move, completion: { self.viewController.doFinishDrawTwoOrFourAction(player: player, card1: card1, card2: card2) })
+        }
 //        card1.run(move)
 //        card2.run(move, completion: { self.viewController.doFinishDrawTwoAction(player: player, card1: card1, card2: card2) })
     }

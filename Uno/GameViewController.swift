@@ -312,22 +312,48 @@ class GameViewController: UIViewController {
         updateDiscardPile(card: card)
         
         // if the card played is skip or reverse, adjust who will play next and the view
-//        let isSkip = handleSkipAndReverseCards(card: card)
         var isSkip: Bool = handleSkipAndReverseCards(card: card)
         
-        // Check if draw two card
+        // Check if Draw Two card
         if card.cardValue == SpecialVals.drawTwo.rawValue {
-            // Skipe next player
-            isSkip = true
-            
-            // Get next player
-            let nextPlayer = getNextPlayer()
-            assert(nextPlayer != nil)
-            
-            // Add two cards to the next player's hand
-            // Add animation to card moving from draw pile to player's hand
-            // After completing the animation, doFinishDrawTwoAction will be called
-            gameScene?.moveCardFromDrawToPlayerHandDrawTwoAction(player: nextPlayer!, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card1: updateDrawPile(), card2: cardDeck.peek()!)
+            // Check if card deck has fewer than two cards
+            if cardDeck.count() < 2 {
+                // TODO: End round (not enough cards)
+                print("Card deck has fewer than 2 cards")
+            } else {
+                // Skipe next player
+                isSkip = true
+                
+                // Get next player
+                let nextPlayer = getNextPlayer()
+                assert(nextPlayer != nil)
+                
+                // Add two cards to the next player's hand
+                // Add animation to card moving from draw pile to player's hand
+                // After completing the animation, doFinishDrawTwoAction will be called
+                gameScene?.moveCardFromDrawToPlayerHandDrawTwoOrFourAction(player: nextPlayer!, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card1: updateDrawPile(), card2: cardDeck.peek()!)
+            }
+        }
+        
+        // Check if Wild Draw Four card
+        if card.cardValue == SpecialVals.wildDrawFour.rawValue {
+            // Check if card deck has fewer than four cards
+            if cardDeck.count() < 4 {
+                // TODO: End round (not enough cards)
+                print("Card deck has fewer than 4 cards")
+            } else {
+                // Skipe next player
+                isSkip = true
+                
+                // Get next player
+                let nextPlayer = getNextPlayer()
+                assert(nextPlayer != nil)
+                
+                // Add two cards to the next player's hand
+                // Add animation to card moving from draw pile to player's hand
+                // After completing the animation, doFinishDrawTwoAction will be called
+                gameScene?.moveCardFromDrawToPlayerHandDrawTwoOrFourAction(player: nextPlayer!, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card1: updateDrawPile(), card2: updateDrawPile(), card3: updateDrawPile(), card4: cardDeck.peek()!)
+            }
         }
 
         // Update view
@@ -436,19 +462,46 @@ class GameViewController: UIViewController {
         // if the card played is skip or reverse, adjust who will play next and the view
         var isSkip = handleSkipAndReverseCards(card: card)
         
-        // Check if draw two card
+        // Check if Draw Two card
         if card.cardValue == SpecialVals.drawTwo.rawValue {
-            // Skipe next player
-            isSkip = true
-            
-            // Get next player
-            let nextPlayer = getNextPlayer()
-            assert(nextPlayer != nil)
-            
-            // Add two cards to the next player's hand
-            // Add animation to card moving from draw pile to player's hand
-            // After completing the animation, doFinishDrawTwoAction will be called
-            gameScene?.moveCardFromDrawToPlayerHandDrawTwoAction(player: nextPlayer!, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card1: updateDrawPile(), card2: cardDeck.peek()!)
+            // Check if card deck has fewer than two cards
+            if cardDeck.count() < 2 {
+                // TODO: End round (not enough cards)
+                print("Card deck has fewer than 2 cards")
+            } else {
+                // Skipe next player
+                isSkip = true
+                
+                // Get next player
+                let nextPlayer = getNextPlayer()
+                assert(nextPlayer != nil)
+                
+                // Add two cards to the next player's hand
+                // Add animation to card moving from draw pile to player's hand
+                // After completing the animation, doFinishDrawTwoAction will be called
+                gameScene?.moveCardFromDrawToPlayerHandDrawTwoOrFourAction(player: nextPlayer!, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card1: updateDrawPile(), card2: cardDeck.peek()!)
+            }
+        }
+        
+        // Check if Wild Draw Four card
+        if card.cardValue == SpecialVals.wildDrawFour.rawValue {
+            // Check if card deck has fewer than four cards
+            if cardDeck.count() < 4 {
+                // TODO: End round (not enough cards)
+                print("Card deck has fewer than 4 cards")
+            } else {
+                // Skipe next player
+                isSkip = true
+                
+                // Get next player
+                let nextPlayer = getNextPlayer()
+                assert(nextPlayer != nil)
+                
+                // Add two cards to the next player's hand
+                // Add animation to card moving from draw pile to player's hand
+                // After completing the animation, doFinishDrawTwoAction will be called
+                gameScene?.moveCardFromDrawToPlayerHandDrawTwoOrFourAction(player: nextPlayer!, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card1: updateDrawPile(), card2: updateDrawPile(), card3: updateDrawPile(), card4: cardDeck.peek()!)
+            }
         }
         
         // Update order of play
@@ -627,16 +680,24 @@ class GameViewController: UIViewController {
         card.cardColor = chosenColor
     }
     
-    func doFinishDrawTwoAction(player: Player, card1: Card, card2: Card) {
+    func doFinishDrawTwoOrFourAction(player: Player, card1: Card, card2: Card, card3: Card? = nil, card4: Card? = nil) {
         // Update draw card pile
         let cardFromDeck = updateDrawPile()
-        assert(card2 === cardFromDeck) // Just checking
+        if card4 == nil {
+            assert(card2 === cardFromDeck) // Just checking
+        } else {
+            assert(card4! === cardFromDeck) // Just checking
+        }
         // Update draw card pile in view
         gameScene?.drawTopDrawDeckCard()
         
         // Update model
         player.drawCard(card: card1)
         player.drawCard(card: card2)
+        if card3 != nil && card4 != nil {
+            player.drawCard(card: card3!)
+            player.drawCard(card: card4!)
+        }
         
         // Update view
         // Rearrange cards: as cards move from hand to discard pile, update cards from

@@ -26,4 +26,8 @@ struct Stack<Element> {
         assert(!items.isEmpty)
         return items.last!
     }
+    
+    func count() -> Int {
+        return items.count
+    }
 }

@@ -80,7 +80,7 @@ class GameViewController: UIViewController {
     /// Initialize array of players
     func initPlayers() {
         playersVec = [Player?](repeating: nil, count: numOfPlayers)
-        let AINameIndices = Array(0...numOfPlayers - 1).shuffled()
+        let AINameIndices = Array(0...listOfPlaceholderNames.count - 1).shuffled()
         let initNumOfCards : Int = 7
         for i in 0..<numOfPlayers {
             var cards = [Card?](repeating: nil, count: initNumOfCards)

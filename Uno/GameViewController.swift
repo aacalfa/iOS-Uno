@@ -32,6 +32,8 @@ class GameViewController: UIViewController {
     var gameScene: GameScene? // Stores GameScene object
     var currentCard: Card? = nil // Current card on the table
     
+    let listOfPlaceholderNames = ["Brett Boe", "Carla Coe", "Donna Doe", "Frank Foe", "Grace Goe", "Harry Hoe", "Jackie Joe", "Jane Doe", "Jane Poe", "Jane Roe", "John Doe", "John Smith", "Karren Koe", "Larry Loe", "Mark Moe", "Marta Moe", "Norma Noe", "Paula Poe", "Quintin Qoe", "Ralph Roe", "Sammy Soe", "Tommy Toe", "Vince Voe", "William Woe", "Xerxes Xoe", "Yvonne Yoe", "Zachery Zoe"] // Used for AI players
+    
     override var prefersStatusBarHidden: Bool {
         return true
     }
@@ -78,6 +80,7 @@ class GameViewController: UIViewController {
     /// Initialize array of players
     func initPlayers() {
         playersVec = [Player?](repeating: nil, count: numOfPlayers)
+        let AINameIndices = Array(0...numOfPlayers).shuffled()
         let initNumOfCards : Int = 7
         for i in 0..<numOfPlayers {
             var cards = [Card?](repeating: nil, count: initNumOfCards)
@@ -85,7 +88,12 @@ class GameViewController: UIViewController {
                 cards[j] = cardDeck.pop()
             }
             
-            playersVec[i] = Player(cards: cards, name: "Player" + String(i), flagAI: i != 0)
+            if i == 0 {
+                playersVec[i] = Player(cards: cards, name: "Player" + String(i), flagAI: i != 0)
+            } else {
+                playersVec[i] = Player(cards: cards, name: listOfPlaceholderNames[AINameIndices[i]], flagAI: i != 0)
+            }
+            
         }
         
         // Now that we have the players created, let's set an order of play

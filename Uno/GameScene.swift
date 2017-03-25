@@ -360,7 +360,8 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
         // Draw picker
         colorPicker = UIPickerView(frame: CGRect(x: (view?.bounds.width)! / 2 - 110, y: (view?.bounds.height)! / 2 - 100, width: 100, height: 60))
         myLabel = UILabel(frame: CGRect(x: 20, y: 10, width: 50, height: 200))
-        myLabel?.text = Array(pickerData.keys)[0] // Set default value for label text
+        myLabel?.text = Array(pickerData.keys.sorted())[0] // Set default value for label text
+        myLabel?.font = UIFont.init(name: "AvenirNext-Bold", size:13)
         colorPicker?.delegate = self
         colorPicker?.dataSource = self
         self.view!.addSubview(colorPicker!)
@@ -418,7 +419,7 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
     
     func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
         let titleData = Array(pickerData.keys.sorted())[row]
-        let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "AvenirNext-Bold", size: 26.0)!,NSForegroundColorAttributeName:UIColor.blue])
+        let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "AvenirNext-Bold", size: 13)!,NSForegroundColorAttributeName:UIColor.blue])
         return myTitle
     }
     
@@ -430,7 +431,7 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
             pickerLabel?.backgroundColor = pickerData[Array(pickerData.keys.sorted())[row]]
         }
         let titleData = Array(pickerData.keys.sorted())[row]
-        let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "AvenirNext-Bold", size: 26.0)!,NSForegroundColorAttributeName:UIColor.black])
+        let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "AvenirNext-Bold", size: 13)!,NSForegroundColorAttributeName:UIColor.black])
         pickerLabel!.attributedText = myTitle
         pickerLabel!.textAlignment = .center
         

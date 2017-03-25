@@ -25,7 +25,7 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
 	// human player plays a wild card and has to select a color
 	var colorPicker : UIPickerView?
 	var myLabel: UILabel?
-	let pickerData = ["Red", "Green", "Blue", "Yellow"]
+	let pickerData = ["Red": UIColor.red, "Green": UIColor.green, "Blue": UIColor.cyan, "Yellow": UIColor.yellow]
 	var colorChoiceButton = UIButton()
 	var cardHackBecauseOBJCIsShit: Card?
 	
@@ -115,6 +115,10 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
     
     /// Draw label that informs what color has been chose for wild card
     func drawWildChosenColorLabel() {
+        // Make sure color picker and button are hidden
+        colorPicker?.isHidden = true
+        colorChoiceButton.isHidden = true
+        
         let topDiscardPileCard = viewController.currentCard
         wildChosenColorLabel.removeFromParent()
         wildChosenColorLabel.position = CGPoint(x: (topDiscardPileCard?.position.x)!, y: (topDiscardPileCard?.position.y)! + (topDiscardPileCard?.size.height)!)
@@ -290,18 +294,22 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
     }
 	
 	func drawColorPicker(player: Player, card: Card) {
+        // Make sure wild chosen color label is hidden
+        wildChosenColorLabel.isHidden = true
+        
 		// Draw picker
 		colorPicker = UIPickerView(frame: CGRect(x: (view?.bounds.width)! / 2 - 110, y: (view?.bounds.height)! / 2 - 100, width: 100, height: 60))
 		myLabel = UILabel(frame: CGRect(x: 20, y: 10, width: 50, height: 200))
-		myLabel?.text = pickerData[0] // Set default value for label text
+		myLabel?.text = Array(pickerData.keys)[0] // Set default value for label text
 		colorPicker?.delegate = self
 		colorPicker?.dataSource = self
 		self.view!.addSubview(colorPicker!)
 		
 		colorChoiceButton = UIButton(frame: CGRect(x: (view?.bounds.width)! / 2, y: (view?.bounds.height)! / 2 - 85, width: 100, height: 30))
 		colorChoiceButton.setTitle("Choose", for: .normal)
-		colorChoiceButton.setTitleColor(UIColor.white, for: .normal)
-		colorChoiceButton.backgroundColor = UIColor.green
+        colorChoiceButton.titleLabel?.font = UIFont.init(name: "AvenirNext-Bold", size:13)
+		colorChoiceButton.setTitleColor(UIColor.black, for: .normal)
+		colorChoiceButton.backgroundColor = UIColor.white
 		colorChoiceButton.addTarget(self, action: #selector(self.colorChoicePressed), for: .touchUpInside)
 		self.view!.addSubview(colorChoiceButton)
 		// hack to tell pressed what card is supposed to be moved
@@ -333,16 +341,16 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
 	}
 	//MARK: Delegates
 	func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-		return pickerData[row]
+		return Array(pickerData.keys.sorted())[row]
 	}
 	
 	func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-		myLabel?.text = pickerData[row]
+		myLabel?.text = Array(pickerData.keys.sorted())[row]
 	}
 	
 	func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
-		let titleData = pickerData[row]
-		let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "Georgia", size: 26.0)!,NSForegroundColorAttributeName:UIColor.blue])
+		let titleData = Array(pickerData.keys.sorted())[row]
+		let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "AvenirNext-Bold", size: 26.0)!,NSForegroundColorAttributeName:UIColor.blue])
 		return myTitle
 	}
 	
@@ -351,11 +359,10 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
 		if view == nil {  //if no label there yet
 			pickerLabel = UILabel()
 			//color the label's background
-			let hue = CGFloat(row)/CGFloat(pickerData.count)
-			pickerLabel?.backgroundColor = UIColor(hue: hue, saturation: 1.0, brightness: 1.0, alpha: 1.0)
+            pickerLabel?.backgroundColor = pickerData[Array(pickerData.keys.sorted())[row]]
 		}
-		let titleData = pickerData[row]
-		let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "Georgia", size: 26.0)!,NSForegroundColorAttributeName:UIColor.black])
+		let titleData = Array(pickerData.keys.sorted())[row]
+		let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "AvenirNext-Bold", size: 26.0)!,NSForegroundColorAttributeName:UIColor.black])
 		pickerLabel!.attributedText = myTitle
 		pickerLabel!.textAlignment = .center
 		

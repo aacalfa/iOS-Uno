@@ -20,7 +20,7 @@ class MenuScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
     let numberPlayersLabel = SKLabelNode(text: "Please select the number of players")
     var myPicker : UIPickerView?
     var myLabel: UILabel?
-    let pickerData = ["2", "3", "4"]
+    let pickerData = ["2": UIColor.red, "3": UIColor.green, "4": UIColor.cyan]
 
     override func didMove(to view: SKView) {
         
@@ -37,7 +37,7 @@ class MenuScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
         // Draw picker
         myPicker = UIPickerView(frame: CGRect(x: view.bounds.width / 2 - 50, y: view.bounds.height / 2 - 100, width: 100, height: 60))
         myLabel = UILabel(frame: CGRect(x: 20, y: 10, width: 50, height: 200))
-        myLabel?.text = pickerData[0] // Set default value for label text
+        myLabel?.text = Array(pickerData.keys.sorted())[0] // Set default value for label text
         myPicker?.delegate = self
         myPicker?.dataSource = self
         self.view!.addSubview(myPicker!)
@@ -82,16 +82,16 @@ class MenuScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
     }
     //MARK: Delegates
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return pickerData[row]
+        return Array(pickerData.keys.sorted())[row]
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        myLabel?.text = pickerData[row]
+        myLabel?.text = Array(pickerData.keys.sorted())[row]
     }
     
     func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
-        let titleData = pickerData[row]
-        let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "Georgia", size: 26.0)!,NSForegroundColorAttributeName:UIColor.blue])
+        let titleData = Array(pickerData.keys.sorted())[row]
+        let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "AvenirNext-Bold", size: 26.0)!,NSForegroundColorAttributeName:UIColor.blue])
         return myTitle
     }
     
@@ -100,11 +100,10 @@ class MenuScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
         if view == nil {  //if no label there yet
             pickerLabel = UILabel()
             //color the label's background
-            let hue = CGFloat(row)/CGFloat(pickerData.count)
-            pickerLabel?.backgroundColor = UIColor(hue: hue, saturation: 1.0, brightness: 1.0, alpha: 1.0)
+            pickerLabel?.backgroundColor = pickerData[Array(pickerData.keys.sorted())[row]]
         }
-        let titleData = pickerData[row]
-        let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "Georgia", size: 26.0)!,NSForegroundColorAttributeName:UIColor.black])
+        let titleData = Array(pickerData.keys.sorted())[row]
+        let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "AvenirNext-Bold", size: 26.0)!,NSForegroundColorAttributeName:UIColor.black])
         pickerLabel!.attributedText = myTitle
         pickerLabel!.textAlignment = .center
         

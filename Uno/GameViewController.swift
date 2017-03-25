@@ -173,7 +173,7 @@ class GameViewController: UIViewController {
     
     /// Handle play by AI player
     func handleAIPlayersPlay() {
-        let delayInSeconds = 1.0
+        let delayInSeconds = 1.5
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delayInSeconds) {
             let player = self.playerOrderOfPlay[self.currPlayerIdx]
             if (player?.isAI())! {
@@ -434,7 +434,22 @@ class GameViewController: UIViewController {
         }
         
         // if the card played is skip or reverse, adjust who will play next and the view
-        let isSkip = handleSkipAndReverseCards(card: card)
+        var isSkip = handleSkipAndReverseCards(card: card)
+        
+        // Check if draw two card
+        if card.cardValue == SpecialVals.drawTwo.rawValue {
+            // Skipe next player
+            isSkip = true
+            
+            // Get next player
+            let nextPlayer = getNextPlayer()
+            assert(nextPlayer != nil)
+            
+            // Add two cards to the next player's hand
+            // Add animation to card moving from draw pile to player's hand
+            // After completing the animation, doFinishDrawTwoAction will be called
+            gameScene?.moveCardFromDrawToPlayerHandDrawTwoAction(player: nextPlayer!, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card1: updateDrawPile(), card2: cardDeck.peek()!)
+        }
         
         // Update order of play
         updateOrderOfPlay(withSkip: isSkip)

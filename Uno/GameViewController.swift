@@ -20,14 +20,14 @@ class GameViewController: UIViewController {
     
     var cardDeck: Stack<Card?> = Stack<Card?>() // Game's card deck
     var discardPile: Stack<Card?> = Stack<Card?>() // Accumulates cards played
-	
+    
     var playersVec: [Player?] = [] // Array that contains all players in the game
-	var numOfPlayers: Int = 0 // Determines how many players are participating in the game
-	
-	var playerOrderOfPlay: [Player?] = [] // Array that determines the order of play
-	var currPlayerIdx: Int = 0 // Index of the player who is currently playing
-	var isOrderClockwise: Bool = true // Determines direction of play
-	
+    var numOfPlayers: Int = 0 // Determines how many players are participating in the game
+    
+    var playerOrderOfPlay: [Player?] = [] // Array that determines the order of play
+    var currPlayerIdx: Int = 0 // Index of the player who is currently playing
+    var isOrderClockwise: Bool = true // Determines direction of play
+    
     var menuScene: MenuScene? // Stores MenuScene object
     var gameScene: GameScene? // Stores GameScene object
     var currentCard: Card? = nil // Current card on the table
@@ -87,16 +87,16 @@ class GameViewController: UIViewController {
             
             playersVec[i] = Player(cards: cards, name: "Player" + String(i), flagAI: i != 0)
         }
-		
+        
         // Now that we have the players created, let's set an order of play
         setOrderOfPlay()
         // Now it's time to create the discard pile
         initDiscardPile()
     }
-	
     
-	/// Set order of play
-	func setOrderOfPlay() {
+    
+    /// Set order of play
+    func setOrderOfPlay() {
         assert(!playersVec.isEmpty)
         // Considering the default order to be clockwise and starting from top of screen,
         // If there are 4 players in total, the order is player 1 - player 3 - player 0 - player 2
@@ -127,7 +127,7 @@ class GameViewController: UIViewController {
         currPlayerIdx = Int(arc4random_uniform(upper - lower) + lower)
         currPlayerIdx = numOfPlayers <= 3 ? 1 : 2 // Uncomment this to test first play by non-AI player
     }
-	
+    
     
     /// Initialize discard pile
     func initDiscardPile() {
@@ -283,14 +283,14 @@ class GameViewController: UIViewController {
             let player = playerCardDict["player"] as! Player
             let card = playerCardDict["card"] as! Card
             if isPlayValid(player: player, card: card) {
-				// if card is wild, first ask human player what color he will choose
-				if card.cardType == CardType.wild {
-					gameScene?.drawColorPicker(player: player, card: card, fromCardDeck: false)
-				} else {
-					// Add animation to card moving from hand to discard pile
-					// After completing the animation, doFinishHandlePlayerCardTouch will be called
-					gameScene?.moveCardFromHandToDiscardPile(player: player, card: card)
-				}
+                // if card is wild, first ask human player what color he will choose
+                if card.cardType == CardType.wild {
+                    gameScene?.drawColorPicker(player: player, card: card, fromCardDeck: false)
+                } else {
+                    // Add animation to card moving from hand to discard pile
+                    // After completing the animation, doFinishHandlePlayerCardTouch will be called
+                    gameScene?.moveCardFromHandToDiscardPile(player: player, card: card)
+                }
             } else {
                 gameScene?.invalidPlayLabel.isHidden = false
             }
@@ -371,9 +371,9 @@ class GameViewController: UIViewController {
                 // Add animation to card moving from draw pile to player's hand
                 // After completing the animation, doFinishHandleDrawCardDeckTouch will be called
                 gameScene?.moveCardFromDrawToPlayerHand(player: player, cardPosIdx: playersVec.index{$0 === player}!, card: card)
-			} else {
-				gameScene?.moveCardFromDrawToDiscardPile(player: player, card: card)
-			}
+            } else {
+                gameScene?.moveCardFromDrawToDiscardPile(player: player, card: card)
+            }
         }
     }
     

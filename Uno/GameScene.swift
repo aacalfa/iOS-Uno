@@ -28,6 +28,14 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
 	let pickerData = ["Red", "Green", "Blue", "Yellow"]
 	var colorChoiceButton = UIButton()
 	var cardHackBecauseOBJCIsShit: Card?
+	var fromCardDeckHackBecauseOBJCIsShit: Bool?
+	
+	// Buttons shown when human player draws a card that is playable,
+	// so he can decide whether to play it or not
+	var playYesButton = UIButton()
+	var playNoButton = UIButton()
+	var decidedToPlay: Bool = false // decision made by player whether to use card or not
+	var playerAndCard: (Player, Card)?
 	
     override func didMove(to view: SKView) {
         // Draw backgorund
@@ -215,14 +223,14 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
                 } else if node === viewController.cardDeck.peek() {
                     if !player.isAI() {
                         // Drawn card from deck
-                        var decidedToPlay: Bool = false // decision made by player whether to use card or not
-                        
+						decidedToPlay = false
                         if viewController.isPlayValid(player: player, card: card) {
-                            // TODO: ask player if he/she wants to play card or keep it
-                            //decidedToPlay = true
-                        }
-                        
-                        NotificationCenter.default.post( name: Notification.Name("handleDrawCardDeckTouch"), object: ["player": player, "card": card, "decidedToPlay": decidedToPlay])
+                            // show card and ask player if he/she wants to play card or keep it
+							card.texture = card.frontTexture
+							drawOptionalPlayButtons(player: player, card: card)
+						} else {
+							NotificationCenter.default.post( name: Notification.Name("handleDrawCardDeckTouch"), object: ["player": player, "card": card, "decidedToPlay": decidedToPlay])
+						}
                     }
                 }
             }
@@ -289,7 +297,48 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
 //        card2.run(move, completion: { self.viewController.doFinishDrawTwoAction(player: player, card1: card1, card2: card2) })
     }
 	
-	func drawColorPicker(player: Player, card: Card) {
+	func drawOptionalPlayButtons(player: Player, card: Card) {
+		playYesButton = UIButton(frame: CGRect(x: (view?.bounds.width)! / 2, y: (view?.bounds.height)! / 2 - 85, width: 100, height: 30))
+		playYesButton.setTitle("Yes", for: .normal)
+		playYesButton.setTitleColor(UIColor.white, for: .normal)
+		playYesButton.backgroundColor = UIColor.green
+		playYesButton.addTarget(self, action: #selector(self.playYesPressed), for: .touchUpInside)
+		self.view!.addSubview(playYesButton)
+		
+		playNoButton = UIButton(frame: CGRect(x: (view?.bounds.width)! / 2 - 100, y: (view?.bounds.height)! / 2 - 85, width: 100, height: 30))
+		playNoButton.setTitle("No", for: .normal)
+		playNoButton.setTitleColor(UIColor.white, for: .normal)
+		playNoButton.backgroundColor = UIColor.red
+		playNoButton.addTarget(self, action: #selector(self.playNoPressed), for: .touchUpInside)
+		self.view!.addSubview(playNoButton)
+		playerAndCard = (player, card)
+	}
+	
+	func playYesPressed() {
+		playYesButton.removeFromSuperview()
+		playNoButton.removeFromSuperview()
+		decidedToPlay = true
+		let player = playerAndCard?.0
+		let card = playerAndCard?.1
+		// first check if this is wild card, if yes, we have to ask the player what is the desired color
+		if card?.cardType == CardType.wild {
+			drawColorPicker(player: player!, card: card!, fromCardDeck: true)
+			fromCardDeckHackBecauseOBJCIsShit = true
+		} else {
+			moveCardFromDrawToDiscardPile(player: player!, card: card!)
+		}
+	}
+	
+	func playNoPressed() {
+		playYesButton.removeFromSuperview()
+		playNoButton.removeFromSuperview()
+		decidedToPlay = false
+		let player = playerAndCard?.0
+		let card = playerAndCard?.1
+		NotificationCenter.default.post( name: Notification.Name("handleDrawCardDeckTouch"), object: ["player": player!, "card": card!, "decidedToPlay": decidedToPlay])
+	}
+	
+	func drawColorPicker(player: Player, card: Card, fromCardDeck: Bool) {
 		// Draw picker
 		colorPicker = UIPickerView(frame: CGRect(x: (view?.bounds.width)! / 2 - 110, y: (view?.bounds.height)! / 2 - 100, width: 100, height: 60))
 		myLabel = UILabel(frame: CGRect(x: 20, y: 10, width: 50, height: 200))
@@ -318,7 +367,15 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
 		let player = viewController.playerOrderOfPlay[viewController.currPlayerIdx]
 		
 		cardHackBecauseOBJCIsShit?.cardColor = Card.stringToCardColor(color: chosenColor!)
-		moveCardFromHandToDiscardPile(player: player!, card: cardHackBecauseOBJCIsShit!)
+		
+		// Check if the wild card played was drawn from deck
+		if fromCardDeckHackBecauseOBJCIsShit == true {
+			fromCardDeckHackBecauseOBJCIsShit = false
+			moveCardFromDrawToDiscardPile(player: player!, card: cardHackBecauseOBJCIsShit!)
+		} else {
+			moveCardFromHandToDiscardPile(player: player!, card: cardHackBecauseOBJCIsShit!)
+		}
+		
 		
 	}
 

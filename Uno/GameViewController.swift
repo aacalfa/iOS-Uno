@@ -134,6 +134,9 @@ class GameViewController: UIViewController {
         let upper : UInt32 = UInt32(numOfPlayers - 1)
         currPlayerIdx = Int(arc4random_uniform(upper - lower) + lower)
 //        currPlayerIdx = numOfPlayers <= 3 ? 1 : 2 // Uncomment this to test first play by non-AI player
+        if playerOrderOfPlay[currPlayerIdx]!.isAI() {
+            handleAIPlayersPlay()
+        }
     }
     
     

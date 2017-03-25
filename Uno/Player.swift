@@ -13,7 +13,7 @@ class Player {
     private var cards: [Card?]
     private var points: Int = 0
     private var name: String
-    private var flagAI: Bool
+    private var AIStatus: Bool
 
     /// Constructor
     ///
@@ -21,7 +21,7 @@ class Player {
     ///   - cards: The initial set of cards of the player
     ///   - name: The name of the player (Default: "Anonymous")
     ///   - flagAI: Flag for artificial intelligence player (Default: false)
-    init(cards: [Card?], name: String = "Anonymous", flagAI: Bool = false) {
+    init(cards: [Card?], name: String = "Anonymous", AIStatus: Bool = false) {
         self.cards = []
         
         for card in cards {
@@ -29,64 +29,64 @@ class Player {
         }
         
         self.name = name
-        self.flagAI = flagAI
+        self.AIStatus = AIStatus
     }
     
-    /// Copy constructor.
+    /// Copy constructor
     ///
     /// - Returns: New instance with the same data as the player
     func copy() -> Player {
         return Player(cards: self.cards)
     }
     
-    /// Checks if artificial intelligence (AI) player.
+    /// Check if artificial intelligence (AI) player
     ///
     /// - Returns: The artificial intelligence (AI) status of the player
     func isAI() -> Bool {
-        return self.flagAI
+        return self.AIStatus
     }
     
-    /// Gets cards.
+    /// Get cards
     ///
     /// - Returns: The set of cards of the player
     func getCards() -> [Card?] {
         return self.cards
     }
     
-    /// Gets points.
+    /// Get points
     ///
     /// - Returns: The current points of the player
     func getPoints() -> Int {
         return self.points
     }
     
-    /// Sets points.
+    /// Set points
     ///
     /// - Parameter points: The current points of the player
     func setPoints(points: Int) {
         self.points = points
     }
     
-    /// Resets current points (i.e., set them to zero).
+    /// Reset current points (i.e., set them to zero)
     func resetPoints() {
         self.points = 0
     }
 
-    /// Gets player's name.
+    /// Get player's name
     ///
     /// - Returns: The name of the player
     func getName() -> String {
         return self.name
     }
 
-    /// Sets player's name.
+    /// Set player's name
     ///
     /// - Parameter name: The name of the player
     func setName(name: String) {
         self.name = name
     }
 
-    /// Plays card by removing it from the player's set of cards.
+    /// Play card by removing it from the player's set of cards
     ///
     /// - Parameter card: The played card
     func playCard(card: Card) {
@@ -99,7 +99,7 @@ class Player {
         }
     }
     
-    /// Draws card by appending or inserting it into the player's set of cards.
+    /// Draw card by appending or inserting it into the player's set of cards
     ///
     /// - Parameter card: The drawn card
     func drawCard(card: Card) {
@@ -112,7 +112,7 @@ class Player {
         }
     }
 
-    /// Checks if given card type is present in player's set of cards.
+    /// Check if given card type is present in player's set of cards
     ///
     /// - Parameter cardType: Given card type
     /// - Returns: True if given card type is present in the set of cards, false otherwise
@@ -120,7 +120,7 @@ class Player {
         return self.cards.contains{$0?.cardType == cardType}
     }
     
-    /// Checks if given card color is present in player's set of cards.
+    /// Check if given card color is present in player's set of cards
     ///
     /// - Parameter cardColor: Given card color
     /// - Returns: True if given card color is present in the set of cards, false otherwise
@@ -128,7 +128,7 @@ class Player {
         return self.cards.contains{$0?.cardColor == cardColor}
     }
 
-    /// Checks if given card value is present in player's set of cards.
+    /// Check if given card value is present in player's set of cards
     ///
     /// - Parameter cardValue: Given card value
     /// - Returns: True if given card value is present in the set of cards, false otherwise
@@ -136,7 +136,7 @@ class Player {
         return self.cards.contains{$0?.cardValue == cardValue}
     }
 
-    /// Checks if given card is present in player's set of cards.
+    /// Check if given card is present in player's set of cards
     ///
     /// - Parameter card: Given card
     /// - Returns: True if given card is present in the set of cards, false otherwise
@@ -144,7 +144,7 @@ class Player {
         return self.hasCardType(cardType: card.cardType) && self.hasCardColor(cardColor: card.cardColor) && self.hasCardValue(cardValue: card.cardValue)
     }
     
-    /// Checks if given card object is present in player's set of cards.
+    /// Check if given card object is present in player's set of cards
     ///
     /// - Parameter card: Given card
     /// - Returns: True if given card object is present in the set of cards (using object reference), false otherwise
@@ -153,7 +153,7 @@ class Player {
     }
     
     
-    /// Get card object that matches given card's type, color, and value.
+    /// Get card object that matches given card's type, color, and value
     ///
     /// - Parameter card: Card template sought
     /// - Returns: A card object if it exists, nil otherwise
@@ -164,7 +164,7 @@ class Player {
         return nil
     }
 
-    /// Gets card with maximum value in player's set of cards.
+    /// Get card with maximum value in player's set of cards
     ///
     /// - Parameter excludeWildDrawFourCard: Flag to exclude or not the Wild Draw Four card
     /// - Returns: Card with maximum value, or nil if set of cards is empty
@@ -176,7 +176,7 @@ class Player {
         }
     }
 
-    /// Gets card of a given color with maximum value in player's set of cards.
+    /// Get card of a given color with maximum value in player's set of cards
     ///
     /// - Parameter cardColor: The color of the card
     /// - Returns: Card with maximum value, or nil if set of cards is empty
@@ -188,6 +188,10 @@ class Player {
         }
     }
     
+    
+    /// Get number of cards of the given color
+    ///
+    /// - Returns: Number of cards of the given color
     func getCountByColor() -> [CardColor: Int] {
         // initialize values in dict
         var ret: [CardColor: Int] = [CardColor.red: 0,CardColor.green: 0, CardColor.blue: 0,
@@ -203,6 +207,10 @@ class Player {
         return ret
     }
     
+    
+    /// Get card color with most cards
+    ///
+    /// - Returns: Card color with most cards
     func getColorWithMostCards() -> CardColor {
         let dict = getCountByColor()
         var ret = CardColor.other
@@ -216,7 +224,7 @@ class Player {
         return ret
     }
 
-    /// Converts the player information to `String`.
+    /// Converts the player information to `String`
     ///
     /// - Returns: A `String` representation of the player
     func toString() -> String {
@@ -229,7 +237,7 @@ class Player {
         return playerString
     }
     
-    /// Sets a new array of cards for player (FOR TEST PURPOSE ONLY)
+    /// Sets a new array of cards for player (FOR TEST PURPOSES ONLY)
     ///
     /// - Parameter cards: array of cards
     func setPlayerCards(cards: [Card]) {

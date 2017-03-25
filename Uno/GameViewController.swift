@@ -89,9 +89,9 @@ class GameViewController: UIViewController {
             }
             
             if i == 0 {
-                playersVec[i] = Player(cards: cards, name: "Player" + String(i), flagAI: i != 0)
+                playersVec[i] = Player(cards: cards, name: "Player" + String(i), AIStatus: i != 0)
             } else {
-                playersVec[i] = Player(cards: cards, name: listOfPlaceholderNames[AINameIndices[i]], flagAI: i != 0)
+                playersVec[i] = Player(cards: cards, name: listOfPlaceholderNames[AINameIndices[i]], AIStatus: i != 0)
             }
             
         }
@@ -133,7 +133,7 @@ class GameViewController: UIViewController {
         let lower : UInt32 = 0
         let upper : UInt32 = UInt32(numOfPlayers - 1)
         currPlayerIdx = Int(arc4random_uniform(upper - lower) + lower)
-        currPlayerIdx = numOfPlayers <= 3 ? 1 : 2 // Uncomment this to test first play by non-AI player
+//        currPlayerIdx = numOfPlayers <= 3 ? 1 : 2 // Uncomment this to test first play by non-AI player
     }
     
     
@@ -205,7 +205,6 @@ class GameViewController: UIViewController {
                     print("Card played")
                     print(card!.toString())
                 } else {
-                    // TODO: Handle returned nil card
                     if mustDraw {
                         let drawnCard = self.cardDeck.peek()
                         if self.isPlayValid(player: player!, card: drawnCard) {
@@ -223,65 +222,10 @@ class GameViewController: UIViewController {
                         }
                     }
                 }
-            } else {
-                // TODO: Not working yet
-//                if self.currentCard?.cardType == CardType.action || self.currentCard?.cardType == CardType.wild {
-//                    self.handleCurrentActionOrWildCard(player: player!)
-//                }
             }
         }
     }
     
-    func handleCurrentActionOrWildCard(player: Player) {
-/*
-        // TODO: Not working yet
-        
-        // Index of the next player
-        var nextPlayerInd = isOrderClockwise ? currPlayerIdx + 1 : currPlayerIdx - 1
-        if nextPlayerInd >= numOfPlayers {
-            nextPlayerInd = 0
-        } else if nextPlayerInd < 0 {
-            nextPlayerInd = numOfPlayers - 1
-        }
-        let nextPlayer = self.playerOrderOfPlay[nextPlayerInd]
-        
-        if self.currentCard?.cardValue == SpecialVals.drawTwo.rawValue {
-            // TODO: Not working yet
-//            // Next player in sequence draws two cards and misses a turn
-//            self.gameScene?.drawTopDrawDeckCard()
-//            gameScene?.moveCardFromDrawToPlayerHand(player: player, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card: self.cardDeck.peek()!, updateOrder: false)
-//            self.gameScene?.drawTopDrawDeckCard()
-//            gameScene?.moveCardFromDrawToPlayerHand(player: player, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card: self.cardDeck.peek()!, updateOrder: false)
-//
-//            // Update order of play
-//            updateOrderOfPlay()
-//            gameScene?.drawCurrentPlayerLabel()
-        } else if self.currentCard?.cardValue == SpecialVals.reverse.rawValue {
-            self.isOrderClockwise = !self.isOrderClockwise
-        } else if self.currentCard?.cardValue == SpecialVals.skip.rawValue {
-            self.currPlayerIdx = self.numOfPlayers > 2 ? nextPlayerInd : self.currPlayerIdx
-            
-            // Update order of play
-            updateOrderOfPlay()
-            gameScene?.drawCurrentPlayerLabel()
-        } else if currentCard?.cardValue == SpecialVals.wild.rawValue {
-            // TODO
-            
-            // Update order of play
-            updateOrderOfPlay()
-            gameScene?.drawCurrentPlayerLabel()
-        } else if currentCard?.cardValue == SpecialVals.wildDrawFour.rawValue {
-            // TODO
-            
-            // Update order of play
-            updateOrderOfPlay()
-            gameScene?.drawCurrentPlayerLabel()
-        }
-        
-        // Go to the next player (possibly AI)
-        handleAIPlayersPlay()
- */
-    }
     
     /// Event handler of the card chosen by the non-AI player
     ///
@@ -329,7 +273,7 @@ class GameViewController: UIViewController {
                 // TODO: End round (not enough cards)
                 print("Card deck has fewer than 2 cards")
             } else {
-                // Skipe next player
+                // Skip next player
                 isSkip = true
                 
                 // Get next player
@@ -350,7 +294,7 @@ class GameViewController: UIViewController {
                 // TODO: End round (not enough cards)
                 print("Card deck has fewer than 4 cards")
             } else {
-                // Skipe next player
+                // Skip next player
                 isSkip = true
                 
                 // Get next player
@@ -477,7 +421,7 @@ class GameViewController: UIViewController {
                 // TODO: End round (not enough cards)
                 print("Card deck has fewer than 2 cards")
             } else {
-                // Skipe next player
+                // Skip next player
                 isSkip = true
                 
                 // Get next player
@@ -498,7 +442,7 @@ class GameViewController: UIViewController {
                 // TODO: End round (not enough cards)
                 print("Card deck has fewer than 4 cards")
             } else {
-                // Skipe next player
+                // Skip next player
                 isSkip = true
                 
                 // Get next player
@@ -527,8 +471,6 @@ class GameViewController: UIViewController {
     ///   - card: Potential card to be played
     /// - Returns: True if card is valid, false otherwise
     func isPlayValid(player: Player, card: Card?) -> Bool {
-        // TODO: Needs testing
-        
         if card == nil {
             return false
         }
@@ -559,17 +501,13 @@ class GameViewController: UIViewController {
     ///
     /// List of steps in descending order of priority (if card to-be-played is available and valid):
     /// 0. Play either Wild Draw Four or Wild card
-    ///     0.1 Play Wild Draw Four card
-    ///     0.2 Play Wild card
     /// 1. Play card matching color, type (except Wild and Wild Draw Four), or value that has the highest value
-    ///     1.1 Or check if action card
+    /// 2. If no valid card, must draw one card
     ///
     /// - Parameters:
     ///   - player: current AI player that must choose card to play
     /// - Returns: card to be played
     func playAIStrategySimpleV1(player: Player, mustDraw: inout Bool) -> Card? {
-        // TODO: Needs testing
-        
         var playedCard: Card? = nil
         
         // Step 0.

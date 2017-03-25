@@ -306,8 +306,6 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
         } else {
             card1.run(move, completion: { self.viewController.doFinishDrawTwoOrFourAction(player: player, card1: card1, card2: card2) })
         }
-//        card1.run(move)
-//        card2.run(move, completion: { self.viewController.doFinishDrawTwoAction(player: player, card1: card1, card2: card2) })
     }
   
     func drawOptionalPlayButtons(player: Player, card: Card) {

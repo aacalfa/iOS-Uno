@@ -34,6 +34,8 @@ class GameViewController: UIViewController {
     
     let listOfPlaceholderNames = ["Brett Boe", "Carla Coe", "Donna Doe", "Frank Foe", "Grace Goe", "Harry Hoe", "Jackie Joe", "Jane Doe", "Jane Poe", "Jane Roe", "John Doe", "John Smith", "Karren Koe", "Larry Loe", "Mark Moe", "Marta Moe", "Norma Noe", "Paula Poe", "Quintin Qoe", "Ralph Roe", "Sammy Soe", "Tommy Toe", "Vince Voe", "William Woe", "Xerxes Xoe", "Yvonne Yoe", "Zachery Zoe"] // Used for AI players
     
+    let listOfAIStrategies = ["v1", "v2"] // List of AI play strategies
+    
     override var prefersStatusBarHidden: Bool {
         return true
     }
@@ -130,8 +132,8 @@ class GameViewController: UIViewController {
             assert(false) // should never happen!
         }
         // To make things more interesting, let's pick a random player to start first:
-        let lower : UInt32 = 0
-        let upper : UInt32 = UInt32(numOfPlayers - 1)
+        let lower: UInt32 = 0
+        let upper: UInt32 = UInt32(numOfPlayers - 1)
         currPlayerIdx = Int(arc4random_uniform(upper - lower) + lower)
 //        currPlayerIdx = numOfPlayers <= 3 ? 1 : 2 // Uncomment this to test first play by non-AI player
         if playerOrderOfPlay[currPlayerIdx]!.isAI() {
@@ -191,9 +193,21 @@ class GameViewController: UIViewController {
                 print("\n\(player!.getName())'s cards")
                 print(player!.toString())
                 
-                // Play
+                // Randomly choose strategy to play
                 var mustDraw: Bool = false
-                let card = self.playAIStrategySimpleV1(player: player!, mustDraw: &mustDraw)
+                let lower: UInt32 = 0
+                let upper: UInt32 = UInt32(self.listOfAIStrategies.count)
+                let strategyIdx = Int(arc4random_uniform(upper - lower) + lower)
+                var card: Card? = nil
+                switch self.listOfAIStrategies[strategyIdx] {
+                    case "v1":
+                        card = self.playAIStrategySimpleV1(player: player!, mustDraw: &mustDraw)
+                    case "v2":
+                        card = self.playAIStrategySimpleV2(player: player!, mustDraw: &mustDraw)
+                    default:
+                        card = self.playAIStrategySimpleV1(player: player!, mustDraw: &mustDraw)
+                }
+//                let card = self.playAIStrategySimpleV1(player: player!, mustDraw: &mustDraw)
                 
                 if card != nil {
                     // If card is wild, AI will have to choose a color for it
@@ -497,68 +511,85 @@ class GameViewController: UIViewController {
         return true
     }
     
+    
+    /// Get all valid cards for an AI player
+    ///
+    /// - Parameter player: AI player
+    /// - Returns: All valid cards of the player
+    func playAIStrategyAllValidCards(player: Player) -> [Card] {
+        var allValidCards: [Card] = []
+        
+        // Wild Draw Four
+        if player.hasCard(card: CardUtils.wildDrawFourCard) {
+            let playedCard = player.getCard(card: CardUtils.wildDrawFourCard)
+            if self.isPlayValid(player: player, card: playedCard) {
+                allValidCards.append(playedCard!)
+            }
+        }
+        
+        // Wild
+        if player.hasCard(card: CardUtils.wildCard) {
+            let playedCard = player.getCard(card: CardUtils.wildCard)
+            if self.isPlayValid(player: player, card: playedCard) {
+                allValidCards.append(playedCard!)
+            }
+        }
+        
+        
+        // Get all other valid cards
+        for card in player.getCards() {
+            if self.isPlayValid(player: player, card: card) {
+                allValidCards.append(card!)
+            }
+        }
+        
+        return allValidCards
+    }
+    
     /// Simple strategy for AI player (version 1).
     ///
-    /// Main objective: prioritize playing cards with higher values.
+    /// Main objective: play valid card of highest value.
     /// Does use any game feedback information.
     ///
-    /// List of steps in descending order of priority (if card to-be-played is available and valid):
-    /// 0. Play either Wild Draw Four or Wild card
-    /// 1. Play card matching color, type (except Wild and Wild Draw Four), or value that has the highest value
-    /// 2. If no valid card, must draw one card
-    ///
     /// - Parameters:
-    ///   - player: current AI player that must choose card to play
-    /// - Returns: card to be played
+    ///   - player: AI player
+    /// - Returns: Card to be played, nil if must draw from deck
     func playAIStrategySimpleV1(player: Player, mustDraw: inout Bool) -> Card? {
         var playedCard: Card? = nil
         
-        // Step 0.
-        if player.hasCard(card: CardUtils.wildDrawFourCard) {
-            playedCard = player.getCard(card: CardUtils.wildDrawFourCard)
-            if self.isPlayValid(player: player, card: playedCard) {
-                return playedCard
-            }
-        }
-        if player.hasCard(card: CardUtils.wildCard) {
-            playedCard = player.getCard(card: CardUtils.wildCard)
-            if self.isPlayValid(player: player, card: playedCard) {
-                return playedCard
-            }
+        let allValidCards = self.playAIStrategyAllValidCards(player: player)
+        if allValidCards.count > 0 {
+            playedCard = allValidCards.max{$0.cardValue < $1.cardValue}
         }
         
-        // Step 1.
-        playedCard = player.getMaximumValueCard() // Exclude Wild Draw Four card (default parameter)
-        
-        // If there is a match in card value, no need to check colors
-        if playedCard != nil && playedCard?.cardValue != currentCard?.cardValue {
-            // Find maximum card of valid color
+        if playedCard == nil {
+            // Does not have valid card, needs to draw one
+            mustDraw = true
             playedCard = nil
-            if currentCard?.cardColor == CardColor.blue {
-                // Get blue card with maximum value
-                let maxBlueCard = player.getMaximumValueCard(cardColor: CardColor.blue)
-                if maxBlueCard != nil {
-                    playedCard = maxBlueCard
-                }
-            } else if currentCard?.cardColor == CardColor.green {
-                // Get green card with maximum value
-                let maxGreenCard = player.getMaximumValueCard(cardColor: CardColor.green)
-                if maxGreenCard != nil {
-                    playedCard = maxGreenCard
-                }
-            } else if currentCard?.cardColor == CardColor.red {
-                // Get red card with maximum value
-                let maxRedCard = player.getMaximumValueCard(cardColor: CardColor.red)
-                if maxRedCard != nil {
-                    playedCard = maxRedCard
-                }
-            } else {
-                // Get yellow card with maximum value
-                let maxYellowCard = player.getMaximumValueCard(cardColor: CardColor.yellow)
-                if maxYellowCard != nil {
-                    playedCard = maxYellowCard
-                }
-            }
+            print("Must draw from deck")
+        }
+        
+        return playedCard
+    }
+    
+    
+    /// Simple strategy for AI player (version 2).
+    ///
+    /// Main objective: play a random valid card.
+    /// Does use any game feedback information.
+    ///
+    /// - Parameters:
+    ///   - player: AI player
+    /// - Returns: Card to be played, nil if must draw from deck
+    func playAIStrategySimpleV2(player: Player, mustDraw: inout Bool) -> Card? {
+        var playedCard: Card? = nil
+        
+        let allValidCards = self.playAIStrategyAllValidCards(player: player)
+        if allValidCards.count > 0 {
+            let lower: UInt32 = 0
+            let upper: UInt32 = UInt32(allValidCards.count - 1)
+            let cardIdx = Int(arc4random_uniform(upper - lower) + lower)
+            playedCard = allValidCards[cardIdx]
         }
         
         if playedCard == nil {

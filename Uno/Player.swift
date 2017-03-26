@@ -189,6 +189,21 @@ class Player {
     }
     
     
+    /// Get all cards of given color
+    ///
+    /// - Parameter cardColor: Given color
+    /// - Returns: All cards of given color
+    func getAllCardsColor(cardColor: CardColor) -> [Card] {
+        var allCardsColor: [Card] = []
+        
+        for card in self.cards.filter({$0?.cardColor == cardColor}) {
+            allCardsColor.append(card!)
+        }
+        
+        return allCardsColor
+    }
+    
+    
     /// Get number of cards of the given color
     ///
     /// - Returns: Number of cards of the given color

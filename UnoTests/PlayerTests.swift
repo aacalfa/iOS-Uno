@@ -214,6 +214,26 @@ class PlayerTests: XCTestCase {
         XCTAssert(player1.getCard(card: wildDrawFourCardOther) !== wildDrawFourCardOther)
     }
     
+    func testGetCardColor() {
+        player1 = Player(cards: [redCard0, redCard1, blueCard2, CardUtils.wildDrawFourCard])
+        let res = player1.getAllCardsColor(cardColor: CardColor.red)
+        let ans = [redCard0, redCard1]
+        
+        XCTAssert(res.count > 0)
+        var i: Int = 0
+        for card in res {
+            XCTAssert(card === ans[i])
+            i += 1
+        }
+    }
+    
+    func testGetCardColorFalse() {
+        player1 = Player(cards: [redCard0, redCard1, CardUtils.wildDrawFourCard])
+        let res = player1.getAllCardsColor(cardColor: CardColor.blue)
+        
+        XCTAssert(res.count == 0)
+    }
+    
     func testGetMaximumValueCard() {
         player1 = Player(cards: [redCard0, redCard1, CardUtils.wildDrawFourCard])
         

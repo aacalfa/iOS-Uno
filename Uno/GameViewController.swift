@@ -36,6 +36,8 @@ class GameViewController: UIViewController {
     
     let listOfAIStrategies = ["v1", "v2"] // List of AI play strategies
     
+    var playerPoints: [Int: Int] = [:] // Dictionary of players' points
+    
     override var prefersStatusBarHidden: Bool {
         return true
     }
@@ -43,16 +45,19 @@ class GameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Load card deck
-        CardUtils.loadDeck()
+//        // Load card deck
+//        CardUtils.loadDeck()
+//        
+//        // Shuffle card deck
+//        CardUtils.shuffleDeck()
+//        
+//        // Populate stack of cards
+//        for card in CardUtils.getCardDeck() {
+//            cardDeck.push(card)
+//        }
         
-        // Shuffle card deck
-        CardUtils.shuffleDeck()
-        
-        // Populate stack of cards
-        for card in CardUtils.getCardDeck() {
-            cardDeck.push(card)
-        }
+        // Load first round
+        loadRound()
         
         // Create state machines
         createStateSm()
@@ -70,6 +75,21 @@ class GameViewController: UIViewController {
         // Add observers
         NotificationCenter.default.addObserver(self, selector: #selector(self.handlePlayerCardTouch), name: Notification.Name("handlePlayerCardTouch"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleDrawCardDeckTouch), name: Notification.Name("handleDrawCardDeckTouch"), object: nil)
+    }
+    
+    
+    /// Load current round
+    func loadRound() {
+        // Load card deck
+        CardUtils.loadDeck()
+        
+        // Shuffle card deck
+        CardUtils.shuffleDeck()
+        
+        // Populate stack of cards
+        for card in CardUtils.getCardDeck() {
+            cardDeck.push(card)
+        }
     }
     
     
@@ -95,11 +115,19 @@ class GameViewController: UIViewController {
             } else {
                 playersVec[i] = Player(cards: cards, name: listOfPlaceholderNames[AINameIndices[i]], AIStatus: i != 0)
             }
-            
+        }
+        
+        // Initialize players' points if first round
+        if playerPoints.count == 0 {
+            // First round
+            for i in 0..<numOfPlayers {
+                playerPoints[i] = 0
+            }
         }
         
         // Now that we have the players created, let's set an order of play
         setOrderOfPlay()
+        
         // Now it's time to create the discard pile
         initDiscardPile()
     }
@@ -167,6 +195,7 @@ class GameViewController: UIViewController {
         }
     }
     
+    
     /// Add card to top of discard pile
     ///
     /// - Parameter card: Card to be inserted
@@ -174,6 +203,7 @@ class GameViewController: UIViewController {
         currentCard = card
         discardPile.push(card)
     }
+    
     
     /// Update draw card pile
     ///
@@ -186,7 +216,7 @@ class GameViewController: UIViewController {
     
     /// Handle play by AI player
     func handleAIPlayersPlay() {
-        let delayInSeconds = 1.5
+        let delayInSeconds = 1.7
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delayInSeconds) {
             let player = self.playerOrderOfPlay[self.currPlayerIdx]
             if (player?.isAI())! {
@@ -201,18 +231,18 @@ class GameViewController: UIViewController {
                 var card: Card? = nil
                 switch self.listOfAIStrategies[strategyIdx] {
                     case "v1":
-                        card = self.playAIStrategySimpleV1(player: player!, mustDraw: &mustDraw)
+                        card = self.playAIStrategyV1(player: player!, mustDraw: &mustDraw)
                     case "v2":
-                        card = self.playAIStrategySimpleV2(player: player!, mustDraw: &mustDraw)
+                        card = self.playAIStrategyV2(player: player!, mustDraw: &mustDraw)
                     default:
-                        card = self.playAIStrategySimpleV1(player: player!, mustDraw: &mustDraw)
+                        card = self.playAIStrategyV1(player: player!, mustDraw: &mustDraw)
                 }
 //                let card = self.playAIStrategySimpleV1(player: player!, mustDraw: &mustDraw)
                 
                 if card != nil {
                     // If card is wild, AI will have to choose a color for it
                     if card?.cardType == CardType.wild {
-                        self.handleChoseColorForWildCard(player: player!, card: card!)
+                        self.handleChosenColorForWildCard(player: player!, card: card!)
                     }
                     
                     // Update model and view
@@ -227,7 +257,7 @@ class GameViewController: UIViewController {
                         if self.isPlayValid(player: player!, card: drawnCard) {
                             // If card is wild, AI will have to choose a color for it
                             if drawnCard?.cardType == CardType.wild {
-                                self.handleChoseColorForWildCard(player: player!, card: drawnCard!)
+                                self.handleChosenColorForWildCard(player: player!, card: drawnCard!)
                             }
                             // Add animation to card moving from draw pile to discard pile
                             // After completing the animation, doFinishHandleDrawDeckPile will be called
@@ -347,14 +377,19 @@ class GameViewController: UIViewController {
         gameScene?.drawCurrentPlayerLabel()
         
         // Go to the next player (possibly AI)
-        handleAIPlayersPlay()
+        if player.getCards().count == 0 {
+            // End of round
+            handleEndOfRound(winnerID: playersVec.index{$0 === player}!)
+        } else {
+            handleAIPlayersPlay()
+        }
     }
+    
     
     /// Event handler of the card chosen by the non-AI player
     ///
     /// - Parameter notification: Dictionary containing the non-AI player and the touched card
     func handleDrawCardDeckTouch(notification: Notification) {
-        // TODO: Fully handle the event
         if let playerCardDict = notification.object as? [String: AnyObject] {
             let player = playerCardDict["player"] as! Player
             let card = playerCardDict["card"] as! Card
@@ -371,6 +406,7 @@ class GameViewController: UIViewController {
             }
         }
     }
+    
     
     /// Finish HandleDrawCardDeckTouch by updating view and model. This is called when a card is drawn
     /// from card deck but not played to discard pile
@@ -403,6 +439,7 @@ class GameViewController: UIViewController {
         handleAIPlayersPlay()
     }
     
+    
     /// Finish HandleDrawCardDeckTouch by updating view and model. This is called when a card is drawn
     /// from card deck AND it is played to discard pile
     ///
@@ -419,6 +456,9 @@ class GameViewController: UIViewController {
         gameScene?.drawTopDiscardPileCard()
         // Update draw card pile in view
         gameScene?.drawTopDrawDeckCard()
+        
+        // Update model
+        player.playCard(card: card)
         
         // If the card played is wild, show in view what was the chosen color
         if card.cardType == CardType.wild {
@@ -478,7 +518,12 @@ class GameViewController: UIViewController {
         gameScene?.drawCurrentPlayerLabel()
         
         // Go to the next player (possibly AI)
-        handleAIPlayersPlay()
+        if player.getCards().count == 0 {
+            // End of round
+            handleEndOfRound(winnerID: playersVec.index{$0 === player}!)
+        } else {
+            handleAIPlayersPlay()
+        }
     }
     
     /// Check if card attempted to be played is valid.
@@ -546,7 +591,7 @@ class GameViewController: UIViewController {
         return allValidCards
     }
     
-    /// Simple strategy for AI player (version 1).
+    /// Strategy for AI player (version 1).
     ///
     /// Main objective: play valid card of highest value.
     /// Does use any game feedback information.
@@ -554,7 +599,7 @@ class GameViewController: UIViewController {
     /// - Parameters:
     ///   - player: AI player
     /// - Returns: Card to be played, nil if must draw from deck
-    func playAIStrategySimpleV1(player: Player, mustDraw: inout Bool) -> Card? {
+    func playAIStrategyV1(player: Player, mustDraw: inout Bool) -> Card? {
         var playedCard: Card? = nil
         
         let allValidCards = self.playAIStrategyAllValidCards(player: player)
@@ -573,7 +618,7 @@ class GameViewController: UIViewController {
     }
     
     
-    /// Simple strategy for AI player (version 2).
+    /// Strategy for AI player (version 2).
     ///
     /// Main objective: play a random valid card.
     /// Does use any game feedback information.
@@ -581,7 +626,7 @@ class GameViewController: UIViewController {
     /// - Parameters:
     ///   - player: AI player
     /// - Returns: Card to be played, nil if must draw from deck
-    func playAIStrategySimpleV2(player: Player, mustDraw: inout Bool) -> Card? {
+    func playAIStrategyV2(player: Player, mustDraw: inout Bool) -> Card? {
         var playedCard: Card? = nil
         
         let allValidCards = self.playAIStrategyAllValidCards(player: player)
@@ -625,7 +670,10 @@ class GameViewController: UIViewController {
         return isSkip
     }
     
+    
     /// Update currPlayerIdx value to set who plays next
+    ///
+    /// - Parameter withSkip: True if skip play, false otherwise
     func updateOrderOfPlay(withSkip: Bool) {
         if withSkip == true {
             currPlayerIdx = isOrderClockwise ? currPlayerIdx + 2 : currPlayerIdx - 2
@@ -641,6 +689,10 @@ class GameViewController: UIViewController {
     }
     
     
+    
+    /// Get next player in the order of play
+    ///
+    /// - Returns: Next player to play
     func getNextPlayer() -> Player? {
         var nextPlayerIdx: Int = isOrderClockwise ? currPlayerIdx + 1 : currPlayerIdx - 1
         if nextPlayerIdx >= numOfPlayers {
@@ -652,7 +704,13 @@ class GameViewController: UIViewController {
         return playerOrderOfPlay[nextPlayerIdx]
     }
     
-    func handleChoseColorForWildCard(player: Player, card: Card) {
+    
+    /// Handle chosen color when Wild card is played
+    ///
+    /// - Parameters:
+    ///   - player: Current player
+    ///   - card: Wild card
+    func handleChosenColorForWildCard(player: Player, card: Card) {
         // Pick color that current player has more cards
         let chosenColor = player.getColorWithMostCards()
         // Change wild card color to chosen color
@@ -660,6 +718,15 @@ class GameViewController: UIViewController {
         card.cardColor = chosenColor
     }
     
+    
+    /// Finalize animation for Draw Two and Wild Draw Four cards
+    ///
+    /// - Parameters:
+    ///   - player: Player receiving additional cards
+    ///   - card1: First card
+    ///   - card2: Second card
+    ///   - card3: Third card (default: nil)
+    ///   - card4: Fourth card (default: nil)
     func doFinishDrawTwoOrFourAction(player: Player, card1: Card, card2: Card, card3: Card? = nil, card4: Card? = nil) {
         // Update draw card pile
         let cardFromDeck = updateDrawPile()
@@ -685,5 +752,33 @@ class GameViewController: UIViewController {
         // is to tell drawPlayerCards which players card we are adjusting in the position
         // perspective.
         gameScene?.drawPlayerCards(player: player, cardPosIdx: playersVec.index{$0 === player}!)
+    }
+    
+    
+    /// Handle end of a round
+    ///
+    /// - Parameter winnerID: ID of the winning player (e.g., `playersVec.index{$0 === player}!`)
+    func handleEndOfRound(winnerID: Int) {
+        // Add up cards' points from all other players
+        var sumPoints: Int = 0
+        for playerID in 0..<numOfPlayers {
+            if playerID != winnerID {
+                for card in playersVec[playerID]!.getCards() {
+                    sumPoints += card!.cardPoints
+                }
+            }
+        }
+        
+        // Update points of the winner
+        self.playerPoints[winnerID]! += sumPoints
+        self.playersVec[winnerID]?.setPoints(points: self.playerPoints[winnerID]!)
+        
+        // Print players' points
+        for playerID in 0..<numOfPlayers {
+            print(playersVec[playerID]!.getName() + ": " + String(playersVec[playerID]!.getPoints()))
+        }
+        
+        // Show all players' cards
+        gameScene?.showAllPlayersCards()
     }
 }

@@ -38,7 +38,7 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
     var playerAndCard: (Player, Card)?
     
     override func didMove(to view: SKView) {
-        // Draw backgorund
+        // Draw background
         addChild(background)
         
         // Define where to place cards on screen
@@ -395,6 +395,16 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
         }
         
         
+    }
+    
+    
+    /// Show cards of all players at the end of a round
+    func showAllPlayersCards() {
+        for player in viewController.playersVec {
+            for card in (player?.getCards())! {
+                card?.texture = card?.frontTexture
+            }
+        }
     }
 
     

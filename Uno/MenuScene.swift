@@ -21,12 +21,14 @@ class MenuScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
     var myPicker : UIPickerView?
     var myLabel: UILabel?
     let pickerData = ["2": UIColor.red, "3": UIColor.green, "4": UIColor.cyan]
+    let nonAIPlayerNameLabel = SKLabelNode(text: "Your name")
+    let nonAIPlayerNameTextField = UITextField()
 
     override func didMove(to view: SKView) {
         
         // Draw button
         startButton = SKSpriteNode(texture: startButtonTex)
-        startButton.position = CGPoint(x: frame.midX, y: frame.midY)
+        startButton.position = CGPoint(x: frame.midX, y: frame.midY - 100)
         startButton.setScale(0.5)
         self.addChild(startButton)
         
@@ -42,6 +44,14 @@ class MenuScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
         myPicker?.dataSource = self
         self.view!.addSubview(myPicker!)
         
+        // Draw name label
+        nonAIPlayerNameLabel.position = CGPoint(x: frame.midX, y: frame.midY)
+        self.addChild(nonAIPlayerNameLabel)
+        
+        // Draw name textfield
+        nonAIPlayerNameTextField.borderStyle = UITextBorderStyle.roundedRect
+        nonAIPlayerNameTextField.frame = CGRect(x: frame.midX - numberPlayersLabel.frame.width / 4, y: frame.midY + 20, width: numberPlayersLabel.frame.width / 2, height: numberPlayersLabel.frame.height)
+        self.view!.addSubview(nonAIPlayerNameTextField)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -51,12 +61,18 @@ class MenuScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
             
             if node == startButton {
                 if view != nil {
+                    // Set non-AI player's name if given
+                    if !(nonAIPlayerNameTextField.text?.isEmpty)! {
+                        viewController.nonAIPlayerName = nonAIPlayerNameTextField.text!
+                    }
                     // Get selected value in picker and set number of players
                     viewController.numOfPlayers = Int((myLabel?.text)!)!
                     // Initialize Players
                     viewController.initPlayers()
                     // Remove picker from view
                     myPicker?.removeFromSuperview()
+                    // Remove non-AI player's name textfield from view
+                    nonAIPlayerNameTextField.removeFromSuperview()
                     
                     // Play button click sound
                     SoundFX.playButtonClickSound()

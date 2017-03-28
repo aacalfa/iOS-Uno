@@ -20,6 +20,7 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
     var currPlayerLabel = SKLabelNode(text: "")
     var wildChosenColorLabel = SKLabelNode(text: "")
     var playerNames: [SKLabelNode] = [] // Labels for players' names
+    var playerPoints: [SKLabelNode] = [] // Labels for players' points
     
     // picker attributes related to color picker used when
     // human player plays a wild card and has to select a color
@@ -44,6 +45,51 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
         // Define where to place cards on screen
         setCardLocations()
         
+//        // Draw players cards
+//        var cardPosIdx = 0
+//        let playersVec = viewController.playersVec
+//        for player in playersVec {
+//            drawPlayerCards(player: player, cardPosIdx: cardPosIdx)
+//            cardPosIdx += 1
+//        }
+//        
+//        // Draw labels for players' names
+//        drawPlayersNames()
+//        
+//        // Draw label for current player
+//        drawCurrentPlayerLabel()
+//        
+//        // Draw discard pile
+//        drawTopDiscardPileCard()
+//        
+//        // Draw card deck
+//        drawTopDrawDeckCard()
+        
+        initRound()
+        
+        // Draw labels for players' names and points
+        drawPlayersNamesAndPoints()
+        
+        // Draw label for current player
+        drawCurrentPlayerLabel()
+        
+//        // Draw playDirection node, but only if number of players > 2
+//        if viewController.numOfPlayers > 2 {
+//            drawPlayDirection()
+//        }
+        
+        // Initialize properties of invalid play label and make it hidden
+        invalidPlayLabel.fontSize = 13
+        invalidPlayLabel.fontName = "AvenirNext-Bold"
+        let topDiscardPileCard = viewController.currentCard
+        invalidPlayLabel.position = CGPoint(x: (topDiscardPileCard?.position.x)!, y: (topDiscardPileCard?.position.y)! - (topDiscardPileCard?.size.height)!)
+        invalidPlayLabel.isHidden = true
+        background.addChild(invalidPlayLabel)
+    }
+    
+    
+    /// Initialize round
+    func initRound() {
         // Draw players cards
         var cardPosIdx = 0
         let playersVec = viewController.playersVec
@@ -51,12 +97,6 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
             drawPlayerCards(player: player, cardPosIdx: cardPosIdx)
             cardPosIdx += 1
         }
-        
-        // Draw labels for players' names
-        drawPlayersNames()
-        
-        // Draw label for current player
-        drawCurrentPlayerLabel()
         
         // Draw discard pile
         drawTopDiscardPileCard()
@@ -68,16 +108,14 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
         if viewController.numOfPlayers > 2 {
             drawPlayDirection()
         }
-        
-        // Initialize properties of invalid play label and make it hidden
-        invalidPlayLabel.fontSize = 13
-        invalidPlayLabel.fontName = "AvenirNext-Bold"
-        let topDiscardPileCard = viewController.currentCard
-        invalidPlayLabel.position = CGPoint(x: (topDiscardPileCard?.position.x)!, y: (topDiscardPileCard?.position.y)! - (topDiscardPileCard?.size.height)!)
-        invalidPlayLabel.isHidden = true
-        background.addChild(invalidPlayLabel)
     }
     
+    
+    /// Draw player's cards on the table
+    ///
+    /// - Parameters:
+    ///   - player: Player
+    ///   - cardPosIdx: Card position index (see `cardPositions`)
     func drawPlayerCards(player: Player?, cardPosIdx: Int) {
         let cards = player?.getCards()
         var xPos = cardPositions[cardPosIdx].x
@@ -92,11 +130,11 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
             // Draw frontTexture if it's human player, otherwise draw backTexture
             card?.texture = (player?.isAI())! ? card?.backTexture : card?.frontTexture
             if cardPosIdx == 1 {
-                card?.zRotation = CGFloat(M_PI)
+                card?.zRotation = CGFloat(Double.pi)
             } else if cardPosIdx == 2 {
-                card?.zRotation = CGFloat(-M_PI / 2)
+                card?.zRotation = CGFloat(-Double.pi / 2)
             } else if cardPosIdx == 3 {
-                card?.zRotation = CGFloat(M_PI / 2)
+                card?.zRotation = CGFloat(Double.pi / 2)
             }
             background.addChild(card!)
             
@@ -139,13 +177,16 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
     }
     
     /// Draw players' names labels
-    func drawPlayersNames() {
+    func drawPlayersNamesAndPoints() {
         let playersVec = viewController.playersVec
         var i = 0
         for player in playersVec {
             let playerNameLabel = SKLabelNode(text: player?.getName())
+            let playerPointLabel = SKLabelNode(text: "Points: 0")
             playerNameLabel.fontSize = 13
             playerNameLabel.fontName = "AvenirNext-Bold"
+            playerPointLabel.fontSize = 13
+            playerPointLabel.fontName = "AvenirNext-Bold"
             var position = cardPositions[i]
             // fixMe: find a better way to set the position
             if i < 2 {
@@ -154,8 +195,22 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
                 position.y -= 60
             }
             playerNameLabel.position = position
+            playerPointLabel.position = CGPoint(x: playerNameLabel.position.x, y: playerNameLabel.position.y - 20)
             playerNames.append(playerNameLabel)
+            playerPoints.append(playerPointLabel)
             background.addChild(playerNames[i])
+            background.addChild(playerPoints[i])
+            i += 1
+        }
+    }
+    
+    
+    /// Updat players' points labels
+    func updatePlayersPoints() {
+        let playersVec = viewController.playersVec
+        var i = 0
+        for player in playersVec {
+            playerPoints[i].text = "Points: " + String(describing: player!.getPoints())
             i += 1
         }
     }
@@ -176,7 +231,7 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
         topDiscardPileCard?.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
         topDiscardPileCard?.setScale(0.2)
         topDiscardPileCard?.texture = topDiscardPileCard?.frontTexture
-        topDiscardPileCard?.zRotation = CGFloat(M_PI / 2)
+        topDiscardPileCard?.zRotation = CGFloat(Double.pi / 2)
         topDiscardPileCard?.removeFromParent()
         background.addChild(topDiscardPileCard!)
     }
@@ -187,7 +242,7 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
         topDrawDeckCard?.position = CGPoint(x: self.size.width / 2 - (topDrawDeckCard?.size.width)! / 3, y: self.size.height / 2)
         topDrawDeckCard?.setScale(0.2)
         topDrawDeckCard?.texture = topDrawDeckCard?.backTexture
-        topDrawDeckCard?.zRotation = CGFloat(M_PI / 2)
+        topDrawDeckCard?.zRotation = CGFloat(Double.pi / 2)
         topDrawDeckCard?.removeFromParent()
         background.addChild(topDrawDeckCard!)
     }
@@ -393,16 +448,16 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
         } else {
             moveCardFromHandToDiscardPile(player: player!, card: cardHackBecauseOBJCIsShit!)
         }
-        
-        
     }
     
     
     /// Show cards of all players at the end of a round
     func showAllPlayersCards() {
-        for player in viewController.playersVec {
-            for card in (player?.getCards())! {
-                card?.texture = card?.frontTexture
+        let players = viewController.playersVec
+        for player in players {
+            let cards = player?.getCards() as! [Card]
+            for card in cards {
+                card.texture = card.frontTexture
             }
         }
     }

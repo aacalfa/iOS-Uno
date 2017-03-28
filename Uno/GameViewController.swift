@@ -39,6 +39,7 @@ class GameViewController: UIViewController {
     var playerPoints: [Int: Int] = [:] // Dictionary of players' points
     var currentRoundCounter: Int = 0 // Counter for the current round
     var roundWinnder: Player! // Winner of the current round
+    var nonAIPlayerName: String = "Me" // Non-AI player's name
     
     override var prefersStatusBarHidden: Bool {
         return true
@@ -156,7 +157,7 @@ class GameViewController: UIViewController {
             }
             
             if i == 0 {
-                playersVec[i] = Player(cards: cards, name: "Player" + String(i), AIStatus: i != 0)
+                playersVec[i] = Player(cards: cards, name: nonAIPlayerName, AIStatus: i != 0)
             } else {
                 playersVec[i] = Player(cards: cards, name: listOfPlaceholderNames[AINameIndices[i]], AIStatus: i != 0)
             }
@@ -829,16 +830,22 @@ class GameViewController: UIViewController {
         // Show all players' cards
         gameScene?.showAllPlayersCards()
         
-        // Display alert
-        showAlertButtonTapped()
-        
         // Remove last played card from table
         lastPlayedCard.removeFromParent()
+        
+        // Check for end of game
+        if roundWinnder.getPoints() >= 500 {
+            // Display end of game alert
+            showEndOfGameAlertButtonTapped()
+        } else {
+            // Display end of round alert
+            showEndOfRoundAlertButtonTapped()
+        }
     }
     
     
     /// Alert end of round
-    func showAlertButtonTapped() {
+    func showEndOfRoundAlertButtonTapped() {
         // Create the alert
         let alert = UIAlertController(title: "End of Round " + String(currentRoundCounter), message: roundWinnder.getName() + " wins!", preferredStyle: UIAlertControllerStyle.alert)
         
@@ -855,6 +862,25 @@ class GameViewController: UIViewController {
             self.loadRound()
         }))
     
+        // Show the alert
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    /// Alert end of game
+    func showEndOfGameAlertButtonTapped() {
+        // Create the alert
+        let alert = UIAlertController(title: "End of Round " + String(currentRoundCounter), message: roundWinnder.getName() + " wins the game with\n" + String(roundWinnder.getPoints()) + " points!", preferredStyle: UIAlertControllerStyle.alert)
+        
+        // Add the actions (buttons)
+        alert.addAction(UIAlertAction(title: "Start Over", style: UIAlertActionStyle.destructive, handler: {action in
+            self.currentRoundCounter = 0
+            for playerIdx in 0..<self.numOfPlayers {
+                self.playerPoints[playerIdx] = 0
+                self.playersVec[playerIdx]?.resetPoints()
+            }
+            self.loadRound()
+        }))
+        
         // Show the alert
         self.present(alert, animated: true, completion: nil)
     }

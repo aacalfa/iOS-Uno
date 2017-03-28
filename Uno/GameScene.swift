@@ -37,6 +37,7 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
     var playNoButton = UIButton()
     var decidedToPlay: Bool = false // decision made by player whether to use card or not
     var playerAndCard: (Player, Card)?
+    let playCardLabel = SKLabelNode(text: "Play card?")
     
     override func didMove(to view: SKView) {
         // Draw background
@@ -364,6 +365,13 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
     }
   
     func drawOptionalPlayButtons(player: Player, card: Card) {
+        // Draw label asking if player wants to play drawn card
+        playCardLabel.fontSize = 13
+        playCardLabel.fontName = "AvenirNext-Bold"
+        playCardLabel.position = CGPoint(x: (view?.bounds.width)! / 2, y: (view?.bounds.height)! / 2 + 90)
+        background.addChild(playCardLabel)
+        
+        // Draw Yes button
         playYesButton = UIButton(frame: CGRect(x: (view?.bounds.width)! / 2, y: (view?.bounds.height)! / 2 - 85, width: 100, height: 30))
         playYesButton.setTitle("Yes", for: .normal)
         playYesButton.titleLabel?.font = UIFont.init(name: "AvenirNext-Bold", size:13)
@@ -372,6 +380,7 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
         playYesButton.addTarget(self, action: #selector(self.playYesPressed), for: .touchUpInside)
         self.view!.addSubview(playYesButton)
         
+        // Draw No button
         playNoButton = UIButton(frame: CGRect(x: (view?.bounds.width)! / 2 - 100, y: (view?.bounds.height)! / 2 - 85, width: 100, height: 30))
         playNoButton.setTitle("No", for: .normal)
         playNoButton.titleLabel?.font = UIFont.init(name: "AvenirNext-Bold", size:13)
@@ -383,6 +392,7 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
     }
     
     func playYesPressed() {
+        playCardLabel.removeFromParent()
         playYesButton.removeFromSuperview()
         playNoButton.removeFromSuperview()
         decidedToPlay = true
@@ -398,6 +408,7 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
     }
     
     func playNoPressed() {
+        playCardLabel.removeFromParent()
         playYesButton.removeFromSuperview()
         playNoButton.removeFromSuperview()
         decidedToPlay = false

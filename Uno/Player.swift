@@ -255,7 +255,7 @@ class Player {
     /// Sets a new array of cards for player (FOR TEST PURPOSES ONLY)
     ///
     /// - Parameter cards: array of cards
-    func setPlayerCards(cards: [Card]) {
+    func setCards(cards: [Card]) {
         self.cards.removeAll()
         self.cards = cards
     }

@@ -94,6 +94,6 @@ class GameViewControllerTest: XCTestCase {
                 cards.append(Card(cardColor: CardColor.other, cardValue: val.rawValue))
             }
         }
-        playerHuman?.setPlayerCards(cards: cards)
+        playerHuman?.setCards(cards: cards)
     }
 }

@@ -48,6 +48,7 @@ class GameViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        definesPresentationContext = true // Prevent "Warning: Attempt to present * on * which is already presenting" due to UIAlertController
         
 //        // Load card deck
 //        CardUtils.loadDeck()
@@ -60,6 +61,33 @@ class GameViewController: UIViewController {
 //            cardDeck.push(card)
 //        }
         
+//        // Load first round
+//        loadRound()
+//        
+//        // Create state machines
+//        createStateSm()
+//        
+//        // Present main menu
+//        menuScene = MenuScene(size: view.bounds.size)
+//        menuScene?.viewController = self
+//        let skView = view as! SKView
+//        skView.showsFPS = false
+//        skView.showsNodeCount = false
+//        skView.ignoresSiblingOrder = false // Draw background first, then cards
+//        menuScene?.scaleMode = .resizeFill
+//        skView.presentScene(menuScene)
+        
+        // Start scenes and initialize necessary members
+        startGame()
+        
+        // Add observers
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handlePlayerCardTouch), name: Notification.Name("handlePlayerCardTouch"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleDrawCardDeckTouch), name: Notification.Name("handleDrawCardDeckTouch"), object: nil)
+    }
+    
+    
+    /// Initialize all necessary data to start a game
+    func startGame() {
         // Load first round
         loadRound()
         
@@ -75,10 +103,6 @@ class GameViewController: UIViewController {
         skView.ignoresSiblingOrder = false // Draw background first, then cards
         menuScene?.scaleMode = .resizeFill
         skView.presentScene(menuScene)
-        
-        // Add observers
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handlePlayerCardTouch), name: Notification.Name("handlePlayerCardTouch"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleDrawCardDeckTouch), name: Notification.Name("handleDrawCardDeckTouch"), object: nil)
     }
     
     
@@ -137,6 +161,28 @@ class GameViewController: UIViewController {
             isOrderClockwise = true
             gameScene?.initRound()
         }
+    }
+    
+    
+    /// Reset all members for the start of a new game
+    func resetMembers() {
+        // IMPORTANT: Add initialization of new members here every time a new member that needs initialization is created for the class
+        cardDeck = Stack<Card?>()
+        discardPile = Stack<Card?>()
+        cardDeckRepository.removeAll()
+        
+        playersVec.removeAll()
+        numOfPlayers = 0
+        
+        playerOrderOfPlay.removeAll()
+        currPlayerIdx = 0
+        isOrderClockwise = true
+        
+        currentCard = nil
+        
+        playerPoints.removeAll()
+        currentRoundCounter = 0
+        nonAIPlayerName = "Me"
     }
     
     
@@ -869,12 +915,18 @@ class GameViewController: UIViewController {
             self.loadRound()
         }))
         alert.addAction(UIAlertAction(title: "Start Over", style: UIAlertActionStyle.destructive, handler: {action in
-            self.currentRoundCounter = 0
-            for playerIdx in 0..<self.numOfPlayers {
-                self.playerPoints[playerIdx] = 0
-                self.playersVec[playerIdx]?.resetPoints()
-            }
-            self.loadRound()
+            // Go to round 1 with the same configuration of players
+//            self.currentRoundCounter = 0
+//            for playerIdx in 0..<self.numOfPlayers {
+//                self.playerPoints[playerIdx] = 0
+//                self.playersVec[playerIdx]?.resetPoints()
+//            }
+//            self.loadRound()
+            
+            // Start the game from scratch
+            self.resetMembers()
+            self.gameScene?.removeFromParent()
+            self.startGame()
         }))
     
         // Show the alert
@@ -888,12 +940,18 @@ class GameViewController: UIViewController {
         
         // Add the actions (buttons)
         alert.addAction(UIAlertAction(title: "Start Over", style: UIAlertActionStyle.destructive, handler: {action in
-            self.currentRoundCounter = 0
-            for playerIdx in 0..<self.numOfPlayers {
-                self.playerPoints[playerIdx] = 0
-                self.playersVec[playerIdx]?.resetPoints()
-            }
-            self.loadRound()
+            // Go to round 1 with the same configuration of players
+//            self.currentRoundCounter = 0
+//            for playerIdx in 0..<self.numOfPlayers {
+//                self.playerPoints[playerIdx] = 0
+//                self.playersVec[playerIdx]?.resetPoints()
+//            }
+//            self.loadRound()
+            
+            // Start the game from scratch
+            self.resetMembers()
+            self.gameScene?.removeFromParent()
+            self.startGame()
         }))
         
         // Show the alert

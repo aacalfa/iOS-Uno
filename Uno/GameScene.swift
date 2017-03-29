@@ -39,6 +39,14 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
     var playerAndCard: (Player, Card)?
     let playCardLabel = SKLabelNode(text: "Play card?")
     
+    // button that will be shown to human player when playing his second to last card, he must click
+    // otherwise a penalty of drawing two cards will occur.
+    var unoYellButton = UIButton()
+    var unoButtonTimer: Timer = Timer()
+    var buttonCounter = 0
+    let unoButtonTimeOut = 3 // amount of seconds tht player has to click uno button
+    var pressedOnTime: Bool = false
+    
     override func didMove(to view: SKView) {
         // Draw background
         addChild(background)
@@ -362,6 +370,91 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
         } else {
             card1.run(move, completion: { self.viewController.doFinishDrawTwoOrFourAction(player: player, card1: card1, card2: card2) })
         }
+    }
+    
+    
+    /// Draw Uno button on screen. Player has to press it
+    /// before the timeout otherwise he'll have to draw 2
+    /// 2 cards
+    ///
+    /// - Parameters:
+    ///   - player: current player
+    ///   - card: card played
+    func drawUnoButton(player: Player, card: Card) {
+        // Draw Uno button
+        unoYellButton = UIButton(frame: CGRect(x: (view?.bounds.width)! / 2, y: (view?.bounds.height)! / 2 - 85, width: 100, height: 30))
+        unoYellButton.setTitle("Uno!", for: .normal)
+        unoYellButton.titleLabel?.font = UIFont.init(name: "AvenirNext-Bold", size:13)
+        unoYellButton.setTitleColor(UIColor.white, for: .normal)
+        unoYellButton.backgroundColor = UIColor.red
+        unoYellButton.addTarget(self, action: #selector(self.unoButtonPressed), for: .touchUpInside)
+        self.view!.addSubview(unoYellButton)
+        
+        playerAndCard = (player, card)
+        startTimer()
+    }
+    
+    
+    /// handle press of uno button
+    func unoButtonPressed() {
+        // get rid of timer
+        unoButtonTimer.invalidate()
+        buttonCounter = 0
+        pressedOnTime = true
+        unoYellButton.removeFromSuperview()
+        let player = playerAndCard?.0
+        let card = playerAndCard?.1
+        // continue the play normally
+        viewController.doFinishHandlePlayerCardTouchFinally(player: player!, card: card!)
+    }
+    
+    
+    /// Starts timer of uno button
+    func startTimer(){
+        unoButtonTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(GameScene.updateTimer), userInfo: nil, repeats: true)
+        print("func startTimer")
+    }
+    
+    
+    /// Stops timer and checks if player pressed uno button before
+    /// the timeout. If he did not, penalize with 2 cards
+    func stopTimer(){
+        unoButtonTimer.invalidate()
+        buttonCounter = 0
+        unoYellButton.removeFromSuperview()
+        // Don't do anything else if player was able to press button on time
+        if pressedOnTime {
+            return
+        }
+        
+        // Player was not able to press the uno button on time, penalize him
+        let player = playerAndCard?.0
+        let card = playerAndCard?.1
+        card?.zRotation = CGFloat(Double.pi/2)
+        moveCardFromDrawToPlayerHandDrawTwoOrFourAction(player: player!, cardPosIdx: viewController.playersVec.index{$0 === player!}!, card1: viewController.updateDrawPile(), card2: viewController.cardDeck.peek()!)
+        
+        // Update discard pile
+        viewController.updateDiscardPile(card: card!)
+        drawTopDiscardPileCard()
+        // Update order of play
+        viewController.updateOrderOfPlay(withSkip: false)
+        drawCurrentPlayerLabel()
+        
+        // Go to the next player (possibly AI)
+        viewController.handleAIPlayersPlay()
+        print("func stopTimer")
+    }
+    
+    
+    /// Increments uno button timer. If a timeout occurs,
+    /// handle it in stopTimer
+    func updateTimer() {
+        buttonCounter += 1
+        if buttonCounter == unoButtonTimeOut {
+            pressedOnTime = false
+            stopTimer()
+        }
+        print("func updateTimer \(buttonCounter)")
     }
   
     func drawOptionalPlayButtons(player: Player, card: Card) {

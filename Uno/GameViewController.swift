@@ -20,6 +20,7 @@ class GameViewController: UIViewController {
     
     var cardDeck: Stack<Card?> = Stack<Card?>() // Game's card deck
     var discardPile: Stack<Card?> = Stack<Card?>() // Accumulates cards played
+    var cardDeckRepository: [Card?] = [] // Stores popped cards from card deck
     
     var playersVec: [Player?] = [] // Array that contains all players in the game
     var numOfPlayers: Int = 0 // Determines how many players are participating in the game
@@ -260,6 +261,17 @@ class GameViewController: UIViewController {
     }
     
     
+    /// Restore card deck when number of cards left is less than or equal to 4
+    func restoreCardDeck() {
+        print("Restoring played cards to card deck")
+        cardDeckRepository.shuffle()
+        for card in cardDeckRepository {
+            cardDeck.push(card)
+        }
+        cardDeckRepository.removeAll()
+    }
+    
+    
     /// Handle play by AI player
     func handleAIPlayersPlay() {
         let delayInSeconds = 1.7
@@ -364,44 +376,32 @@ class GameViewController: UIViewController {
             
             // Check if Draw Two card
             if card.cardValue == SpecialVals.drawTwo.rawValue {
-                // Check if card deck has fewer than two cards
-                if cardDeck.count() < 2 {
-                    // TODO: End round (not enough cards)
-                    print("Card deck has fewer than 2 cards")
-                } else {
-                    // Skip next player
-                    isSkip = true
-                    
-                    // Get next player
-                    let nextPlayer = getNextPlayer()
-                    assert(nextPlayer != nil)
-                    
-                    // Add two cards to the next player's hand
-                    // Add animation to card moving from draw pile to player's hand
-                    // After completing the animation, doFinishDrawTwoAction will be called
-                    gameScene?.moveCardFromDrawToPlayerHandDrawTwoOrFourAction(player: nextPlayer!, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card1: updateDrawPile(), card2: cardDeck.peek()!)
-                }
+                // Skip next player
+                isSkip = true
+                
+                // Get next player
+                let nextPlayer = getNextPlayer()
+                assert(nextPlayer != nil)
+                
+                // Add two cards to the next player's hand
+                // Add animation to card moving from draw pile to player's hand
+                // After completing the animation, doFinishDrawTwoAction will be called
+                gameScene?.moveCardFromDrawToPlayerHandDrawTwoOrFourAction(player: nextPlayer!, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card1: updateDrawPile(), card2: cardDeck.peek()!)
             }
             
             // Check if Wild Draw Four card
             if card.cardValue == SpecialVals.wildDrawFour.rawValue {
-                // Check if card deck has fewer than four cards
-                if cardDeck.count() < 4 {
-                    // TODO: End round (not enough cards)
-                    print("Card deck has fewer than 4 cards")
-                } else {
-                    // Skip next player
-                    isSkip = true
-                    
-                    // Get next player
-                    let nextPlayer = getNextPlayer()
-                    assert(nextPlayer != nil)
-                    
-                    // Add two cards to the next player's hand
-                    // Add animation to card moving from draw pile to player's hand
-                    // After completing the animation, doFinishDrawTwoAction will be called
-                    gameScene?.moveCardFromDrawToPlayerHandDrawTwoOrFourAction(player: nextPlayer!, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card1: updateDrawPile(), card2: updateDrawPile(), card3: updateDrawPile(), card4: cardDeck.peek()!)
-                }
+                // Skip next player
+                isSkip = true
+                
+                // Get next player
+                let nextPlayer = getNextPlayer()
+                assert(nextPlayer != nil)
+                
+                // Add two cards to the next player's hand
+                // Add animation to card moving from draw pile to player's hand
+                // After completing the animation, doFinishDrawTwoAction will be called
+                gameScene?.moveCardFromDrawToPlayerHandDrawTwoOrFourAction(player: nextPlayer!, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card1: updateDrawPile(), card2: updateDrawPile(), card3: updateDrawPile(), card4: cardDeck.peek()!)
             }
 
             // Update view
@@ -463,6 +463,10 @@ class GameViewController: UIViewController {
         // Update draw card pile
         let cardFromDeck = updateDrawPile()
         assert(card === cardFromDeck) // Just checking
+        cardDeckRepository.append(cardFromDeck) // Update repository
+        if cardDeck.count() <= 4 {
+            restoreCardDeck()
+        }
         // Update draw card pile in view
         gameScene?.drawTopDrawDeckCard()
         
@@ -497,6 +501,10 @@ class GameViewController: UIViewController {
         // Update discard pile
         updateDiscardPile(card: cardFromDeck)
         assert(card === cardFromDeck) // Just checking
+        cardDeckRepository.append(cardFromDeck) // Update repository
+        if cardDeck.count() <= 4 {
+            restoreCardDeck()
+        }
         // Update draw discard pile in view
         gameScene?.drawTopDiscardPileCard()
         // Update draw card pile in view
@@ -777,10 +785,17 @@ class GameViewController: UIViewController {
     func doFinishDrawTwoOrFourAction(player: Player, card1: Card, card2: Card, card3: Card? = nil, card4: Card? = nil) {
         // Update draw card pile
         let cardFromDeck = updateDrawPile()
+        cardDeckRepository.append(card1) // Update repository
+        cardDeckRepository.append(card2) // Update repository
         if card4 == nil {
             assert(card2 === cardFromDeck) // Just checking
         } else {
             assert(card4! === cardFromDeck) // Just checking
+            cardDeckRepository.append(card3) // Update repository
+            cardDeckRepository.append(cardFromDeck) // Update repository
+        }
+        if cardDeck.count() <= 4 {
+            restoreCardDeck()
         }
         // Update draw card pile in view
         gameScene?.drawTopDrawDeckCard()

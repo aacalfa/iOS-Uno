@@ -51,6 +51,7 @@ class MenuScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
         // Draw name textfield
         nonAIPlayerNameTextField.borderStyle = UITextBorderStyle.roundedRect
         nonAIPlayerNameTextField.frame = CGRect(x: frame.midX - numberPlayersLabel.frame.width / 4, y: frame.midY + 20, width: numberPlayersLabel.frame.width / 2, height: numberPlayersLabel.frame.height)
+        nonAIPlayerNameTextField.textAlignment = .center
         self.view!.addSubview(nonAIPlayerNameTextField)
     }
     

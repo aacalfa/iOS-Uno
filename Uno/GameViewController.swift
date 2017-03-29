@@ -20,6 +20,7 @@ class GameViewController: UIViewController {
     
     var cardDeck: Stack<Card?> = Stack<Card?>() // Game's card deck
     var discardPile: Stack<Card?> = Stack<Card?>() // Accumulates cards played
+    var cardDeckRepository: [Card?] = [] // Stores popped cards from card deck
     
     var playersVec: [Player?] = [] // Array that contains all players in the game
     var numOfPlayers: Int = 0 // Determines how many players are participating in the game
@@ -47,6 +48,7 @@ class GameViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        definesPresentationContext = true // Prevent "Warning: Attempt to present * on * which is already presenting" due to UIAlertController
         
 //        // Load card deck
 //        CardUtils.loadDeck()
@@ -59,6 +61,33 @@ class GameViewController: UIViewController {
 //            cardDeck.push(card)
 //        }
         
+//        // Load first round
+//        loadRound()
+//        
+//        // Create state machines
+//        createStateSm()
+//        
+//        // Present main menu
+//        menuScene = MenuScene(size: view.bounds.size)
+//        menuScene?.viewController = self
+//        let skView = view as! SKView
+//        skView.showsFPS = false
+//        skView.showsNodeCount = false
+//        skView.ignoresSiblingOrder = false // Draw background first, then cards
+//        menuScene?.scaleMode = .resizeFill
+//        skView.presentScene(menuScene)
+        
+        // Start scenes and initialize necessary members
+        startGame()
+        
+        // Add observers
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handlePlayerCardTouch), name: Notification.Name("handlePlayerCardTouch"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleDrawCardDeckTouch), name: Notification.Name("handleDrawCardDeckTouch"), object: nil)
+    }
+    
+    
+    /// Initialize all necessary data to start a game
+    func startGame() {
         // Load first round
         loadRound()
         
@@ -74,10 +103,6 @@ class GameViewController: UIViewController {
         skView.ignoresSiblingOrder = false // Draw background first, then cards
         menuScene?.scaleMode = .resizeFill
         skView.presentScene(menuScene)
-        
-        // Add observers
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handlePlayerCardTouch), name: Notification.Name("handlePlayerCardTouch"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleDrawCardDeckTouch), name: Notification.Name("handleDrawCardDeckTouch"), object: nil)
     }
     
     
@@ -136,6 +161,28 @@ class GameViewController: UIViewController {
             isOrderClockwise = true
             gameScene?.initRound()
         }
+    }
+    
+    
+    /// Reset all members for the start of a new game
+    func resetMembers() {
+        // IMPORTANT: Add initialization of new members here every time a new member that needs initialization is created for the class
+        cardDeck = Stack<Card?>()
+        discardPile = Stack<Card?>()
+        cardDeckRepository.removeAll()
+        
+        playersVec.removeAll()
+        numOfPlayers = 0
+        
+        playerOrderOfPlay.removeAll()
+        currPlayerIdx = 0
+        isOrderClockwise = true
+        
+        currentCard = nil
+        
+        playerPoints.removeAll()
+        currentRoundCounter = 0
+        nonAIPlayerName = "Me"
     }
     
     
@@ -260,6 +307,17 @@ class GameViewController: UIViewController {
     }
     
     
+    /// Restore card deck when number of cards left is less than or equal to 4
+    func restoreCardDeck() {
+        print("Restoring played cards to card deck")
+        cardDeckRepository.shuffle()
+        for card in cardDeckRepository {
+            cardDeck.push(card)
+        }
+        cardDeckRepository.removeAll()
+    }
+    
+    
     /// Handle play by AI player
     func handleAIPlayersPlay() {
         let delayInSeconds = 1.7
@@ -364,44 +422,32 @@ class GameViewController: UIViewController {
             
             // Check if Draw Two card
             if card.cardValue == SpecialVals.drawTwo.rawValue {
-                // Check if card deck has fewer than two cards
-                if cardDeck.count() < 2 {
-                    // TODO: End round (not enough cards)
-                    print("Card deck has fewer than 2 cards")
-                } else {
-                    // Skip next player
-                    isSkip = true
-                    
-                    // Get next player
-                    let nextPlayer = getNextPlayer()
-                    assert(nextPlayer != nil)
-                    
-                    // Add two cards to the next player's hand
-                    // Add animation to card moving from draw pile to player's hand
-                    // After completing the animation, doFinishDrawTwoAction will be called
-                    gameScene?.moveCardFromDrawToPlayerHandDrawTwoOrFourAction(player: nextPlayer!, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card1: updateDrawPile(), card2: cardDeck.peek()!)
-                }
+                // Skip next player
+                isSkip = true
+                
+                // Get next player
+                let nextPlayer = getNextPlayer()
+                assert(nextPlayer != nil)
+                
+                // Add two cards to the next player's hand
+                // Add animation to card moving from draw pile to player's hand
+                // After completing the animation, doFinishDrawTwoAction will be called
+                gameScene?.moveCardFromDrawToPlayerHandDrawTwoOrFourAction(player: nextPlayer!, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card1: updateDrawPile(), card2: cardDeck.peek()!)
             }
             
             // Check if Wild Draw Four card
             if card.cardValue == SpecialVals.wildDrawFour.rawValue {
-                // Check if card deck has fewer than four cards
-                if cardDeck.count() < 4 {
-                    // TODO: End round (not enough cards)
-                    print("Card deck has fewer than 4 cards")
-                } else {
-                    // Skip next player
-                    isSkip = true
-                    
-                    // Get next player
-                    let nextPlayer = getNextPlayer()
-                    assert(nextPlayer != nil)
-                    
-                    // Add two cards to the next player's hand
-                    // Add animation to card moving from draw pile to player's hand
-                    // After completing the animation, doFinishDrawTwoAction will be called
-                    gameScene?.moveCardFromDrawToPlayerHandDrawTwoOrFourAction(player: nextPlayer!, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card1: updateDrawPile(), card2: updateDrawPile(), card3: updateDrawPile(), card4: cardDeck.peek()!)
-                }
+                // Skip next player
+                isSkip = true
+                
+                // Get next player
+                let nextPlayer = getNextPlayer()
+                assert(nextPlayer != nil)
+                
+                // Add two cards to the next player's hand
+                // Add animation to card moving from draw pile to player's hand
+                // After completing the animation, doFinishDrawTwoAction will be called
+                gameScene?.moveCardFromDrawToPlayerHandDrawTwoOrFourAction(player: nextPlayer!, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card1: updateDrawPile(), card2: updateDrawPile(), card3: updateDrawPile(), card4: cardDeck.peek()!)
             }
 
             // Update view
@@ -463,6 +509,10 @@ class GameViewController: UIViewController {
         // Update draw card pile
         let cardFromDeck = updateDrawPile()
         assert(card === cardFromDeck) // Just checking
+        cardDeckRepository.append(cardFromDeck) // Update repository
+        if cardDeck.count() <= 4 {
+            restoreCardDeck()
+        }
         // Update draw card pile in view
         gameScene?.drawTopDrawDeckCard()
         
@@ -497,6 +547,10 @@ class GameViewController: UIViewController {
         // Update discard pile
         updateDiscardPile(card: cardFromDeck)
         assert(card === cardFromDeck) // Just checking
+        cardDeckRepository.append(cardFromDeck) // Update repository
+        if cardDeck.count() <= 4 {
+            restoreCardDeck()
+        }
         // Update draw discard pile in view
         gameScene?.drawTopDiscardPileCard()
         // Update draw card pile in view
@@ -777,10 +831,17 @@ class GameViewController: UIViewController {
     func doFinishDrawTwoOrFourAction(player: Player, card1: Card, card2: Card, card3: Card? = nil, card4: Card? = nil) {
         // Update draw card pile
         let cardFromDeck = updateDrawPile()
+        cardDeckRepository.append(card1) // Update repository
+        cardDeckRepository.append(card2) // Update repository
         if card4 == nil {
             assert(card2 === cardFromDeck) // Just checking
         } else {
             assert(card4! === cardFromDeck) // Just checking
+            cardDeckRepository.append(card3) // Update repository
+            cardDeckRepository.append(cardFromDeck) // Update repository
+        }
+        if cardDeck.count() <= 4 {
+            restoreCardDeck()
         }
         // Update draw card pile in view
         gameScene?.drawTopDrawDeckCard()
@@ -854,12 +915,18 @@ class GameViewController: UIViewController {
             self.loadRound()
         }))
         alert.addAction(UIAlertAction(title: "Start Over", style: UIAlertActionStyle.destructive, handler: {action in
-            self.currentRoundCounter = 0
-            for playerIdx in 0..<self.numOfPlayers {
-                self.playerPoints[playerIdx] = 0
-                self.playersVec[playerIdx]?.resetPoints()
-            }
-            self.loadRound()
+            // Go to round 1 with the same configuration of players
+//            self.currentRoundCounter = 0
+//            for playerIdx in 0..<self.numOfPlayers {
+//                self.playerPoints[playerIdx] = 0
+//                self.playersVec[playerIdx]?.resetPoints()
+//            }
+//            self.loadRound()
+            
+            // Start the game from scratch
+            self.resetMembers()
+            self.gameScene?.removeFromParent()
+            self.startGame()
         }))
     
         // Show the alert
@@ -873,12 +940,18 @@ class GameViewController: UIViewController {
         
         // Add the actions (buttons)
         alert.addAction(UIAlertAction(title: "Start Over", style: UIAlertActionStyle.destructive, handler: {action in
-            self.currentRoundCounter = 0
-            for playerIdx in 0..<self.numOfPlayers {
-                self.playerPoints[playerIdx] = 0
-                self.playersVec[playerIdx]?.resetPoints()
-            }
-            self.loadRound()
+            // Go to round 1 with the same configuration of players
+//            self.currentRoundCounter = 0
+//            for playerIdx in 0..<self.numOfPlayers {
+//                self.playerPoints[playerIdx] = 0
+//                self.playersVec[playerIdx]?.resetPoints()
+//            }
+//            self.loadRound()
+            
+            // Start the game from scratch
+            self.resetMembers()
+            self.gameScene?.removeFromParent()
+            self.startGame()
         }))
         
         // Show the alert

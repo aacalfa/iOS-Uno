@@ -413,66 +413,12 @@ class GameViewController: UIViewController {
         if player.getCards().count == 0 {
             // End of round
             handleEndOfRound(winnerID: playersVec.index{$0 === player}!, lastPlayedCard: card)
+        } else if player.getCards().count == 1 && !player.isAI() {
+            // Show uno button, human player has to click on
+            // it before the timeout
+            gameScene?.drawUnoButton(player: player, card: card)
         } else {
-            // Update discard pile
-            updateDiscardPile(card: card)
-            
-            // if the card played is skip or reverse, adjust who will play next and the view
-            var isSkip: Bool = handleSkipAndReverseCards(card: card)
-            
-            // Check if Draw Two card
-            if card.cardValue == SpecialVals.drawTwo.rawValue {
-                // Skip next player
-                isSkip = true
-                
-                // Get next player
-                let nextPlayer = getNextPlayer()
-                assert(nextPlayer != nil)
-                
-                // Add two cards to the next player's hand
-                // Add animation to card moving from draw pile to player's hand
-                // After completing the animation, doFinishDrawTwoAction will be called
-                gameScene?.moveCardFromDrawToPlayerHandDrawTwoOrFourAction(player: nextPlayer!, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card1: updateDrawPile(), card2: cardDeck.peek()!)
-            }
-            
-            // Check if Wild Draw Four card
-            if card.cardValue == SpecialVals.wildDrawFour.rawValue {
-                // Skip next player
-                isSkip = true
-                
-                // Get next player
-                let nextPlayer = getNextPlayer()
-                assert(nextPlayer != nil)
-                
-                // Add two cards to the next player's hand
-                // Add animation to card moving from draw pile to player's hand
-                // After completing the animation, doFinishDrawTwoAction will be called
-                gameScene?.moveCardFromDrawToPlayerHandDrawTwoOrFourAction(player: nextPlayer!, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card1: updateDrawPile(), card2: updateDrawPile(), card3: updateDrawPile(), card4: cardDeck.peek()!)
-            }
-
-            // Update view
-            // If the card played is wild, show in view what was the chosen color
-            if card.cardType == CardType.wild {
-                gameScene?.drawWildChosenColorLabel()
-            } else {
-                // make sure chosen color label is not displayed
-                gameScene?.wildChosenColorLabel.isHidden = true
-            }
-            
-            gameScene?.invalidPlayLabel.isHidden = true
-            gameScene?.drawTopDiscardPileCard()
-            // Rearrange cards: as cards move from hand to discard pile, update cards from
-            // player hand so that they are shown right next to each other. cardPosIdx corresponds
-            // is to tell drawPlayerCards which players card we are adjusting in the position
-            // perspective.
-            gameScene?.drawPlayerCards(player: player, cardPosIdx: playersVec.index{$0 === player}!)
-            
-            // Update order of play
-            updateOrderOfPlay(withSkip: isSkip)
-            gameScene?.drawCurrentPlayerLabel()
-            
-            // Go to the next player (possibly AI)
-            handleAIPlayersPlay()
+            doFinishHandlePlayerCardTouchFinally(player: player, card: card)
         }
     }
     
@@ -563,6 +509,10 @@ class GameViewController: UIViewController {
         if player.getCards().count == 0 {
             // End of round
             handleEndOfRound(winnerID: playersVec.index{$0 === player}!, lastPlayedCard: card)
+        } else if player.getCards().count == 1 && !player.isAI() {
+            // Show uno button, human player has to click on
+            // it before the timeout
+            gameScene?.drawUnoButton(player: player, card: card)
         } else {
             // If the card played is wild, show in view what was the chosen color
             if card.cardType == CardType.wild {
@@ -957,6 +907,71 @@ class GameViewController: UIViewController {
         // Show the alert
         self.present(alert, animated: true, completion: nil)
     }
+    
+    
+    
+    func doFinishHandlePlayerCardTouchFinally(player: Player, card: Card) {
+        // Update discard pile
+        updateDiscardPile(card: card)
+        
+        // if the card played is skip or reverse, adjust who will play next and the view
+        var isSkip: Bool = handleSkipAndReverseCards(card: card)
+        
+        // Check if Draw Two card
+        if card.cardValue == SpecialVals.drawTwo.rawValue {
+            // Skip next player
+            isSkip = true
+            
+            // Get next player
+            let nextPlayer = getNextPlayer()
+            assert(nextPlayer != nil)
+            
+            // Add two cards to the next player's hand
+            // Add animation to card moving from draw pile to player's hand
+            // After completing the animation, doFinishDrawTwoAction will be called
+            gameScene?.moveCardFromDrawToPlayerHandDrawTwoOrFourAction(player: nextPlayer!, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card1: updateDrawPile(), card2: cardDeck.peek()!)
+        }
+        
+        // Check if Wild Draw Four card
+        if card.cardValue == SpecialVals.wildDrawFour.rawValue {
+            // Skip next player
+            isSkip = true
+            
+            // Get next player
+            let nextPlayer = getNextPlayer()
+            assert(nextPlayer != nil)
+            
+            // Add two cards to the next player's hand
+            // Add animation to card moving from draw pile to player's hand
+            // After completing the animation, doFinishDrawTwoAction will be called
+            gameScene?.moveCardFromDrawToPlayerHandDrawTwoOrFourAction(player: nextPlayer!, cardPosIdx: playersVec.index{$0 === nextPlayer}!, card1: updateDrawPile(), card2: updateDrawPile(), card3: updateDrawPile(), card4: cardDeck.peek()!)
+        }
+        
+        // Update view
+        // If the card played is wild, show in view what was the chosen color
+        if card.cardType == CardType.wild {
+            gameScene?.drawWildChosenColorLabel()
+        } else {
+            // make sure chosen color label is not displayed
+            gameScene?.wildChosenColorLabel.isHidden = true
+        }
+        
+        gameScene?.invalidPlayLabel.isHidden = true
+        gameScene?.drawTopDiscardPileCard()
+        // Rearrange cards: as cards move from hand to discard pile, update cards from
+        // player hand so that they are shown right next to each other. cardPosIdx corresponds
+        // is to tell drawPlayerCards which players card we are adjusting in the position
+        // perspective.
+        gameScene?.drawPlayerCards(player: player, cardPosIdx: playersVec.index{$0 === player}!)
+        
+        // Update order of play
+        updateOrderOfPlay(withSkip: isSkip)
+        gameScene?.drawCurrentPlayerLabel()
+        
+        // Go to the next player (possibly AI)
+        handleAIPlayersPlay()
+    }
+
 }
 
 

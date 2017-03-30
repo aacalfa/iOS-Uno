@@ -33,5 +33,5 @@ When playing a wild card, you must choose which color shall be played next. For 
 
 ![Alt text](http://image.prntscr.com/image/a7a61b247336422494fab5ead41cde75.png "Playing a wild card")
 
-#### End of Hame
+#### End of Game
 The first player who runs out of cards wins the round. Once that happens, an alert popup will be shown and you can choose between starting the next round, or starting over from the beginning (points will be reset). To win the game, you must reach at least 500 points.

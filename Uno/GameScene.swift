@@ -283,6 +283,13 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
             let node: SKNode = self.atPoint(location)
             
             if node is Card {
+                // Prevent choosing other cards after buttons appear
+                if colorPicker != nil && !(colorPicker?.isHidden)! {
+                    return
+                }
+                if playNoButton.isDescendant(of: self.view!) {
+                    return
+                }
                 let card = (node as? Card)!
                 let player = viewController.playerOrderOfPlay[viewController.currPlayerIdx]!
                 if !player.isAI() && player.hasCardObject(card: card) {

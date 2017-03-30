@@ -160,6 +160,9 @@ class GameViewController: UIViewController {
             // Initialize view
             isOrderClockwise = true
             gameScene?.initRound()
+            
+            // Update current player label
+            gameScene?.drawCurrentPlayerLabel()
         }
     }
     

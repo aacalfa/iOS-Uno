@@ -117,6 +117,15 @@ class GameScene: SKScene, UITextFieldDelegate,UIPickerViewDataSource,UIPickerVie
         if viewController.numOfPlayers > 2 {
             drawPlayDirection()
         }
+        
+        // Hide labels and nillify pickers
+        colorPicker = nil
+        playCardLabel.removeFromParent()
+        playYesButton.removeFromSuperview()
+        playNoButton.removeFromSuperview()
+        invalidPlayLabel.isHidden = true
+        wildChosenColorLabel.isHidden = true
+        playCardLabel.isHidden = true
     }
     
     
